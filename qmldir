@@ -1,0 +1,7 @@
+plugin jollacomponentsgallerysplugin
+SplitViewPage 1.0 SplitViewPage.qml
+ImageGridView 1.0 ImageGridView.qml
+ContentModel 1.0 ContentModel.qml
+SelectedContentModel 1.0 SelectedContentModel.qml
+ThumbnailImage 1.0 ThumbnailImage.qml
+ThumbnailVideo 1.0 ThumbnailVideo.qml
