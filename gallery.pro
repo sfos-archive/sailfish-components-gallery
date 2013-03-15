@@ -12,7 +12,9 @@ import.files = *.qml qmldir scripts
 import.path = $$TARGETPATH
 target.path = $$TARGETPATH
 
-OTHER_FILES += *.qml
+OTHER_FILES += *.qml \
+    ThumbnailBase.qml \
+    ThumbnailCustom.qml
 
 
 SOURCES += \

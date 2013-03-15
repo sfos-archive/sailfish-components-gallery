@@ -2,3 +2,4 @@ plugin jollacomponentsgalleryplugin
 ImageGridView 1.0 ImageGridView.qml
 ThumbnailImage 1.0 ThumbnailImage.qml
 ThumbnailVideo 1.0 ThumbnailVideo.qml
+ThumbnailCustom 1.0 ThumbnailCustom.qml
