@@ -1,4 +1,5 @@
 plugin jollacomponentsgalleryplugin
+HighlightItem 1.0 HighlightItem.qml
 ImageGridView 1.0 ImageGridView.qml
 ThumbnailImage 1.0 ThumbnailImage.qml
 ThumbnailVideo 1.0 ThumbnailVideo.qml

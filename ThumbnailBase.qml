@@ -7,8 +7,8 @@ MouseArea {
     id: thumbnail
 
     property url source
+    property bool down: pressed && containsMouse
     property string mimeType
-    property bool selected
     property bool pressedAndHolded
     property int size: GridView.view.cellSize
     property int firstVisibleIndex: GridView.view._firstVisible

@@ -28,15 +28,13 @@ SilicaGridView {
 
     VerticalScrollDecorator { }
 
-    Rectangle {
+    HighlightItem {
         id: highlightItem
-        color: theme.highlightBackgroundColor
         width: grid.cellWidth
         height: grid.cellHeight
-        opacity: 0.5
         objectName: "highlightItem"
-        visible: highlightEnabled && _unfocusedOpacity == 1 && grid.currentIndex > -1
-                 && grid.currentItem.pressed && grid.currentItem.containsMouse
+        active: highlightEnabled && _unfocusedOpacity == 1 && grid.currentIndex > -1
+                 && grid.currentItem.down
         x: grid.currentItem != null ? grid.currentItem.x : 0
         y: grid.currentItem != null ? grid.currentItem.y - grid.contentY : 0
         z: grid.currentItem != null ? grid.currentItem.z + 1 : 0
