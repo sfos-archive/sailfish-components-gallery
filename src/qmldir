@@ -1,4 +1,4 @@
-plugin jollacomponentsgalleryplugin
+plugin sailfishgalleryplugin
 HighlightItem 1.0 HighlightItem.qml
 ImageGridView 1.0 ImageGridView.qml
 ThumbnailImage 1.0 ThumbnailImage.qml

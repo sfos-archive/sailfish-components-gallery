@@ -2,7 +2,7 @@
 #include <QDeclarativeExtensionPlugin>
 #include <QDeclarativeEngine>
 
-class ComponentsGalleryPlugin : public QDeclarativeExtensionPlugin
+class SailfishGalleryPlugin : public QDeclarativeExtensionPlugin
 {
     Q_OBJECT
 
@@ -11,12 +11,12 @@ public:
     virtual void registerTypes(const char *uri)
     {
         Q_UNUSED(uri)
-        Q_ASSERT(QLatin1String(uri) == QLatin1String("com.jolla.components.gallery"));
+        Q_ASSERT(QLatin1String(uri) == QLatin1String("Sailfish.Gallery"));
         // TODO: Add gallery specific types here
     }
 };
 
 #include "plugin.moc"
 
-Q_EXPORT_PLUGIN2(componentsgalleryplugin, ComponentsGalleryPlugin);
+Q_EXPORT_PLUGIN2(sailfishgalleryplugin, SailfishGalleryPlugin);
 
