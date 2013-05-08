@@ -45,6 +45,7 @@ mkdir -p %{buildroot}/opt/tests/sailfish-gallery/test-definition
 mkdir -p %{buildroot}/opt/tests/sailfish-gallery/auto
 cp -a tests/test-definition/tests.xml %{buildroot}/opt/tests/sailfish-gallery/test-definition
 cp -a tests/auto/*qml %{buildroot}/opt/tests/sailfish-gallery/auto
+cp -a tests/auto/*js %{buildroot}/opt/tests/sailfish-gallery/auto
 
 %qmake_install
 
