@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testdefinition version="1.0">
+   <suite name="sailfish-gallery-tests" domain="ui">
+       <description>Sailfish Gallery UI Components automatic tests</description>
+       <set name="unit-tests" feature="Sailfish Gallery UI Components">
+           <description>Sailfish Gallery UI component unit tests</description>
+           <case manual="false" name="unittests">
+               <step>cd /opt/tests/sailfish-gallery/auto/ &amp;&amp;DISPLAY=:0 qmltestrunner</step>
+           </case>
+       </set>
+   </suite>
+</testdefinition>

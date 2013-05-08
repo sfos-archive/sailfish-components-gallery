@@ -18,6 +18,16 @@ Requires:  nemo-qml-plugins-thumbnailer
 %description
 Sailfish Gallery UI Components
 
+%package tests
+Summary:    Unit tests for Sailfish Gallery UI components
+Group:      System/Libraries
+BuildRequires:  pkgconfig(QtTest)
+Requires:   %{name} = %{version}-%{release}
+Requires:   qtest-qml
+
+%description tests
+This package contains QML unit tests for Sailfish Gallery UI components
+
 %prep
 %setup -q -n %{name}-%{version}
 
@@ -30,6 +40,12 @@ make %{?jobs:-j%jobs}
 %install
 rm -rf %{buildroot}
 
+# Copy tests
+mkdir -p %{buildroot}/opt/tests/sailfish-gallery/test-definition
+mkdir -p %{buildroot}/opt/tests/sailfish-gallery/auto
+cp -a tests/test-definition/tests.xml %{buildroot}/opt/tests/sailfish-gallery/test-definition
+cp -a tests/auto/*qml %{buildroot}/opt/tests/sailfish-gallery/auto
+
 %qmake_install
 
 #
@@ -38,4 +54,10 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{_libdir}/qt4/imports/Sailfish/Gallery/*
+
+%files tests
+%defattr(-,root,root,-)
+# >> files tests
+/opt/tests/sailfish-gallery/*
+# << files tests
 
