@@ -1,11 +1,11 @@
-Name:       sailfish-gallery
+Name:       sailfish-components-gallery
 
 Summary:    Sailfish Gallery UI Components
 Version:    0.0.1
 Release:    1
 Group:      System/Libraries
 License:    TBD
-URL:        https://bitbucket.org/jolla/ui-sailfish-gallery
+URL:        https://bitbucket.org/jolla/ui-sailfish-components-gallery
 Source0:    %{name}-%{version}.tar.bz2
 BuildRequires:  pkgconfig(QtCore) >= 4.8.0
 BuildRequires:  pkgconfig(QtDeclarative)
@@ -14,6 +14,9 @@ BuildRequires:  pkgconfig(QtOpenGL)
 
 Requires:  sailfishsilica >= 0.8.22
 Requires:  nemo-qml-plugins-thumbnailer
+
+Obsoletes: sailfish-gallery <= 0.0.3
+Provides:  sailfish-gallery > 0.0.3
 
 %description
 Sailfish Gallery UI Components
@@ -41,11 +44,11 @@ make %{?jobs:-j%jobs}
 rm -rf %{buildroot}
 
 # Copy tests
-mkdir -p %{buildroot}/opt/tests/sailfish-gallery/test-definition
-mkdir -p %{buildroot}/opt/tests/sailfish-gallery/auto
-cp -a tests/test-definition/tests.xml %{buildroot}/opt/tests/sailfish-gallery/test-definition
-cp -a tests/auto/*qml %{buildroot}/opt/tests/sailfish-gallery/auto
-cp -a tests/auto/*js %{buildroot}/opt/tests/sailfish-gallery/auto
+mkdir -p %{buildroot}/opt/tests/sailfish-components-gallery/test-definition
+mkdir -p %{buildroot}/opt/tests/sailfish-components-gallery/auto
+cp -a tests/test-definition/tests.xml %{buildroot}/opt/tests/sailfish-components-gallery/test-definition
+cp -a tests/auto/*qml %{buildroot}/opt/tests/sailfish-components-gallery/auto
+cp -a tests/auto/*js %{buildroot}/opt/tests/sailfish-components-gallery/auto
 
 %qmake_install
 
@@ -59,6 +62,6 @@ cp -a tests/auto/*js %{buildroot}/opt/tests/sailfish-gallery/auto
 %files tests
 %defattr(-,root,root,-)
 # >> files tests
-/opt/tests/sailfish-gallery/*
+/opt/tests/sailfish-components-gallery/*
 # << files tests
 
