@@ -1,6 +1,7 @@
 plugin sailfishgalleryplugin
 HighlightItem 1.0 HighlightItem.qml
 ImageGridView 1.0 ImageGridView.qml
+SplitViewPage 1.0 SplitViewPage.qml
 ThumbnailImage 1.0 ThumbnailImage.qml
 ThumbnailVideo 1.0 ThumbnailVideo.qml
 ThumbnailCustom 1.0 ThumbnailCustom.qml
