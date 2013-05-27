@@ -1,7 +1,7 @@
 Name:       sailfish-components-gallery
 
 Summary:    Sailfish Gallery UI Components
-Version:    0.0.5
+Version:    0.0.6
 Release:    1
 Group:      System/Libraries
 License:    TBD
@@ -31,6 +31,14 @@ Requires:   qtest-qml
 %description tests
 This package contains QML unit tests for Sailfish Gallery UI components
 
+%package ts-devel
+Summary:   Translation source for sailfish-components-gallery
+License:   TBD
+Group:     System/Libraries
+
+%description ts-devel
+Translation source for sailfish-components-gallery
+
 %prep
 %setup -q -n %{name}-%{version}
 
@@ -58,6 +66,7 @@ cp -a tests/auto/*js %{buildroot}/opt/tests/sailfish-components-gallery/auto
 %files
 %defattr(-,root,root,-)
 %{_libdir}/qt4/imports/Sailfish/Gallery/*
+%{_datadir}/translations/sailfish_components_gallery_eng_en.qm
 
 %files tests
 %defattr(-,root,root,-)
@@ -65,3 +74,6 @@ cp -a tests/auto/*js %{buildroot}/opt/tests/sailfish-components-gallery/auto
 /opt/tests/sailfish-components-gallery/*
 # << files tests
 
+%files ts-devel
+%defattr(-,root,root,-)
+%{_datadir}/translations/source/sailfish_components_gallery.ts
