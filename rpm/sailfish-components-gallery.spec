@@ -1,7 +1,7 @@
 Name:       sailfish-components-gallery
 
 Summary:    Sailfish Gallery UI Components
-Version:    0.0.1
+Version:    0.0.5
 Release:    1
 Group:      System/Libraries
 License:    TBD
