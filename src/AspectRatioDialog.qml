@@ -32,11 +32,11 @@ SplitViewDialog {
             //: Label that is shown for currently selected aspect ratio.
             //% "Aspect ratio"
             sectionLabel: qsTrId("components_gallery-li-aspect_ratio")
-            selected: cropView.aspectRatio == model.ratio ||
-                      model.ratio == -1.0 && cropView.originalAspectRatio
+            selected: cropView.aspectRatioType == model.type
 
             onClicked: {
                 cropView.aspectRatio = model.ratio
+                cropView.aspectRatioType = model.type
                 aspectRatioDialog.splitOpen = !aspectRatioDialog.splitOpen
             }
         }

@@ -16,7 +16,7 @@ Item {
     property real explicitHeight
     // Aspect ratio as width / height
     property real aspectRatio
-    property bool originalAspectRatio
+    property string aspectRatioType
     property bool isPortrait: width < height
     property bool active
     property bool showTitle: true
@@ -91,9 +91,7 @@ Item {
         function setSize() {
             if (!aspectRatio || aspectRatio === -1.0) {
                 aspectRatio = zoomableImage.contentWidth / zoomableImage.contentHeight
-                originalAspectRatio = true
-            } else {
-                originalAspectRatio = false
+                aspectRatioType = "original"
             }
 
             if (isPortrait) {
