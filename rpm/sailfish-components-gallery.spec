@@ -1,4 +1,4 @@
-Name:       sailfish-components-gallery
+Name:       sailfish-components-gallery-qt5
 
 Summary:    Sailfish Gallery UI Components
 Version:    0.0.5
@@ -7,16 +7,14 @@ Group:      System/Libraries
 License:    TBD
 URL:        https://bitbucket.org/jolla/ui-sailfish-components-gallery
 Source0:    %{name}-%{version}.tar.bz2
-BuildRequires:  pkgconfig(QtCore) >= 4.8.0
-BuildRequires:  pkgconfig(QtDeclarative)
-BuildRequires:  pkgconfig(QtGui)
-BuildRequires:  pkgconfig(QtOpenGL)
+BuildRequires:  pkgconfig(Qt5Core)
+BuildRequires:  pkgconfig(Qt5Qml)
+BuildRequires:  pkgconfig(Qt5Quick)
+BuildRequires:  pkgconfig(Qt5Gui)
+BuildRequires:  pkgconfig(Qt5OpenGL)
 
-Requires:  sailfishsilica >= 0.8.22
-Requires:  nemo-qml-plugins-thumbnailer
-
-Obsoletes: sailfish-gallery <= 0.0.3
-Provides:  sailfish-gallery > 0.0.3
+Requires:  sailfishsilica-qt5
+Requires:  nemo-qml-plugin-thumbnailer-qt5
 
 %description
 Sailfish Gallery UI Components
@@ -24,9 +22,9 @@ Sailfish Gallery UI Components
 %package tests
 Summary:    Unit tests for Sailfish Gallery UI components
 Group:      System/Libraries
-BuildRequires:  pkgconfig(QtTest)
+BuildRequires:  pkgconfig(Qt5Test)
 Requires:   %{name} = %{version}-%{release}
-Requires:   qtest-qml
+Requires:   qt5-qtdeclarative-import-qttest
 
 %description tests
 This package contains QML unit tests for Sailfish Gallery UI components
@@ -36,7 +34,7 @@ This package contains QML unit tests for Sailfish Gallery UI components
 
 %build
 
-%qmake
+%qmake5
 
 make %{?jobs:-j%jobs}
 
@@ -44,24 +42,24 @@ make %{?jobs:-j%jobs}
 rm -rf %{buildroot}
 
 # Copy tests
-mkdir -p %{buildroot}/opt/tests/sailfish-components-gallery/test-definition
-mkdir -p %{buildroot}/opt/tests/sailfish-components-gallery/auto
-cp -a tests/test-definition/tests.xml %{buildroot}/opt/tests/sailfish-components-gallery/test-definition
-cp -a tests/auto/*qml %{buildroot}/opt/tests/sailfish-components-gallery/auto
-cp -a tests/auto/*js %{buildroot}/opt/tests/sailfish-components-gallery/auto
+mkdir -p %{buildroot}/opt/tests/sailfish-components-gallery-qt5/test-definition
+mkdir -p %{buildroot}/opt/tests/sailfish-components-gallery-qt5/auto
+cp -a tests/test-definition/tests.xml %{buildroot}/opt/tests/sailfish-components-gallery-qt5/test-definition
+cp -a tests/auto/*qml %{buildroot}/opt/tests/sailfish-components-gallery-qt5/auto
+cp -a tests/auto/*js %{buildroot}/opt/tests/sailfish-components-gallery-qt5/auto
 
-%qmake_install
+%qmake5_install
 
 #
 # Sailfish Gallery files
 #
 %files
 %defattr(-,root,root,-)
-%{_libdir}/qt4/imports/Sailfish/Gallery/*
+%{_libdir}/qt5/qml/Sailfish/Gallery/*
 
 %files tests
 %defattr(-,root,root,-)
 # >> files tests
-/opt/tests/sailfish-components-gallery/*
+/opt/tests/sailfish-components-gallery-qt5/*
 # << files tests
 

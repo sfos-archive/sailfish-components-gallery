@@ -1,4 +1,4 @@
-import QtQuick 1.1
+import QtQuick 2.0
 import org.nemomobile.thumbnailer 1.0
 
 // Base item for thumbnails in a Grid to get default behavior for free.

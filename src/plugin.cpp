@@ -1,10 +1,10 @@
-#include <qdeclarative.h>
-#include <QDeclarativeExtensionPlugin>
-#include <QDeclarativeEngine>
+#include <QQmlExtensionPlugin>
+#include <QQmlEngine>
 
-class SailfishGalleryPlugin : public QDeclarativeExtensionPlugin
+class SailfishGalleryPlugin : public QQmlExtensionPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.sailfish.components.gallery")
 
 public:
 
@@ -17,6 +17,4 @@ public:
 };
 
 #include "plugin.moc"
-
-Q_EXPORT_PLUGIN2(sailfishgalleryplugin, SailfishGalleryPlugin);
 

@@ -1,5 +1,5 @@
-import QtQuickTest 1.0
-import QtQuick 1.0
+import QtTest 1.0
+import QtQuick 2.0
 import Sailfish.Silica 1.0
 import Sailfish.Gallery 1.0
 

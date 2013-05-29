@@ -3,9 +3,9 @@ TARGET = sailfishgalleryplugin
 TARGET = $$qtLibraryTarget($$TARGET)
 
 MODULENAME = Sailfish/Gallery
-TARGETPATH = $$[QT_INSTALL_IMPORTS]/$$MODULENAME
+TARGETPATH = $$[QT_INSTALL_QML]/$$MODULENAME
 
-QT += declarative
+QT += qml quick
 CONFIG += plugin
 
 import.files = *.qml qmldir scripts

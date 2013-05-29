@@ -1,5 +1,6 @@
-import QtQuick 1.1
+import QtQuick 2.0
 import Sailfish.Silica 1.0
+import Sailfish.Silica.theme 1.0
 
 ThumbnailImage {
     property alias duration: durationLabel.text
@@ -12,7 +13,7 @@ ThumbnailImage {
         opacity: 0.8
         gradient: Gradient {
             GradientStop { position: 0.0; color: "transparent" }
-            GradientStop { position: 1.0; color: theme.highlightDimmerColor }
+            GradientStop { position: 1.0; color: Theme.highlightDimmerColor }
         }
     }
 
@@ -20,10 +21,10 @@ ThumbnailImage {
         id: durationLabel
 
         font {
-            pixelSize: theme.fontSizeSmall
+            pixelSize: Theme.fontSizeSmall
         }
         anchors {
-            bottom: titleLabel.top; left: parent.left; leftMargin: theme.paddingMedium
+            bottom: titleLabel.top; left: parent.left; leftMargin: Theme.paddingMedium
         }
     }
 
@@ -31,13 +32,13 @@ ThumbnailImage {
         id: titleLabel
 
         font {
-            pixelSize: theme.fontSizeExtraSmall
+            pixelSize: Theme.fontSizeExtraSmall
         }
-        color: theme.highlightColor
+        color: Theme.highlightColor
         truncationMode: TruncationMode.Elide
         anchors {
-            bottom: parent.bottom; bottomMargin: theme.paddingMedium
-            left: parent.left; leftMargin: theme.paddingMedium
+            bottom: parent.bottom; bottomMargin: Theme.paddingMedium
+            left: parent.left; leftMargin: Theme.paddingMedium
             right: parent.right
         }
     }
