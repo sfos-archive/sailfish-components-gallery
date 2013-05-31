@@ -16,18 +16,17 @@ Item {
     property real explicitHeight
     // Aspect ratio as width / height
     property real aspectRatio
-    property string aspectRatioType
+    property string aspectRatioType: splitView.avatarAspectRatio ? "avatar" : "original"
     property bool isPortrait: width < height
     property bool active
-    property bool showTitle: true
+    property bool showTitle: active
+    property bool cropping
     property alias source: zoomableImage.source
     property alias target: editor.target
     property alias scale: zoomableImage.scale
 
-    signal clicked
-    signal cropped(bool success)
-
     function crop() {
+        cropping = true
         editor.crop(Qt.size(editor.width, editor.height),
                     Qt.size(zoomableImage.contentWidth, zoomableImage.contentHeight),
                     Qt.point(zoomableImage.contentX, zoomableImage.contentY))
@@ -35,8 +34,10 @@ Item {
 
     onAspectRatioChanged: zoomableImage.resetImagePosition()
     onIsPortraitChanged: {
-        // Reset back to orginal
-        aspectRatio = -1.0
+        // Reset back to original aspect ratio that needs to be calculated
+        if (aspectRatioType == "original") {
+            aspectRatio = -1.0
+        }
     }
 
     Label {
@@ -80,7 +81,7 @@ Item {
         minimumWidth: editor.width
         minimumHeight: editor.height
         interactive: active
-        onClicked: cropView.clicked()
+        onClicked: splitView.splitOpen = !splitView.splitOpen
         onStatusChanged: resetImagePosition()
     }
 
@@ -91,7 +92,6 @@ Item {
         function setSize() {
             if (!aspectRatio || aspectRatio === -1.0) {
                 aspectRatio = zoomableImage.contentWidth / zoomableImage.contentHeight
-                aspectRatioType = "original"
             }
 
             if (isPortrait) {
@@ -118,7 +118,18 @@ Item {
 
         anchors.centerIn: parent
         source: zoomableImage.source
-        onCropped: cropView.cropped(success)
+        onCropped: {
+            cropping = false
+            if (success) {
+                cropView.targetChanged()
+                if (cropView.source == cropView.target) {
+                    // Force source image to be reloaded
+                    cropView.source = ""
+                    cropView.source = cropView.target
+                }
+                splitView.edited()
+            }
+        }
     }
 
     DimmedRegion {
