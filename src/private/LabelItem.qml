@@ -7,6 +7,7 @@
 
 import QtQuick 1.1
 import Sailfish.Silica 1.0
+import Sailfish.Gallery 1.0
 
 BackgroundItem {
     id: backgroundItem

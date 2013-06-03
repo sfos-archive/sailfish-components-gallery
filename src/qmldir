@@ -1,6 +1,4 @@
 plugin sailfishgalleryplugin
-CropDialog 1.0 CropDialog.qml
-CropView 1.0 CropView.qml
 HighlightItem 1.0 HighlightItem.qml
 ImageEditPage 1.0 ImageEditPage.qml
 ImageGridView 1.0 ImageGridView.qml

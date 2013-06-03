@@ -15,11 +15,11 @@ CONFIG(use_quill) {
     DEFINES += USE_QIMAGE
 }
 
-import.files = *.qml qmldir scripts
+import.files = *.qml private qmldir scripts
 import.path = $$TARGETPATH
 target.path = $$TARGETPATH
 
-OTHER_FILES += *.qml
+OTHER_FILES += *.qml private/*.qml
 
 SOURCES += \
     declarativeimageeditor.cpp \
