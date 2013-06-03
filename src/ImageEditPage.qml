@@ -7,7 +7,7 @@
 
 import QtQuick 1.1
 import Sailfish.Silica 1.0
-import Sailfish.Gallery.Private 1.0
+import "private"
 
 SplitViewPage {
     id: imageEditor
