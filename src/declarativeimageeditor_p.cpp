@@ -3,6 +3,7 @@
 #include <QImage>
 #include <QDebug>
 #include <QFileInfo>
+#include <QDir>
 
 DeclarativeImageEditorPrivate::DeclarativeImageEditorPrivate(QObject *parent) :
     QObject(parent)
@@ -53,6 +54,13 @@ void  DeclarativeImageEditorPrivate::crop(const QString &source, const QString &
                 tmpFile.setFile(tmpTarget);
                 ++i;
             } while (tmpFile.exists());
+        }
+
+        QString targetPath = tmpTarget.left(tmpTarget.lastIndexOf("/"));
+        if (!QDir().mkpath(targetPath)) {
+            qWarning() << Q_FUNC_INFO << "failed to create target path";
+            emit cropped(false);
+            return;
         }
 
         qreal width = sourceImage.width() / imageSize.width() * cropSize.width();

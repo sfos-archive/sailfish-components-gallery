@@ -7,15 +7,30 @@
 
 import QtQuick 1.1
 import Sailfish.Silica 1.0
+import Sailfish.Gallery 1.0
 
 SplitViewDialog {
     id: aspectRatioDialog
 
+    property bool avatarAspectRatio
+
+    signal edited
+
+    function _verifyPageIndicatorVisibility(splitView) {
+        var enabled = true
+        if (!splitView.splitOpened) {
+            enabled = false
+        }
+
+        if (pageStack._pageStackIndicator) {
+            pageStack._pageStackIndicator.enabled = enabled
+        }
+    }
+
     onDone: {
-         if (result == DialogResult.Accepted) {
-             cropView.crop()
-         }
-         pageStack.pop()
+        if (result == DialogResult.Accepted) {
+            cropView.crop()
+        }
     }
 
     onSplitOpenedChanged: _verifyPageIndicatorVisibility(aspectRatioDialog)

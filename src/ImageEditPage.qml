@@ -7,13 +7,14 @@
 
 import QtQuick 1.1
 import Sailfish.Silica 1.0
+import "private"
 
 SplitViewPage {
     id: imageEditor
 
     property alias source: cropView.source
     property alias target: cropView.target
-    property alias aspectRatio: cropView.aspectRatio
+    property alias cropping: cropView.cropping
     // To align this with SplitViewDialog
     property alias splitOpen: imageEditor.open
     property alias splitOpened: imageEditor.opened
@@ -79,7 +80,7 @@ SplitViewPage {
         model: ImageEditOperationModel {}
     }
 
-    // Shared between ImageEditPage and AspectRatioDialog so that state
+    // Shared between ImageEditPage and CropDialog so that state
     // of zoom is correct.
     foreground: CropView {
         id: cropView
@@ -96,26 +97,14 @@ SplitViewPage {
         active: pageStack.currentPage === imageEditor ? false : !splitView.splitOpen
         explicitWidth: imageEditor.width
         explicitHeight: imageEditor.height
-
-        onClicked: splitView.splitOpen = !splitView.splitOpen
-        onCropped: {
-            if (success) {
-                targetChanged()
-                if (source == target) {
-                    // Force source image to be reloaded
-                    cropView.source = ""
-                    cropView.source = target
-                }
-                edited()
-            }
-        }
     }
 
     Component {
         id: aspectRatioDialogComponent
-        AspectRatioDialog {
+        CropDialog {
             allowedOrientations: imageEditor.allowedOrientations
             foreground: cropView
+            onEdited: imageEditor.edited()
         }
     }
 

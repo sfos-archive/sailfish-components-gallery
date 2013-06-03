@@ -42,7 +42,7 @@ public:
     virtual void registerTypes(const char *uri)
     {
         Q_ASSERT(QLatin1String(uri) == QLatin1String("Sailfish.Gallery"));
-        qmlRegisterType<DeclarativeImageEditor>(uri, 1, 0, "ImageEditor");
+        qmlRegisterType<DeclarativeImageEditor>("Sailfish.Gallery.private", 1, 0, "ImageEditor");
     }
 };
 
