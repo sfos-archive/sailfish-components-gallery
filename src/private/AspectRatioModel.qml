@@ -57,7 +57,7 @@ ListModel {
     }
 
     Component.onCompleted: {
-        if (!avatarAspectRatio) {
+        if (!avatarCrop) {
             var index = 0
             for (; index < 5; ++index) {
                 append(_aspectRatio(index))

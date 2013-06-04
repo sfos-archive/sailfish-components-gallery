@@ -7,6 +7,7 @@
 
 import QtQuick 1.1
 import Sailfish.Silica 1.0
+import Sailfish.Contacts 1.0
 import "private"
 
 SplitViewPage {
@@ -18,6 +19,9 @@ SplitViewPage {
     // To align this with SplitViewDialog
     property alias splitOpen: imageEditor.open
     property alias splitOpened: imageEditor.opened
+
+    property Page _contactPicker
+    property bool _contactSaveRequested
 
     signal edited
 
@@ -32,16 +36,28 @@ SplitViewPage {
         }
     }
 
+    function _pageActivating() {
+        imageEditor.foreground = cropView
+        cropView.resetParent(imageEditor.foregroundItem)
+        cropView.splitView = imageEditor
+        splitOpen = true
+    }
+
     onSplitOpenedChanged: _verifyPageIndicatorVisibility(imageEditor)
     onStatusChanged: {
         if (status == PageStatus.Activating) {
-            imageEditor.foreground = cropView
-            cropView.resetParent(imageEditor.foregroundItem)
-            cropView.splitView = imageEditor
-            splitOpen = true
+            _pageActivating()
         }
     }
 
+    onEdited: {
+        if (_contactSaveRequested) {
+            _contactPicker.allContactsModel.savePerson(_contactPicker.unsavedContact)
+        }
+    }
+
+    // Clip zoomed part of the image
+    clip: true
     background: SilicaListView {
         anchors.fill: parent
         header: PageHeader {
@@ -102,9 +118,61 @@ SplitViewPage {
     Component {
         id: aspectRatioDialogComponent
         CropDialog {
+            // Prepare acceptDestionation for contact picking
+            function prepareAcceptDestination() {
+                if (cropView.aspectRatioType == "avatar") {
+                    if (!_contactPicker) {
+                        _contactPicker = contactPickerPage.createObject(imageEditor)
+                    }
+                    acceptDestinationAction = PageStackAction.Push
+                    acceptDestination = _contactPicker
+                    _contactSaveRequested = false
+                } else {
+                    acceptDestinationAction = PageStackAction.Pop
+                    acceptDestination = undefined
+                }
+            }
+
             allowedOrientations: imageEditor.allowedOrientations
             foreground: cropView
             onEdited: imageEditor.edited()
+            onSplitOpenedChanged: {
+                if (!splitOpened) {
+                    prepareAcceptDestination()
+                }
+            }
+
+            onCropRequested: {
+                if (cropView.aspectRatioType != "avatar") {
+                    // Reset back to empty
+                    cropView.target = ""
+                    cropView.crop()
+                }
+                // For avatars crop will be triggered when contact selected
+            }
+
+            Component.onCompleted: prepareAcceptDestination()
+        }
+    }
+
+    Component {
+        id: contactPickerPage
+
+        ContactSelectPage {
+            property variant unsavedContact
+
+            onContactClicked: {
+                // Hardcoded path will be removed once get JB5266 fixed
+                cropView.target = "/home/nemo/.local/share/data/avatars/" + contact.firstName + "-" + contact.lastName + ".png"
+                cropView.crop()
+                _contactSaveRequested = true
+                unsavedContact = contact
+                unsavedContact.avatarPath = cropView.target
+                // Do all needed page activation states before popping pages
+                imageEditor._pageActivating()
+                _navigation = PageNavigation.Forward
+                pageStack.pop(imageEditor)
+            }
         }
     }
 
