@@ -14,6 +14,7 @@ BuildRequires:  pkgconfig(QtOpenGL)
 
 Requires:  sailfishsilica >= 0.8.22
 Requires:  sailfish-components-contacts >= 0.0.11
+Requires:  jolla-ambient >= 0.1.30
 Requires:  nemo-qml-plugins-thumbnailer
 
 Obsoletes: sailfish-gallery <= 0.0.3

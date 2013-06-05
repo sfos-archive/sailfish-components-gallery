@@ -49,7 +49,7 @@ ListModel {
                             //% "Crop"
                             text: qsTrId("components_gallery-li-crop"),
                             type: "crop",
-                            icon: "image://theme/icon-m-backup"
+                            icon: "image://theme/icon-m-crop"
                         }
                     ]
         }
