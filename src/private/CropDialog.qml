@@ -12,9 +12,10 @@ import Sailfish.Gallery 1.0
 SplitViewDialog {
     id: aspectRatioDialog
 
-    property bool avatarAspectRatio
+    property bool avatarCrop
 
     signal edited
+    signal cropRequested
 
     function _verifyPageIndicatorVisibility(splitView) {
         var enabled = true
@@ -27,9 +28,11 @@ SplitViewDialog {
         }
     }
 
+    // Clip zoomed part of the image
+    clip: true
     onDone: {
         if (result == DialogResult.Accepted) {
-            cropView.crop()
+            cropRequested()
         }
     }
 
@@ -50,9 +53,9 @@ SplitViewDialog {
             selected: cropView.aspectRatioType == model.type
 
             onClicked: {
+                aspectRatioDialog.splitOpen = !aspectRatioDialog.splitOpen
                 cropView.aspectRatio = model.ratio
                 cropView.aspectRatioType = model.type
-                aspectRatioDialog.splitOpen = !aspectRatioDialog.splitOpen
             }
         }
 

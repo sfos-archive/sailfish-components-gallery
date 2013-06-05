@@ -18,7 +18,7 @@ Item {
     property real explicitHeight
     // Aspect ratio as width / height
     property real aspectRatio
-    property string aspectRatioType: splitView.avatarAspectRatio ? "avatar" : "original"
+    property string aspectRatioType: splitView.avatarCrop ? "avatar" : "original"
     property bool isPortrait: width < height
     property bool active
     property bool showTitle: active
