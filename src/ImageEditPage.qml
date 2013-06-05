@@ -67,10 +67,14 @@ SplitViewPage {
         }
 
         delegate: BackgroundItem {
+            id: operationDelegate
             IconButton {
                 id: icon
                 x: theme.paddingLarge
                 icon.source: model.icon
+                icon.opacity: 1.0
+                down: operationDelegate.highlighted
+                enabled: false
                 anchors.verticalCenter: parent.verticalCenter
             }
 
