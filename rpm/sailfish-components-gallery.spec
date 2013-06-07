@@ -13,6 +13,8 @@ BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5OpenGL)
 BuildRequires:  pkgconfig(Qt5Concurrent)
+BuildRequires:  qt5-qttools
+BuildRequires:  qt5-qttools-linguist
 
 Requires:  sailfishsilica-qt5
 Requires:  nemo-qml-plugin-thumbnailer-qt5
