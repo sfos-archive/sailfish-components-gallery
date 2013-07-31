@@ -7,8 +7,7 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import Sailfish.Silica.theme 1.0
-//import Sailfish.Contacts 1.0
+import Sailfish.Contacts 1.0
 import "private"
 
 SplitViewPage {
@@ -160,7 +159,6 @@ SplitViewPage {
         }
     }
 
-/* XXX Qt5 Port
     Component {
         id: contactPickerPage
 
@@ -181,7 +179,6 @@ SplitViewPage {
             }
         }
     }
-*/
 
     Component.onCompleted: _verifyPageIndicatorVisibility(imageEditor)
 }
