@@ -5,7 +5,7 @@ ThumbnailBase {
 
     Thumbnail {
         source: parent.source
-        mimeType: mimeType
+        mimeType: model.mimeType
         width:  size
         height: size
         sourceSize.width: width
