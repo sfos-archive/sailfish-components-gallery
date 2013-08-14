@@ -11,7 +11,6 @@ MouseArea {
     property string mimeType
     property bool pressedAndHolded
     property int size: GridView.view.cellSize
-    property int firstVisibleIndex: GridView.view._firstVisible
     property real contentYOffset
     property real contentXOffset
 
