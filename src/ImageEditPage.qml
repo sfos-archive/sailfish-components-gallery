@@ -25,17 +25,6 @@ SplitViewPage {
 
     signal edited
 
-    function _verifyPageIndicatorVisibility(splitView) {
-        var enabled = true
-        if (!splitView.splitOpened) {
-            enabled = false
-        }
-
-        if (pageStack._pageStackIndicator) {
-            pageStack._pageStackIndicator.enabled = enabled
-        }
-    }
-
     function _pageActivating() {
         imageEditor.foreground = cropView
         cropView.resetParent(imageEditor.foregroundItem)
@@ -43,7 +32,6 @@ SplitViewPage {
         splitOpen = true
     }
 
-    onSplitOpenedChanged: _verifyPageIndicatorVisibility(imageEditor)
     onStatusChanged: {
         if (status == PageStatus.Activating) {
             _pageActivating()
@@ -119,6 +107,13 @@ SplitViewPage {
         explicitHeight: imageEditor.height
     }
 
+    Binding {
+        target: pageStack._pageStackIndicator
+        property: "enabled"
+        value: imageEditor.splitOpened
+        when: imageEditor.status === PageStatus.Activating || imageEditor.status === PageStatus.Active
+    }
+
     Component {
         id: aspectRatioDialogComponent
         CropDialog {
@@ -179,6 +174,4 @@ SplitViewPage {
             }
         }
     }
-
-    Component.onCompleted: _verifyPageIndicatorVisibility(imageEditor)
 }

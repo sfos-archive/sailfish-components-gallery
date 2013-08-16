@@ -17,17 +17,6 @@ SplitViewDialog {
     signal edited
     signal cropRequested
 
-    function _verifyPageIndicatorVisibility(splitView) {
-        var enabled = true
-        if (!splitView.splitOpened) {
-            enabled = false
-        }
-
-        if (pageStack._pageStackIndicator) {
-            pageStack._pageStackIndicator.enabled = enabled
-        }
-    }
-
     // Clip zoomed part of the image
     clip: true
     onDone: {
@@ -35,8 +24,6 @@ SplitViewDialog {
             cropRequested()
         }
     }
-
-    onSplitOpenedChanged: _verifyPageIndicatorVisibility(aspectRatioDialog)
 
     background: SilicaListView {
         anchors.fill: parent
@@ -62,5 +49,10 @@ SplitViewDialog {
         model: AspectRatioModel {}
     }
 
-    Component.onCompleted: _verifyPageIndicatorVisibility(aspectRatioDialog)
+    Binding {
+        target: pageStack._pageStackIndicator
+        property: "enabled"
+        value: aspectRatioDialog.splitOpened
+        when: aspectRatioDialog.status === PageStatus.Activating || aspectRatioDialog.status === PageStatus.Active
+    }
 }
