@@ -21,6 +21,18 @@ public:
     }
 };
 
+
+class FitNamespace : public QObject
+{
+    Q_OBJECT
+    Q_ENUMS(Fit)
+public:
+    enum Fit {
+        Width,
+        Height
+    };
+};
+
 class SailfishGalleryPlugin : public QQmlExtensionPlugin
 {
     Q_OBJECT
@@ -43,6 +55,7 @@ public:
     {
         Q_ASSERT(QLatin1String(uri) == QLatin1String("Sailfish.Gallery"));
         qmlRegisterType<DeclarativeImageEditor>("Sailfish.Gallery.private", 1, 0, "ImageEditor");
+        qmlRegisterUncreatableType<FitNamespace>("Sailfish.Gallery", 1, 0, "Fit", QString());
     }
 };
 
