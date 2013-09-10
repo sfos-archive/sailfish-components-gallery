@@ -16,11 +16,19 @@ SilicaFlickable {
 
     property int status: Image.Null
 
+    property int orientation
+
+    readonly property bool _transpose: (orientation % 180) != 0
+
     signal clicked
 
     flickableDirection: Flickable.HorizontalAndVerticalFlick
-    contentWidth: photo.implicitWidth * photo.scale
-    contentHeight: photo.implicitHeight * photo.scale
+
+    implicitWidth: !_transpose ? photo.implicitWidth : photo.implicitHeight
+    implicitHeight: !_transpose ? photo.implicitHeight : photo.implicitWidth
+
+    contentWidth: flickable.implicitWidth * photo.scale
+    contentHeight: flickable.implicitHeight * photo.scale
 
     function resetScale() {
         photo.updateScale()
@@ -48,8 +56,8 @@ SilicaFlickable {
         anchors.fill: parent
         enabled: interactive && photo.status == Image.Ready
         pinch.target: photo
-        pinch.minimumScale: Math.max(minimumWidth / photo.implicitWidth, minimumHeight / photo.implicitHeight)
-        pinch.maximumScale: Math.min(maximumWidth / photo.implicitWidth, maximumHeight / photo.implicitHeight)
+        pinch.minimumScale: Math.max(minimumWidth / flickable.implicitWidth, minimumHeight / flickable.implicitHeight)
+        pinch.maximumScale: Math.min(maximumWidth / flickable.implicitWidth, maximumHeight / flickable.implicitHeight)
         pinch.dragAxis: Pinch.XandYAxis
 
         onPinchUpdated: _centerImage(pinch)
@@ -63,13 +71,13 @@ SilicaFlickable {
                     return
 
                 var fittedScale
-                var isImagePortrait = photo.implicitWidth < photo.implicitHeight
+                var isImagePortrait = flickable.implicitWidth < flickable.implicitHeight
                 var minimumDimension = Math.min(initialImageHeight, initialImageWidth)
-                fittedScale = minimumDimension / (isImagePortrait ? photo.implicitWidth : photo.implicitHeight)
+                fittedScale = minimumDimension / (isImagePortrait ? flickable.implicitWidth : flickable.implicitHeight)
 
                 scale = fittedScale
-                flickable.contentX = (implicitWidth * scale - flickable.width) / 2
-                flickable.contentY = (implicitHeight * scale - flickable.height) / 2
+                flickable.contentX = (flickable.implicitWidth * scale - flickable.width) / 2
+                flickable.contentY = (flickable.implicitHeight * scale - flickable.height) / 2
             }
 
             objectName: "zoomableImage"
@@ -79,6 +87,8 @@ SilicaFlickable {
             asynchronous: true
             anchors.centerIn: parent
             sourceSize.width: Math.max(screen.height, screen.width) * 2
+
+            rotation: -flickable.orientation
 
             onStatusChanged: {
                 flickable.status = status

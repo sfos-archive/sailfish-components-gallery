@@ -26,6 +26,7 @@ Item {
     property alias source: zoomableImage.source
     property alias target: editor.target
     property alias scale: zoomableImage.scale
+    property alias orientation: zoomableImage.orientation
 
     function crop() {
         cropping = true

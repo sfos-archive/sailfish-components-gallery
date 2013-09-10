@@ -20,6 +20,8 @@ SplitViewPage {
     property alias splitOpen: imageEditor.open
     property alias splitOpened: imageEditor.opened
 
+    property alias orientation: cropView.orientation
+
     property Page _contactPicker
     property bool _contactSaveRequested
 

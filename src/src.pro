@@ -6,13 +6,18 @@ MODULENAME = Sailfish/Gallery
 TARGETPATH = $$[QT_INSTALL_QML]/$$MODULENAME
 
 QT += qml quick concurrent
-CONFIG += plugin
+CONFIG += plugin link_pkgconfig
 
 CONFIG(use_quill) {
     CONFIG += link_pkgconfig
     PKGCONFIG += quill
 } else {
     DEFINES += USE_QIMAGE
+}
+
+packagesExist(quillmetadata-qt5) {
+    PKGCONFIG += quillmetadata-qt5
+    DEFINES += USE_QUILLMETADATA
 }
 
 import.files = *.qml private qmldir scripts
