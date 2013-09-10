@@ -21,6 +21,10 @@ SilicaFlickable {
 
     signal clicked
 
+    // Overrider SilicaFlickable's pressDelay because otherwise it will
+    // block touch events going to PinchArea in certain cases.
+    pressDelay: 0
+
     flickableDirection: Flickable.HorizontalAndVerticalFlick
 
     implicitWidth: !_transpose ? photo.implicitWidth : photo.implicitHeight
@@ -88,12 +92,7 @@ SilicaFlickable {
         }
         // Fixup contentX and contentY
         contentX += (center.x * newWidth / oldWidth) - center.x
-
-        // If photo height is greater than view height, do Y centering only after that
-        // otherwise it shoots to the skies.
-        if (photo.height > height) {
-            contentY += (center.y * newHeight / oldHeight) - center.y
-        }
+        contentY += (center.y * newHeight / oldHeight) - center.y
 
         scaled = true
     }
