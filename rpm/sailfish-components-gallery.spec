@@ -15,6 +15,7 @@ BuildRequires:  pkgconfig(Qt5OpenGL)
 BuildRequires:  pkgconfig(Qt5Concurrent)
 BuildRequires:  qt5-qttools
 BuildRequires:  qt5-qttools-linguist
+BuildRequires:  pkgconfig(quillmetadata-qt5)
 
 Requires:  sailfishsilica-qt5
 Requires:  nemo-qml-plugin-thumbnailer-qt5

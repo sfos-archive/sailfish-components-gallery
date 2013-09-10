@@ -5,6 +5,10 @@
 #include <QFileInfo>
 #include <QDir>
 
+#ifdef USE_QUILLMETADATA
+#include <quillmetadata-qt5/QuillMetadata>
+#endif
+
 DeclarativeImageEditorPrivate::DeclarativeImageEditorPrivate(QObject *parent) :
     QObject(parent)
 {
@@ -35,6 +39,33 @@ void  DeclarativeImageEditorPrivate::crop(const QString &source, const QString &
 {
     QImage sourceImage(source);
     if (!source.isEmpty() && !sourceImage.isNull() && !cropSize.isEmpty() && !imageSize.isEmpty()) {
+#ifdef USE_QUILLMETADATA
+        int rotate = 0;
+        bool mirror = false;
+
+        QuillMetadata md(source);
+        switch (md.entry(QuillMetadata::Tag_Orientation).toInt()) {
+        case 1: rotate = 0  ; mirror = false; break;
+        case 2: rotate = 0  ; mirror = true  ; break;
+        case 3: rotate = 180; mirror = false; break;
+        case 4: rotate = 180; mirror = true ; break;
+        case 5: rotate = 90 ; mirror = true ; break;
+        case 6: rotate = 90 ; mirror = false; break;
+        case 7: rotate = 270; mirror = true ; break;
+        case 8: rotate = 270; mirror = false; break;
+        default: break;
+        }
+
+        if (mirror) {
+            sourceImage = sourceImage.mirrored(true, false);
+        }
+        if (rotate != 0) {
+            QTransform transform;
+            transform.rotate(rotate);
+            sourceImage = sourceImage.transformed(transform);
+        }
+#endif
+
         QString tmpTarget = target;
         if (tmpTarget.isEmpty()) {
             QFileInfo tmpFile(source);
