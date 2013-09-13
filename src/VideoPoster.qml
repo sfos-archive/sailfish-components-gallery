@@ -10,14 +10,26 @@ MouseArea {
     property bool active
     property url source
     property string mimeType
+    property int duration
+    onDurationChanged: positionSlider.maximumValue = duration
 
     property bool playing: active && videoItem.player && videoItem.player.playbackState == MediaPlayer.PlayingState
+    readonly property bool _loaded: active
+                && videoItem.player
+                && videoItem.player.status >= MediaPlayer.Loaded
+                && videoItem.player.status < MediaPlayer.EndOfMedia
 
     Connections {
-        target: videoItem.active ? videoItem.player : null
+        target: videoItem._loaded ? videoItem.player : null
 
         onPositionChanged: positionSlider.value = videoItem.player.position / 1000
         onDurationChanged: positionSlider.maximumValue = videoItem.player.duration / 1000
+    }
+
+    onActiveChanged: {
+        if (!active) {
+            positionSlider.value = 0
+        }
     }
 
     // Poster
@@ -36,7 +48,10 @@ MouseArea {
 
         priority: Thumbnail.HighPriority
         fillMode: Thumbnail.PreserveAspectFit
-        visible: !videoItem.active || !videoItem.player || !videoItem.player.playbackState != MediaPlayer.StoppedState
+        opacity: !videoItem._loaded ? 1.0 : 0.0
+        Behavior on opacity { FadeAnimation { id: posterFade } }
+
+        visible: !videoItem._loaded || posterFade.running
     }
 
     Item {
@@ -44,9 +59,9 @@ MouseArea {
         height: videoItem.height
 
         opacity: videoItem.playing ? 0.0 : 1.0
-        Behavior on opacity { FadeAnimation {} }
+        Behavior on opacity { FadeAnimation { id: controlFade } }
 
-        visible: videoItem.player
+        visible: videoItem.player && (videoItem.playing || controlFade.running)
 
         Image {
             anchors.centerIn: parent
@@ -73,7 +88,13 @@ MouseArea {
             minimumValue: 0
             valueText: Format.formatDuration(value, Formatter.DurationShort)
 
-            onReleased: videoItem.player.seek(value * 1000)
+            onReleased: {
+                if (videoItem.active) {
+                    videoItem.player.source = videoItem.source
+                    videoItem.player.seek(value * 1000)
+                    videoItem.player.pause()
+                }
+            }
         }
     }
 }
