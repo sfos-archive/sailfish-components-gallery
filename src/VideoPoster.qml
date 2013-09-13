@@ -61,7 +61,7 @@ MouseArea {
         opacity: videoItem.playing ? 0.0 : 1.0
         Behavior on opacity { FadeAnimation { id: controlFade } }
 
-        visible: videoItem.player && (videoItem.playing || controlFade.running)
+        visible: videoItem.player && (!videoItem.playing || controlFade.running)
 
         Image {
             anchors.centerIn: parent
