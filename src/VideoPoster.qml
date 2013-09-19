@@ -13,11 +13,16 @@ MouseArea {
     property int duration
     onDurationChanged: positionSlider.maximumValue = duration
 
+    property bool transpose
+
     property bool playing: active && videoItem.player && videoItem.player.playbackState == MediaPlayer.PlayingState
     readonly property bool _loaded: active
                 && videoItem.player
                 && videoItem.player.status >= MediaPlayer.Loaded
                 && videoItem.player.status < MediaPlayer.EndOfMedia
+
+    implicitWidth: poster.implicitWidth
+    implicitHeight: poster.implicitHeight
 
     Connections {
         target: videoItem._loaded ? videoItem.player : null
@@ -38,7 +43,9 @@ MouseArea {
 
         anchors.centerIn: parent
 
-        width: videoItem.width
+
+        width: !videoItem.transpose ? videoItem.width : videoItem.height
+        height: !videoItem.transpose ? videoItem.height : videoItem.width
 
         sourceSize.width: Screen.height
         sourceSize.height: Screen.height
@@ -52,6 +59,8 @@ MouseArea {
         Behavior on opacity { FadeAnimation { id: posterFade } }
 
         visible: !videoItem._loaded || posterFade.running
+
+        rotation: videoItem.transpose ? (implicitHeight > implicitWidth ? 270 : 90)  : 0
     }
 
     Item {
