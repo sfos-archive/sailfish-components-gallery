@@ -31,6 +31,7 @@ Group:      System/Libraries
 BuildRequires:  pkgconfig(Qt5Test)
 Requires:   %{name} = %{version}-%{release}
 Requires:   qt5-qtdeclarative-import-qttest
+Requires:   qt5-qtdeclarative-devel-tools
 
 %description tests
 This package contains QML unit tests for Sailfish Gallery UI components
