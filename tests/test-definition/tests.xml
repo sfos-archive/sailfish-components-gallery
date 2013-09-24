@@ -5,7 +5,7 @@
        <set name="unit-tests" feature="Sailfish Gallery UI Components">
            <description>Sailfish Gallery UI component unit tests</description>
            <case manual="false" name="unittests">
-               <step>cd /opt/tests/sailfish-components-gallery/auto/ &amp;&amp;DISPLAY=:0 qmltestrunner</step>
+               <step>/usr/lib/qt5/bin/qmltestrunner -input /opt/tests/sailfish-components-gallery-qt5/auto</step>
            </case>
        </set>
    </suite>
