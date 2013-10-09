@@ -1,10 +1,11 @@
 import QtQuick 2.0
+import Sailfish.Silica 1.0
 import org.nemomobile.thumbnailer 1.0
 
 ThumbnailBase {
 
     Thumbnail {
-
+        id: thumbnail
         property bool gridMoving: grid.moving
 
         source: parent.source
@@ -27,6 +28,26 @@ ThumbnailBase {
                     priority = Thumbnail.LowPriority
                 }
             }
+        }
+
+        onStatusChanged: {
+            if (status == Thumbnail.Error) {
+                errorLabelComponent.createObject(thumbnail)
+            }
+        }
+    }
+
+    Component {
+        id: errorLabelComponent
+        Label {
+            //: Thumbnail Image loading failed
+            //% "Oops, can't display the thumbnail!"
+            text: qsTrId("components_gallery-la-image-thumbnail-loading-failed")
+            anchors.centerIn: parent
+            width: parent.width
+            wrapMode: Text.Wrap
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: Theme.fontSizeSmall
         }
     }
 }

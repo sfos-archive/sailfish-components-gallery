@@ -130,7 +130,7 @@ SilicaFlickable {
 
         Image {
             id: photo
-
+            property var errorLabel
             objectName: "zoomableImage"
 
             smooth: !(flickable.movingVertically || flickable.movingHorizontally)
@@ -141,8 +141,19 @@ SilicaFlickable {
             asynchronous: true
             anchors.centerIn: parent
 
-            onStatusChanged: flickable._updateScale()
+            onStatusChanged: {
+                flickable._updateScale()
+
+                if (status == Image.Error) {
+                    errorLabel = errorLabelComponent.createObject(photo)
+                }
+            }
+
             onSourceChanged: {
+                if (errorLabel) {
+                    errorLabel.destroy()
+                }
+
                 scaleBehavior.enabled = false
                 flickable._fittedScale = 0
                 flickable.scaled = false
@@ -158,6 +169,19 @@ SilicaFlickable {
             onClicked: {
                 flickable.clicked()
             }
+        }
+    }
+
+    Component {
+        id: errorLabelComponent
+        Label {
+            //: Image loading failed
+            //% "Oops, can't display the image"
+            text: qsTrId("components_gallery-la-image-loading-failed")
+            anchors.centerIn: parent
+            width: parent.width
+            wrapMode: Text.Wrap
+            horizontalAlignment: Text.AlignHCenter
         }
     }
 }
