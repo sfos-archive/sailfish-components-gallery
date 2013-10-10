@@ -44,7 +44,7 @@ ThumbnailBase {
             //% "Oops, can't display the thumbnail!"
             text: qsTrId("components_gallery-la-image-thumbnail-loading-failed")
             anchors.centerIn: parent
-            width: parent.width
+            width: parent.width - 2 * Theme.paddingMedium
             wrapMode: Text.Wrap
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: Theme.fontSizeSmall
