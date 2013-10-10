@@ -160,6 +160,9 @@ SilicaFlickable {
             }
 
             rotation: -flickable.orientation
+
+            opacity: status == Image.Ready ? 1 : 0
+            Behavior on opacity { FadeAnimation{} }
         }
 
         MouseArea {
