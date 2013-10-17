@@ -12,16 +12,25 @@ SilicaFlickable {
 
     property int fit
 
-    property real _fittedScale
+    property real _fittedScale: Math.min(width / _originalPhotoWidth, height / _originalPhotoHeight)
+    property real _menuOpenScale: Math.max(width / _originalPhotoWidth, height / _originalPhotoHeight)
     property real _scale
 
     property int orientation
 
+    property int _viewOrientation: width === Screen.width && height === Screen.height
+                                 ? Orientation.Portrait
+                                 : width === Screen.height && height === Screen.width
+                                 ? Orientation.Landscape
+                                 : Orientation.None // In the middle of Portrait and Landscape transitions
+
     readonly property bool _transpose: (orientation % 180) != 0
+    readonly property real _originalPhotoWidth: !_transpose ? photo.implicitWidth : photo.implicitHeight
+    readonly property real _originalPhotoHeight: !_transpose ? photo.implicitHeight : photo.implicitWidth
 
     signal clicked
 
-    // Overrider SilicaFlickable's pressDelay because otherwise it will
+    // Override SilicaFlickable's pressDelay because otherwise it will
     // block touch events going to PinchArea in certain cases.
     pressDelay: 0
 
@@ -30,27 +39,18 @@ SilicaFlickable {
     implicitWidth: !_transpose ? photo.implicitWidth : photo.implicitHeight
     implicitHeight: !_transpose ? photo.implicitHeight : photo.implicitWidth
 
-    contentWidth: Math.max(width, !_transpose ? photo.width : photo.height)
-    contentHeight: Math.max(height, !_transpose ? photo.height : photo.width)
+    contentWidth: container.width
+    contentHeight: container.height
 
-    onMenuOpenChanged: setSplitMode()
-
-    onFitChanged: _updateScale()
+    // Only update the scale when width and height are properly set by Silica.
+    // If we do it too early, then calculating a new _fittedScale goes wrong
+    on_ViewOrientationChanged: {
+        _updateScale()
+    }
 
     interactive: scaled
 
-    function setSplitMode()
-    {
-        if (menuOpen) {
-            scaleBehavior.enabled = true
-            _updateScale()
-        } else {
-            _updateScale()
-            scaleBehavior.enabled = false
-        }
-    }
-
-    function resetScale()
+    function _resetScale()
     {
         if (scaled) {
             _scale = _fittedScale
@@ -62,6 +62,7 @@ SilicaFlickable {
 
     function _scaleImage(scale, center)
     {
+
         var newWidth
         var newHeight
         var oldWidth = contentWidth
@@ -69,9 +70,10 @@ SilicaFlickable {
 
         if (fit == Fit.Width) {
             // Scale and bounds check the width, and then apply the same scale to height.
-            newWidth = contentWidth * scale
-            if (newWidth <= Screen.width) {
-                resetScale()
+            newWidth = (!flickable._transpose ? photo.width : photo.height) * scale
+
+            if (newWidth <= _fittedScale * _originalPhotoWidth) {
+                _resetScale()
                 return
             } else {
                 newWidth = Math.min(newWidth, Screen.width * 3.5)
@@ -80,9 +82,9 @@ SilicaFlickable {
             }
         } else {
             // Scale and bounds check the height, and then apply the same scale to width.
-            newHeight = contentHeight * scale
-            if (newHeight <= Screen.width) {
-                resetScale()
+            newHeight = (!flickable._transpose ? photo.height: photo.width) * scale
+            if (newHeight <= _fittedScale * _originalPhotoHeight) {
+                _resetScale()
                 return
             } else {
                 newHeight = Math.min(newHeight, Screen.width * 3.5)
@@ -90,43 +92,39 @@ SilicaFlickable {
                 newWidth = Math.max(!_transpose ? photo.width : photo.height, Screen.height)
             }
         }
+
         // Fixup contentX and contentY
-        contentX += (center.x * newWidth / oldWidth) - center.x
-        contentY += (center.y * newHeight / oldHeight) - center.y
+        if (newWidth >= flickable.width)
+            contentX += (center.x * newWidth / oldWidth) - center.x
+        if (newHeight >= flickable.height)
+            contentY += (center.y * newHeight / oldHeight) - center.y
 
         scaled = true
     }
 
     function _updateScale() {
-        if (photo.status != Image.Ready)
+        if (photo.status != Image.Ready) {
             return
-
-        if (menuOpen) {
-            _fittedScale = Screen.width / Math.min(photo.implicitWidth, photo.implicitHeight)
-        } else {
-            _fittedScale = (fit == Fit.Width)
-                    ? Screen.width / flickable.implicitWidth
-                    : Screen.width / flickable.implicitHeight
         }
 
-        if (!scaled || _scale < _fittedScale) {
-            _scale = _fittedScale
-            contentX = 0
-            contentY = 0
-            scaled = false
-        }
+        state = menuOpen
+                ? "menuOpen"
+                : _viewOrientation == Orientation.Portrait
+                ? "portrait"
+                : _viewOrientation == Orientation.Landscape
+                ? "landscape"
+                : "fullscreen" // fallback
     }
 
-    // This Behavior is used only when user has aligned image i.e. we are on a split screen mode
-    Behavior on _scale { id: scaleBehavior; NumberAnimation {  duration: 300; alwaysRunToEnd: true } }
-
     children: ScrollDecorator {}
+
     PinchArea {
-        id: pinchArea
+        id: container
         enabled: !flickable.menuOpen && flickable.enableZoom && photo.status == Image.Ready
-        anchors.fill: parent
         onPinchUpdated: flickable._scaleImage(1.0 + pinch.scale - pinch.previousScale, pinch.center)
         onPinchFinished: flickable.returnToBounds()
+        width: Math.max(flickable.width, !flickable._transpose ? photo.width : photo.height)
+        height: Math.max(flickable.height, !flickable._transpose ? photo.height : photo.width)
 
         Image {
             id: photo
@@ -136,13 +134,17 @@ SilicaFlickable {
             smooth: !(flickable.movingVertically || flickable.movingHorizontally)
             width: implicitWidth * flickable._scale
             height: implicitHeight * flickable._scale
-            sourceSize.width: Screen.width * 1.5
+            sourceSize.width: Screen.width * 2.5
             fillMode:  Image.PreserveAspectFit
             asynchronous: true
             anchors.centerIn: parent
+            cache: false
 
             onStatusChanged: {
-                flickable._updateScale()
+
+                if (status == Image.Ready) {
+                    flickable._updateScale()
+                }
 
                 if (status == Image.Error) {
                     errorLabel = errorLabelComponent.createObject(photo)
@@ -154,8 +156,6 @@ SilicaFlickable {
                     errorLabel.destroy()
                 }
 
-                scaleBehavior.enabled = false
-                flickable._fittedScale = 0
                 flickable.scaled = false
             }
 
@@ -164,7 +164,6 @@ SilicaFlickable {
             opacity: status == Image.Ready ? 1 : 0
             Behavior on opacity { FadeAnimation{} }
         }
-
         MouseArea {
             anchors.fill: parent
             enabled: !flickable.scaled
@@ -187,4 +186,64 @@ SilicaFlickable {
             horizontalAlignment: Text.AlignHCenter
         }
     }
+
+    // Let the states handle switching between menu open and fullscreen states.
+    // We need to extend fullscreen state with two different states: portrait and
+    // landscape to make it actually reset the fitted scale via state changes when
+    // the orientation changes. Ie. state change from "fullscreen" to "fullscreen"
+    // doesn't reset the fitted scale.
+    states: [
+        State {
+            name: "menuOpen"
+            when: flickable.menuOpen && photo.status == Image.Ready
+            PropertyChanges {
+                target: flickable
+                _scale: flickable._menuOpenScale
+                scaled: false
+                contentX: (flickable._originalPhotoWidth  * flickable._menuOpenScale - flickable.width ) / 2.0
+                contentY: (flickable._originalPhotoHeight * flickable._menuOpenScale - flickable.height) / 2.0
+            }
+        },
+        State {
+            name: "fullscreen"
+            when: !flickable.menuOpen && photo.status == Image.Ready
+            PropertyChanges {
+                target: flickable
+                // 1.0 for smaller images. _fittedScale for images which are larger than view
+                _scale: flickable._fittedScale >= 1 ? 1.0 : flickable._fittedScale
+                scaled: false
+                contentX: 0
+                contentY: 0
+            }
+        },
+        State {
+            name: "portrait"
+            extend: "fullscreen"
+        },
+        State {
+            name: "landscape"
+            extend: "fullscreen"
+        }
+    ]
+
+    transitions: [
+        Transition {
+            from: '*'
+            to: 'menuOpen'
+            PropertyAnimation {
+                target: flickable
+                properties: "_scale,contentX,contentY"
+                duration: 150
+            }
+        },
+        Transition {
+            from: 'menuOpen'
+            to: '*'
+            PropertyAnimation {
+                target: flickable
+                properties: "_scale,contentX,contentY"
+                duration: 150
+            }
+        }
+    ]
 }
