@@ -12,7 +12,16 @@ class DeclarativeImageEditor : public QQuickItem
     Q_OBJECT
     Q_PROPERTY(QUrl source READ source WRITE setSource NOTIFY sourceChanged)
     Q_PROPERTY(QUrl target READ target WRITE setTarget NOTIFY targetChanged)
+    Q_ENUMS(EditOperationType)
+
 public:
+
+    enum EditOperationType {
+        None,
+        Crop,
+        Rotate
+    };
+
     explicit DeclarativeImageEditor(QQuickItem *parent = 0);
     virtual ~DeclarativeImageEditor();
 
@@ -23,11 +32,17 @@ public:
     void setTarget(const QUrl &target);
 
     Q_INVOKABLE void crop(const QSizeF &cropSize, const QSizeF &imageSize, const QPointF &position);
+    Q_INVOKABLE void rotate(int rotation);
 
 Q_SIGNALS:
     void cropped(bool success);
+    void rotated(bool success);
     void sourceChanged();
     void targetChanged();
+
+private Q_SLOTS:
+    void cropResult(bool success, const QString &targetFile);
+    void rotateResult(bool success, const QString &targetFile);
 
 private:
     DeclarativeImageEditorPrivate *d_ptr;

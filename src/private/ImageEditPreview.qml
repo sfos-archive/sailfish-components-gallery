@@ -11,31 +11,44 @@ import Sailfish.Gallery 1.0
 import Sailfish.Gallery.private 1.0
 
 Item {
-    id: cropView
+    id: preview
 
     property Item splitView
+    property int editOperation
     property real explicitWidth
-    property real explicitHeight
+    property real explicitHeight    
     // Aspect ratio as width / height
     property real aspectRatio
     property string aspectRatioType: splitView.avatarCrop ? "avatar" : "original"
     property bool isPortrait: width < height
     property bool active
-    property bool showTitle: active
-    property bool cropping
+    property bool editInProgress
     property alias source: zoomableImage.source
     property alias target: editor.target
-    property alias scale: zoomableImage.scale
-    property alias orientation: zoomableImage.orientation
+    //property alias orientation: zoomableImage.orientation
+    property int orientation
+    property alias previewRotation: zoomableImage.rotation
 
-    function crop() {
-        cropping = true
+    function crop()
+    {
+        editInProgress = true
         editor.crop(Qt.size(editor.width, editor.height),
                     Qt.size(zoomableImage.contentWidth, zoomableImage.contentHeight),
                     Qt.point(zoomableImage.contentX, zoomableImage.contentY))
     }
 
-    onAspectRatioChanged: zoomableImage.resetImagePosition()
+    function rotateImage()
+    {
+        editInProgress = true
+        editor.rotate(preview.previewRotation)
+    }
+
+    function resetScale()
+    {
+        zoomableImage.resetScale()
+    }
+
+    onAspectRatioTypeChanged: zoomableImage.resetImagePosition()
     onIsPortraitChanged: {
         // Reset back to original aspect ratio that needs to be calculated
         if (aspectRatioType == "original") {
@@ -43,16 +56,36 @@ Item {
         }
     }
 
-    Label {
-        id: cropHeader
+    // ImageMetadata is needed to track the real orientation
+    // when the file is being edited.
+    ImageMetadata {
+        id: metadata
+        source: preview.source
+    }
 
-        //% "Crop"
-        text: qsTrId("components_gallery-he-crop")
+    Label {
+        id: header
+        function headerText(type)
+        {
+            switch(type) {
+            case ImageEditor.Crop:
+                //% "Crop"
+                return qsTrId("components_gallery-he-crop")
+            case ImageEditor.Rotate:
+                //% "Rotate"
+                return qsTrId("components_gallery-he-rotate")
+            default:
+                return ""
+            }
+        }
+
+        text: headerText(imageEditPreview.editOperation)
         height: Theme.itemSizeLarge
         color: Theme.highlightColor
         verticalAlignment: Text.AlignVCenter
         anchors.horizontalCenter: parent.horizontalCenter
-        opacity: active && showTitle ? 1.0 : 0.0
+
+        opacity: active && !splitView.splitOpen ? 1.0 : 0.0
         z: 1
 
         font {
@@ -75,6 +108,7 @@ Item {
             resetScale()
         }
 
+        orientation: metadata.orientation
         boundsBehavior: Flickable.StopAtBounds
         anchors.fill: editor
         initialImageWidth: explicitWidth
@@ -83,9 +117,11 @@ Item {
         maximumHeight: 4 * parent.height
         minimumWidth: editor.width
         minimumHeight: editor.height
-        interactive: active
+        interactive: active && editOperation == ImageEditor.Crop
         onClicked: splitView.splitOpen = !splitView.splitOpen
         onStatusChanged: resetImagePosition()
+        Behavior on rotation { SmoothedAnimation { duration: 200 } }
+
     }
 
     ImageEditor {
@@ -100,7 +136,7 @@ Item {
             if (isPortrait) {
                 var maxWidth = explicitWidth - Theme.itemSizeMedium
                 var tmpHeight = maxWidth / aspectRatio
-                var maxHeight = explicitHeight - cropHeader.height
+                var maxHeight = explicitHeight - header.height
                 if (tmpHeight > maxHeight) {
                     maxWidth = maxHeight * aspectRatio
                 }
@@ -121,28 +157,40 @@ Item {
 
         anchors.centerIn: parent
         source: zoomableImage.source
+
         onCropped: {
-            cropping = false
+            editInProgress = false
             if (success) {
-                cropView.targetChanged()
-                if (cropView.source == cropView.target) {
-                    // Force source image to be reloaded
-                    cropView.source = ""
-                    cropView.source = cropView.target
-                }
-                splitView.edited()
+                 if (preview.source == preview.target) {
+                    preview.source = ""
+                    preview.source = editor.target
+                 }
+                 splitView.edited()
             }
+        }
+
+        onRotated: {
+            editInProgress = false
+            if (success) {
+                preview.source = editor.target
+            }
+            preview.previewRotation = 0
         }
     }
 
     DimmedRegion {
         anchors.fill: parent
         color: Theme.highlightDimmerColor
-        opacity: active ? 0.5 : 0.0
-        target: cropView
-        area: Qt.rect(0, 0, cropView.width, cropView.height)
+        opacity: preview.editOperation == ImageEditor.Crop && active ? 0.5 : 0.0
+        target: preview
+        area: Qt.rect(0, 0, preview.width, preview.height)
         exclude: [ editor ]
 
         Behavior on opacity { FadeAnimation {} }
+    }
+
+    BusyIndicator {
+        anchors.centerIn: parent
+        running: editInProgress
     }
 }

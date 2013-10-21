@@ -3,10 +3,7 @@
 
 #include <QObject>
 #include <QUrl>
-
-#ifndef USE_QIMAGE
-#include <QuillFile>
-#endif
+#include <QDir>
 
 class QString;
 class QSizeF;
@@ -19,22 +16,20 @@ public:
     explicit DeclarativeImageEditorPrivate(QObject *parent = 0);
     virtual ~DeclarativeImageEditorPrivate();
 
+    QString uniqueFilePath(const QString &sourceFilePath, const QString &path = QDir::tempPath());
+
     // Member variables
     QUrl m_source;
     QUrl m_target;
 
-#ifdef USE_QIMAGE
-public Q_SLOTS:
-    void crop(const QString &source, const QString &target, const QSizeF &cropSize, const QSizeF &imageSize, const QPointF &position);
-#else
-    QuillFile *m_file;
 
 public Q_SLOTS:
-    void releaseImage(QString fileName);
-#endif
+    void rotate(const QString &source, const QString &target, int rotation);
+    void crop(const QString &source, const QString &target, const QSizeF &cropSize, const QSizeF &imageSize, const QPointF &position);
 
 Q_SIGNALS:
-    void cropped(bool success);
+    void cropped(bool success, const QString &targetFile = QString());
+    void rotated(bool success, const QString &targetFile = QString());
 
 };
 
