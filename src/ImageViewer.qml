@@ -134,7 +134,7 @@ SilicaFlickable {
             smooth: !(flickable.movingVertically || flickable.movingHorizontally)
             width: implicitWidth * flickable._scale
             height: implicitHeight * flickable._scale
-            sourceSize.width: Screen.width * 2.5
+            sourceSize.width: 3264 // Max width or height for captured image
             fillMode:  Image.PreserveAspectFit
             asynchronous: true
             anchors.centerIn: parent
