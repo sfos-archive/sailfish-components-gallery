@@ -3,6 +3,7 @@
 #include <QGuiApplication>
 #include <QTranslator>
 #include "declarativeimageeditor.h"
+#include "declarativeimagemetadata.h"
 
 // using custom translator so it gets properly removed from qApp when engine is deleted
 class AppTranslator: public QTranslator
@@ -55,6 +56,7 @@ public:
     {
         Q_ASSERT(QLatin1String(uri) == QLatin1String("Sailfish.Gallery"));
         qmlRegisterType<DeclarativeImageEditor>("Sailfish.Gallery.private", 1, 0, "ImageEditor");
+        qmlRegisterType<DeclarativeImageMetadata>("Sailfish.Gallery.private", 1, 0, "ImageMetadata");
         qmlRegisterUncreatableType<FitNamespace>("Sailfish.Gallery", 1, 0, "Fit", QString());
     }
 };

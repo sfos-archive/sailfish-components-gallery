@@ -9,7 +9,6 @@ SilicaFlickable {
     property bool menuOpen
     property bool enableZoom: !menuOpen
     property alias source: photo.source
-
     property int fit
 
     property real _fittedScale: Math.min(width / _originalPhotoWidth, height / _originalPhotoHeight)
@@ -106,7 +105,6 @@ SilicaFlickable {
         if (photo.status != Image.Ready) {
             return
         }
-
         state = menuOpen
                 ? "menuOpen"
                 : _viewOrientation == Orientation.Portrait
@@ -147,7 +145,7 @@ SilicaFlickable {
                 }
 
                 if (status == Image.Error) {
-                    errorLabel = errorLabelComponent.createObject(photo)
+                   errorLabel = errorLabelComponent.createObject(photo)
                 }
             }
 

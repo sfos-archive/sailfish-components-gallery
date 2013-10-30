@@ -30,12 +30,15 @@ SilicaFlickable {
     contentWidth: flickable.implicitWidth * photo.scale
     contentHeight: flickable.implicitHeight * photo.scale
 
+    pressDelay: 0
+
     function resetScale() {
         photo.updateScale()
     }
 
     function _centerImage(pinch) {
         var scale = 1.0 + pinch.scale - pinch.previousScale
+
         var newContentWidth = contentWidth * scale
         var newContentHeight = contentHeight * scale
 
@@ -86,9 +89,9 @@ SilicaFlickable {
             fillMode:  Image.PreserveAspectFit
             asynchronous: true
             anchors.centerIn: parent
-            sourceSize.width: Math.max(screen.height, screen.width) * 2
+            sourceSize.width: 3264
 
-            rotation: -flickable.orientation
+            rotation: orientation
 
             onStatusChanged: {
                 flickable.status = status

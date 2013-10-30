@@ -8,19 +8,20 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import Sailfish.Contacts 1.0
+import Sailfish.Gallery.private 1.0
 import "private"
 
 SplitViewPage {
     id: imageEditor
 
-    property alias source: cropView.source
-    property alias target: cropView.target
-    property alias cropping: cropView.cropping
+    property alias source: imageEditPreview.source
+    property alias target: imageEditPreview.target
     // To align this with SplitViewDialog
     property alias splitOpen: imageEditor.open
     property alias splitOpened: imageEditor.opened
-
-    property alias orientation: cropView.orientation
+    // TODO: Remove orientation, it won't be used anymore but it's needed
+    // to prevent this QML element loading to fail.
+    property int orientation
 
     property Page _contactPicker
     property bool _contactSaveRequested
@@ -28,9 +29,10 @@ SplitViewPage {
     signal edited
 
     function _pageActivating() {
-        imageEditor.foreground = cropView
-        cropView.resetParent(imageEditor.foregroundItem)
-        cropView.splitView = imageEditor
+        imageEditor.foreground = imageEditPreview
+        imageEditPreview.resetParent(imageEditor.foregroundItem)
+        imageEditPreview.splitView = imageEditor
+        imageEditPreview.editOperation = ImageEditor.None
         splitOpen = true
     }
 
@@ -58,6 +60,9 @@ SplitViewPage {
 
         delegate: BackgroundItem {
             id: operationDelegate
+
+            enabled: !imageEditPreview.editInProgress
+
             IconButton {
                 id: icon
                 x: Theme.paddingLarge
@@ -80,9 +85,17 @@ SplitViewPage {
             }
 
             onClicked: {
-                if (model.type === "crop") {
-                    cropView.splitView = pageStack.push(aspectRatioDialogComponent, {splitOpen: false})
-                    cropView.resetParent(cropView.splitView.foregroundItem)
+                if (model.type === ImageEditor.Crop) {
+                    imageEditPreview.splitView = pageStack.push(aspectRatioDialogComponent,
+                                                                { splitOpen: false })
+                    imageEditPreview.editOperation = model.type
+                    imageEditPreview.resetParent(imageEditPreview.splitView.foregroundItem)
+                } else
+                if (model.type === ImageEditor.Rotate) {
+                    imageEditPreview.splitView = pageStack.push(rotateDialogComponent,
+                                                                { splitOpen: true })
+                    imageEditPreview.editOperation = model.type
+                    imageEditPreview.resetParent(imageEditPreview.splitView.foregroundItem)
                 }
             }
         }
@@ -92,8 +105,8 @@ SplitViewPage {
 
     // Shared between ImageEditPage and CropDialog so that state
     // of zoom is correct.
-    foreground: CropView {
-        id: cropView
+    foreground: ImageEditPreview {
+        id: imageEditPreview
 
         function resetParent(parentItem) {
             parent = null
@@ -103,7 +116,6 @@ SplitViewPage {
         isPortrait: splitView.isPortrait
         splitView: imageEditor
         anchors.fill: parent
-        showTitle: !splitView.splitOpen
         active: pageStack.currentPage === imageEditor ? false : !splitView.splitOpen
         explicitWidth: imageEditor.width
         explicitHeight: imageEditor.height
@@ -121,7 +133,7 @@ SplitViewPage {
         CropDialog {
             // Prepare acceptDestionation for contact picking
             function prepareAcceptDestination() {
-                if (cropView.aspectRatioType == "avatar") {
+                if (imageEditPreview.aspectRatioType == "avatar") {
                     if (!_contactPicker) {
                         _contactPicker = contactPickerPage.createObject(imageEditor)
                     }
@@ -135,7 +147,7 @@ SplitViewPage {
             }
 
             allowedOrientations: imageEditor.allowedOrientations
-            foreground: cropView
+            foreground: imageEditPreview
             onEdited: imageEditor.edited()
             onSplitOpenedChanged: {
                 if (!splitOpened) {
@@ -144,17 +156,46 @@ SplitViewPage {
             }
 
             onCropRequested: {
-                if (cropView.aspectRatioType != "avatar") {
+                if (imageEditPreview.aspectRatioType != "avatar") {
                     // Reset back to empty
-                    cropView.target = ""
-                    cropView.crop()
+                    imageEditPreview.target = ""
+                    imageEditPreview.crop()
                 }
                 // For avatars crop will be triggered when contact selected
+            }
+
+            onCropCanceled: {
+                imageEditPreview.resetScale()
             }
 
             Component.onCompleted: prepareAcceptDestination()
         }
     }
+
+    Component {
+        id: rotateDialogComponent
+        RotateDialog {
+            id: rotateDialog
+            foreground: imageEditPreview
+
+            onRotate: {
+                // Rotate in steps, but not when there's an ongoing transition
+                if (imageEditPreview.previewRotation % 90 == 0) {
+                    imageEditPreview.previewRotation = imageEditPreview.previewRotation + angle
+                }
+            }
+
+            onRotateRequested: {
+                imageEditPreview.target = ""
+                imageEditPreview.rotateImage()
+            }
+
+            onRotateCanceled: {
+                imageEditPreview.previewRotation = 0
+            }
+        }
+    }
+
 
     Component {
         id: contactPickerPage
@@ -164,11 +205,11 @@ SplitViewPage {
 
             onContactClicked: {
                 // Hardcoded path will be removed once get JB5266 fixed
-                cropView.target = "/home/nemo/.local/share/data/avatars/" + contact.firstName + "-" + contact.lastName + ".png"
-                cropView.crop()
+                imageEditPreview.target = "/home/nemo/.local/share/data/avatars/" + contact.firstName + "-" + contact.lastName + ".jpeg"
+                imageEditPreview.crop()
                 _contactSaveRequested = true
                 unsavedContact = contact
-                unsavedContact.avatarPath = cropView.target
+                unsavedContact.avatarPath = imageEditPreview.target
                 // Do all needed page activation states before popping pages
                 imageEditor._pageActivating()
                 _navigation = PageNavigation.Forward

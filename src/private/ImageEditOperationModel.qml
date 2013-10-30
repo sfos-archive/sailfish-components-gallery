@@ -6,49 +6,25 @@
 ****************************************************************************/
 
 import QtQuick 2.0
+import Sailfish.Gallery.private 1.0
 
 ListModel {
     function _operation(index) {
         if (_operation["list"] === undefined) {
             _operation.list = [
-                        /*
+
                         {
-                            //: Rotate the image right edit operation (clockwise)
-                            //% "Rotate right"
-                            text: qsTrId("components_gallery-li-rotate_right"),
-                            type: "rotateRight",
-                            icon: "image://theme/icon-m-backup"
+                            //: Rotate the image edit operations
+                            //% "Rotate"
+                            text: qsTrId("components_gallery-li-rotate"),
+                            type: ImageEditor.Rotate,
+                            icon: "image://theme/icon-m-rotate"
                         },
-
-                        {
-                            //: Rotate the image left edit operation (counter clockwise)
-                            //% "Rotate left"
-                            text: qsTrId("components_gallery-li-rotate_left"),
-                            type: "rotateLeft",
-                            icon: "image://theme/icon-m-backup"
-                        },
-
-                        {
-                            //: Flip the image horizontally
-                            //% "Flip horizontally"
-                            text: qsTrId("components_gallery-li-flip_horizontally"),
-                            type: "flipHorizontally",
-                            icon: "image://theme/icon-m-backup"
-                        },
-
-                        {
-                            //: Flip the image vertically
-                            //% "Flip vertically"
-                            text: qsTrId("components_gallery-li-flip_vertically"),
-                            type: "flipVertically",
-                            icon: "image://theme/icon-m-backup"
-                        },*/
-
                         {
                             //: Crop the image. This opens separete cropping view
                             //% "Crop"
                             text: qsTrId("components_gallery-li-crop"),
-                            type: "crop",
+                            type: ImageEditor.Crop,
                             icon: "image://theme/icon-m-crop"
                         }
                     ]
@@ -58,7 +34,7 @@ ListModel {
 
     Component.onCompleted: {
         var index = 0
-        for (; index < 1; ++index) {
+        for (; index < 2; ++index) {
             append(_operation(index))
         }
     }

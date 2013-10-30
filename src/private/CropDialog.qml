@@ -16,12 +16,15 @@ SplitViewDialog {
 
     signal edited
     signal cropRequested
+    signal cropCanceled
 
     // Clip zoomed part of the image
     clip: true
     onDone: {
         if (result == DialogResult.Accepted) {
             cropRequested()
+        } else {
+            cropCanceled()
         }
     }
 
@@ -37,12 +40,12 @@ SplitViewDialog {
             //: Label that is shown for currently selected aspect ratio.
             //% "Aspect ratio"
             sectionLabel: qsTrId("components_gallery-li-aspect_ratio")
-            selected: cropView.aspectRatioType == model.type
+            selected: imageEditPreview.aspectRatioType == model.type
 
             onClicked: {
                 aspectRatioDialog.splitOpen = !aspectRatioDialog.splitOpen
-                cropView.aspectRatio = model.ratio
-                cropView.aspectRatioType = model.type
+                imageEditPreview.aspectRatio = model.ratio
+                imageEditPreview.aspectRatioType = model.type
             }
         }
 

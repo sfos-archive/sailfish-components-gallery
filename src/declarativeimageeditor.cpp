@@ -1,16 +1,9 @@
 #include "declarativeimageeditor.h"
 #include "declarativeimageeditor_p.h"
 
-#ifdef USE_QIMAGE
+
 #include <QImage>
 #include <QtConcurrentRun>
-#else
-#include <Quill>
-#include <QuillFile>
-#include <QuillImageFilter>
-#include <QuillImageFilterFactory>
-#endif
-
 #include <QRectF>
 
 DeclarativeImageEditor::DeclarativeImageEditor(QQuickItem *parent) :
@@ -18,11 +11,8 @@ DeclarativeImageEditor::DeclarativeImageEditor(QQuickItem *parent) :
     d_ptr(new DeclarativeImageEditorPrivate)
 {
     setFlag(QQuickItem::ItemHasContents, true);
-    connect(d_ptr, SIGNAL(cropped(bool)), this, SIGNAL(cropped(bool)));
-#ifndef USE_QIMAGE
-    Quill::setDBusThumbnailingEnabled(false);
-#endif
-
+    connect(d_ptr, SIGNAL(cropped(bool,QString)), this, SLOT(cropResult(bool,QString)));
+    connect(d_ptr, SIGNAL(rotated(bool,QString)), this, SLOT(rotateResult(bool,QString)));
 }
 
 DeclarativeImageEditor::~DeclarativeImageEditor()
@@ -63,23 +53,36 @@ QUrl DeclarativeImageEditor::target() const
     return d->m_target;
 }
 
+void DeclarativeImageEditor::rotate(int rotation)
+{
+    Q_D(DeclarativeImageEditor);
+    QString source = d->m_source.toLocalFile();
+    QString target = d->m_target.toLocalFile();
+    QtConcurrent::run(d, &DeclarativeImageEditorPrivate::rotate, source, target, rotation);
+}
+
 void DeclarativeImageEditor::crop(const QSizeF &cropSize, const QSizeF &imageSize, const QPointF &position)
 {
     Q_D(DeclarativeImageEditor);
     QString source = d->m_source.toLocalFile();
     QString target = d->m_target.toLocalFile();
-#ifdef USE_QIMAGE
     QtConcurrent::run(d, &DeclarativeImageEditorPrivate::crop, source, target, cropSize, imageSize, position);
-#else
-    if (!d->m_source.isEmpty() && !d->m_target.isEmpty() && target.isValid() && !target.isEmpty()) {
-        d->m_file = new QuillFile(d->m_source);
-        QuillImageFilter *filter = QuillImageFilterFactory::createImageFilter("org.maemo.crop");
-        filter->setOption(QuillImageFilter::CropRectangle, QVariant(targetRect.toRect()));
-        d->m_file->runFilter(filter);
-        QObject::connect(Quill::instance(), SIGNAL(saved(QString)),
-                                 d, SLOT(releaseImage(QString)));
+}
 
-        d->m_file->save();
+void DeclarativeImageEditor::cropResult(bool success, const QString &targetFile)
+{
+    Q_D(DeclarativeImageEditor);
+    if (d->m_target.isEmpty()) {
+        setTarget(targetFile);
     }
-#endif
+    emit cropped(success);
+}
+
+void DeclarativeImageEditor::rotateResult(bool success, const QString &targetFile)
+{
+    Q_D(DeclarativeImageEditor);
+    if (d->m_target.isEmpty()) {
+        setTarget(targetFile);
+    }
+    emit rotated(success);
 }

@@ -8,31 +8,26 @@ TARGETPATH = $$[QT_INSTALL_QML]/$$MODULENAME
 QT += qml quick concurrent
 CONFIG += plugin link_pkgconfig
 
-CONFIG(use_quill) {
-    CONFIG += link_pkgconfig
-    PKGCONFIG += quill
-} else {
-    DEFINES += USE_QIMAGE
-}
-
 packagesExist(quillmetadata-qt5) {
     PKGCONFIG += quillmetadata-qt5
-    DEFINES += USE_QUILLMETADATA
 }
 
 import.files = *.qml private qmldir scripts
 import.path = $$TARGETPATH
 target.path = $$TARGETPATH
 
-OTHER_FILES += *.qml private/*.qml
+OTHER_FILES += *.qml private/*.qml \
+    private/ImageEditPreview.qml
 
 SOURCES += \
     declarativeimageeditor.cpp \
     declarativeimageeditor_p.cpp \
-    plugin.cpp
+    plugin.cpp \
+    declarativeimagemetadata.cpp
 
 HEADERS += declarativeimageeditor.h \
-    declarativeimageeditor_p.h
+    declarativeimageeditor_p.h \
+    declarativeimagemetadata.h
 
 TS_FILE = $$OUT_PWD/sailfish_components_gallery_qt5.ts
 EE_QM = $$OUT_PWD/sailfish_components_gallery_qt5_eng_en.qm
