@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import Sailfish.Gallery 1.0
+import Sailfish.Gallery.private 1.0
 
 SilicaFlickable {
     id: flickable
@@ -11,11 +12,16 @@ SilicaFlickable {
     property alias source: photo.source
     property int fit
 
+    property bool active: true
+
     property real _fittedScale: Math.min(width / _originalPhotoWidth, height / _originalPhotoHeight)
     property real _menuOpenScale: Math.max(width / _originalPhotoWidth, height / _originalPhotoHeight)
     property real _scale
 
     property int orientation
+
+    property int maximumWidth: photo.implicitWidth
+    property int maximumHeight: photo.implicitHeight
 
     property int _viewOrientation: width === Screen.width && height === Screen.height
                                  ? Orientation.Portrait
@@ -24,8 +30,8 @@ SilicaFlickable {
                                  : Orientation.None // In the middle of Portrait and Landscape transitions
 
     readonly property bool _transpose: (orientation % 180) != 0
-    readonly property real _originalPhotoWidth: !_transpose ? photo.implicitWidth : photo.implicitHeight
-    readonly property real _originalPhotoHeight: !_transpose ? photo.implicitHeight : photo.implicitWidth
+    readonly property real _originalPhotoWidth: !_transpose ? maximumWidth : maximumHeight
+    readonly property real _originalPhotoHeight: !_transpose ? maximumHeight : maximumWidth
 
     signal clicked
 
@@ -35,8 +41,8 @@ SilicaFlickable {
 
     flickableDirection: Flickable.HorizontalAndVerticalFlick
 
-    implicitWidth: !_transpose ? photo.implicitWidth : photo.implicitHeight
-    implicitHeight: !_transpose ? photo.implicitHeight : photo.implicitWidth
+    implicitWidth: !_transpose ? maximumWidth : maximumHeight
+    implicitHeight: !_transpose ? maximumHeight : maximumWidth
 
     contentWidth: container.width
     contentHeight: container.height
@@ -45,6 +51,13 @@ SilicaFlickable {
     // If we do it too early, then calculating a new _fittedScale goes wrong
     on_ViewOrientationChanged: {
         _updateScale()
+    }
+
+    onActiveChanged: {
+        if (!active) {
+            _resetScale()
+            largePhoto.source = ""
+        }
     }
 
     interactive: scaled
@@ -61,7 +74,9 @@ SilicaFlickable {
 
     function _scaleImage(scale, center)
     {
-
+        if (largePhoto.source != photo.source) {
+            largePhoto.source = photo.source
+        }
         var newWidth
         var newHeight
         var oldWidth = contentWidth
@@ -75,7 +90,7 @@ SilicaFlickable {
                 _resetScale()
                 return
             } else {
-                newWidth = Math.min(newWidth, Screen.width * 3.5)
+                newWidth = Math.min(newWidth, flickable.maximumWidth)
                 _scale = newWidth / flickable.implicitWidth
                 newHeight = Math.max(!_transpose ? photo.height : photo.width, Screen.height)
             }
@@ -86,7 +101,7 @@ SilicaFlickable {
                 _resetScale()
                 return
             } else {
-                newHeight = Math.min(newHeight, Screen.width * 3.5)
+                newHeight = Math.min(newHeight, flickable.maximumHeight)
                 _scale = newHeight / flickable.implicitHeight
                 newWidth = Math.max(!_transpose ? photo.width : photo.height, Screen.height)
             }
@@ -130,9 +145,9 @@ SilicaFlickable {
             objectName: "zoomableImage"
 
             smooth: !(flickable.movingVertically || flickable.movingHorizontally)
-            width: implicitWidth * flickable._scale
-            height: implicitHeight * flickable._scale
-            sourceSize.width: 3264 // Max width or height for captured image
+            width: flickable.maximumWidth * flickable._scale
+            height: flickable.maximumHeight * flickable._scale
+            sourceSize.width: Screen.height
             fillMode:  Image.PreserveAspectFit
             asynchronous: true
             anchors.centerIn: parent
@@ -162,6 +177,15 @@ SilicaFlickable {
             opacity: status == Image.Ready ? 1 : 0
             Behavior on opacity { FadeAnimation{} }
         }
+        Image {
+            id: largePhoto
+            sourceSize.width: 3264 // Max width or height for captured image
+            cache: false
+            asynchronous: true
+            anchors.fill: photo
+            rotation: -flickable.orientation
+        }
+
         MouseArea {
             anchors.fill: parent
             enabled: !flickable.scaled
