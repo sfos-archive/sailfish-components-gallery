@@ -4,6 +4,7 @@
 #include <QStringList>
 #include <QuillMetadata>
 #include <QtDebug>
+#include <QImageReader>
 
 DeclarativeImageMetadata::DeclarativeImageMetadata(QObject *parent)
     : QObject(parent)
@@ -37,10 +38,7 @@ void DeclarativeImageMetadata::setSource(const QUrl &source)
 
         if (!path.isEmpty() && QFile::exists(path)) {
             m_watcher->addPath(path);
-
-            QuillMetadata md(path);
-            m_orientation = md.entry(QuillMetadata::Tag_Orientation).toInt();
-            emit orientationChanged();
+            fileChanged();
         }
     }
 }
@@ -48,6 +46,7 @@ void DeclarativeImageMetadata::setSource(const QUrl &source)
 int DeclarativeImageMetadata::orientation() const
 {
     switch (m_orientation) {
+    case 0: return 0;
     case 1: return 0;
     case 2: return 0;
     case 3: return 180;
@@ -60,12 +59,50 @@ int DeclarativeImageMetadata::orientation() const
     }
 }
 
+int DeclarativeImageMetadata::width() const
+{
+    return m_width;
+}
+
+int DeclarativeImageMetadata::height() const
+{
+    return m_height;
+}
+
+
 void DeclarativeImageMetadata::fileChanged()
 {
-    QuillMetadata md(m_source.toLocalFile());
-    int orientation = md.entry(QuillMetadata::Tag_Orientation).toInt();
-    if (m_orientation != orientation) {
-        m_orientation = orientation;
+    qDebug() << Q_FUNC_INFO;
+    const QString path = m_source.toLocalFile();
+    if (QuillMetadata::canRead(path)) {
+        QuillMetadata md(path);
+        int orientation = md.entry(QuillMetadata::Tag_Orientation).toInt();
+        if (m_orientation != orientation) {
+            m_orientation = orientation;
+            emit orientationChanged();
+        }
+    } else {
+        qWarning() << Q_FUNC_INFO;
+        qWarning() << "Failed to read image metadata: " << path;
+        m_orientation = 0;
         emit orientationChanged();
+    }
+
+    QImageReader ir(path);
+    if (ir.canRead()) {
+        const int width = ir.size().width();
+        if (m_width != width) {
+            m_width = width;
+            emit widthChanged();
+        }
+        const int height = ir.size().height();
+        if (m_height != height) {
+            m_height = height;
+            emit heightChanged();
+        }
+
+    } else {
+        qWarning() << Q_FUNC_INFO;
+        qWarning() << "Failed to read image data: " << path;
     }
 }
