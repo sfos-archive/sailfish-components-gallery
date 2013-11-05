@@ -72,7 +72,6 @@ int DeclarativeImageMetadata::height() const
 
 void DeclarativeImageMetadata::fileChanged()
 {
-    qDebug() << Q_FUNC_INFO;
     const QString path = m_source.toLocalFile();
     if (QuillMetadata::canRead(path)) {
         QuillMetadata md(path);
