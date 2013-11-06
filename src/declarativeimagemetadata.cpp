@@ -11,6 +11,8 @@ DeclarativeImageMetadata::DeclarativeImageMetadata(QObject *parent)
     , m_source()
     , m_watcher(new QFileSystemWatcher(this))
     , m_orientation(0)
+    , m_width(0)
+    , m_height(0)
 {
     connect(m_watcher, &QFileSystemWatcher::fileChanged,
             this, &DeclarativeImageMetadata::fileChanged);
@@ -87,6 +89,8 @@ void DeclarativeImageMetadata::fileChanged()
         emit orientationChanged();
     }
 
+    // Looks like width and height are quite often left out from the metadata
+    // so it's safer to read them using QImageReader
     QImageReader ir(path);
     if (ir.canRead()) {
         const int width = ir.size().width();
