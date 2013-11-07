@@ -66,13 +66,11 @@ SilicaFlickable {
     {
         if (scaled) {
             _scale = _fittedScale
-            contentX = 0
-            contentY = 0
             scaled = false
         }
     }
 
-    function _scaleImage(scale, center)
+    function _scaleImage(scale, center, prevCenter)
     {
         if (largePhoto.source != photo.source) {
             largePhoto.source = photo.source
@@ -81,6 +79,10 @@ SilicaFlickable {
         var newHeight
         var oldWidth = contentWidth
         var oldHeight = contentHeight
+
+        // move center
+        contentX += prevCenter.x - center.x
+        contentY += prevCenter.y - center.y
 
         if (fit == Fit.Width) {
             // Scale and bounds check the width, and then apply the same scale to height.
@@ -107,11 +109,11 @@ SilicaFlickable {
             }
         }
 
-        // Fixup contentX and contentY
-        if (newWidth >= flickable.width)
-            contentX += (center.x * newWidth / oldWidth) - center.x
-        if (newHeight >= flickable.height)
-            contentY += (center.y * newHeight / oldHeight) - center.y
+        // scale about center
+        if (newWidth > flickable.width)
+            contentX -= (oldWidth - newWidth)/(oldWidth/prevCenter.x)
+        if (newHeight > flickable.height)
+            contentY -= (oldHeight - newHeight)/(oldHeight/prevCenter.y)
 
         scaled = true
     }
@@ -134,7 +136,7 @@ SilicaFlickable {
     PinchArea {
         id: container
         enabled: !flickable.menuOpen && flickable.enableZoom && photo.status == Image.Ready
-        onPinchUpdated: flickable._scaleImage(1.0 + pinch.scale - pinch.previousScale, pinch.center)
+        onPinchUpdated: flickable._scaleImage(1.0 + pinch.scale - pinch.previousScale, pinch.center, pinch.previousCenter)
         onPinchFinished: flickable.returnToBounds()
         width: Math.max(flickable.width, !flickable._transpose ? photo.width : photo.height)
         height: Math.max(flickable.height, !flickable._transpose ? photo.height : photo.width)
