@@ -179,7 +179,10 @@ SilicaFlickable {
         }
         Image {
             id: largePhoto
-            sourceSize.width: 3264 // Max width or height for captured image
+            sourceSize {
+                width: photo.implicitWidth >= photo.implicitHeight ? 3264 : -1
+                height: photo.implicitWidth < photo.implicitHeight ? 3264 : -1
+            }
             cache: false
             asynchronous: true
             anchors.fill: photo
