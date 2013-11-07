@@ -117,6 +117,8 @@ Item {
         maximumHeight: 4 * parent.height
         minimumWidth: editor.width
         minimumHeight: editor.height
+        imageWidth: metadata.width
+        imageHeight: metadata.height
         interactive: active && editOperation == ImageEditor.Crop
         onClicked: splitView.splitOpen = !splitView.splitOpen
         onStatusChanged: resetImagePosition()

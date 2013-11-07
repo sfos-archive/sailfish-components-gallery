@@ -13,7 +13,8 @@ SilicaFlickable {
     property real maximumHeight
     property real initialImageWidth: width
     property real initialImageHeight: height
-
+    property int imageHeight
+    property int imageWidth
     property int status: Image.Null
 
     property int orientation
@@ -89,7 +90,10 @@ SilicaFlickable {
             fillMode:  Image.PreserveAspectFit
             asynchronous: true
             anchors.centerIn: parent
-            sourceSize.width: 3264
+            sourceSize {
+                width: flickable.imageWidth >= flickable.imageHeight ? 3264 : -1
+                height: flickable.imageWidth < flickable.imageHeight ? 3264 : -1
+            }
 
             rotation: orientation
 
