@@ -1,7 +1,7 @@
 Name:       sailfish-components-gallery-qt5
 
 Summary:    Sailfish Gallery UI Components
-Version:    0.0.26
+Version:    0.0.28
 Release:    1
 Group:      System/Libraries
 License:    TBD
