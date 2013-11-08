@@ -15,7 +15,7 @@ SilicaFlickable {
     property bool active: true
 
     property real _fittedScale: Math.min(width / _originalPhotoWidth, height / _originalPhotoHeight)
-    property real _menuOpenScale: Math.max(width / _originalPhotoWidth, height / _originalPhotoHeight)
+    property real _menuOpenScale: Math.max(Screen.width / _originalPhotoWidth, (Screen.height / 2) / _originalPhotoHeight)
     property real _scale
 
     property int orientation
@@ -228,7 +228,7 @@ SilicaFlickable {
                 _scale: flickable._menuOpenScale
                 scaled: false
                 contentX: (flickable._originalPhotoWidth  * flickable._menuOpenScale - flickable.width ) / 2.0
-                contentY: (flickable._originalPhotoHeight * flickable._menuOpenScale - flickable.height) / 2.0
+
             }
         },
         State {
@@ -240,7 +240,6 @@ SilicaFlickable {
                 _scale: flickable._fittedScale >= 1 ? 1.0 : flickable._fittedScale
                 scaled: false
                 contentX: 0
-                contentY: 0
             }
         },
         State {
@@ -259,8 +258,9 @@ SilicaFlickable {
             to: 'menuOpen'
             PropertyAnimation {
                 target: flickable
-                properties: "_scale,contentX,contentY"
+                properties: "_scale,contentX"
                 duration: 150
+                easing.type: Easing.InQuad
             }
         },
         Transition {
@@ -268,9 +268,11 @@ SilicaFlickable {
             to: '*'
             PropertyAnimation {
                 target: flickable
-                properties: "_scale,contentX,contentY"
+                properties: "_scale,contentX"
                 duration: 150
+                easing.type: Easing.InQuad
             }
         }
+
     ]
 }
