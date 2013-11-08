@@ -15,7 +15,7 @@ SilicaFlickable {
     property bool active: true
 
     property real _fittedScale: Math.min(width / _originalPhotoWidth, height / _originalPhotoHeight)
-    property real _menuOpenScale: Math.max(Screen.width / _originalPhotoWidth, (Screen.height / 2) / _originalPhotoHeight)
+    property real _menuOpenScale: Math.max(_viewOpenWidth / _originalPhotoWidth, _viewOpenHeight / _originalPhotoHeight)
     property real _scale
 
     property int orientation
@@ -23,11 +23,9 @@ SilicaFlickable {
     property int maximumWidth: photo.implicitWidth
     property int maximumHeight: photo.implicitHeight
 
-    property int _viewOrientation: width === Screen.width && height === Screen.height
-                                 ? Orientation.Portrait
-                                 : width === Screen.height && height === Screen.width
-                                 ? Orientation.Landscape
-                                 : Orientation.None // In the middle of Portrait and Landscape transitions
+    property int _viewOrientation: fit == Fit.Width ? Orientation.Portrait : Orientation.Landscape
+    property int _viewOpenWidth: _viewOrientation == Orientation.Portrait ? Screen.width : Screen.height / 2
+    property int _viewOpenHeight: _viewOrientation == Orientation.Portrait ? Screen.height / 2 : Screen.width
 
     readonly property bool _transpose: (orientation % 180) != 0
     readonly property real _originalPhotoWidth: !_transpose ? maximumWidth : maximumHeight
@@ -196,6 +194,16 @@ SilicaFlickable {
             enabled: !flickable.scaled
 
             onClicked: {
+                // There's a little timing problem if listening when drawer's
+                // open property changes and animation looks bit late. Let's
+                // just change menuOpen property when ever we click image then
+                // animation looks to be in sync with drawer animation.
+                if (menuOpen) {
+                    menuOpen = false
+                } else {
+                    menuOpen = true
+                }
+
                 flickable.clicked()
             }
         }
@@ -213,7 +221,6 @@ SilicaFlickable {
             horizontalAlignment: Text.AlignHCenter
         }
     }
-
     // Let the states handle switching between menu open and fullscreen states.
     // We need to extend fullscreen state with two different states: portrait and
     // landscape to make it actually reset the fitted scale via state changes when
@@ -222,31 +229,33 @@ SilicaFlickable {
     states: [
         State {
             name: "menuOpen"
-            when: flickable.menuOpen && photo.status == Image.Ready
+            when: flickable.menuOpen && photo.status === Image.Ready
             PropertyChanges {
                 target: flickable
                 _scale: flickable._menuOpenScale
                 scaled: false
-                contentX: (flickable._originalPhotoWidth  * flickable._menuOpenScale - flickable.width ) / 2.0
-
+                contentX: (flickable._originalPhotoWidth  * flickable._menuOpenScale - flickable._viewOpenWidth ) / (flickable._viewOrientation == Orientation.Portrait ? 2 : -2)
+                contentY: (flickable._originalPhotoHeight  * flickable._menuOpenScale - flickable._viewOpenHeight ) / (flickable._viewOrientation == Orientation.Portrait ? -2 : 2)
             }
         },
         State {
             name: "fullscreen"
-            when: !flickable.menuOpen && photo.status == Image.Ready
             PropertyChanges {
                 target: flickable
                 // 1.0 for smaller images. _fittedScale for images which are larger than view
                 _scale: flickable._fittedScale >= 1 ? 1.0 : flickable._fittedScale
                 scaled: false
                 contentX: 0
+                contentY: 0
             }
         },
         State {
+            when: !flickable.menuOpen && photo.status === Image.Ready && _viewOrientation === Orientation.Portrait
             name: "portrait"
             extend: "fullscreen"
         },
         State {
+            when: !flickable.menuOpen && photo.status === Image.Ready && _viewOrientation === Orientation.Landscape
             name: "landscape"
             extend: "fullscreen"
         }
@@ -258,9 +267,9 @@ SilicaFlickable {
             to: 'menuOpen'
             PropertyAnimation {
                 target: flickable
-                properties: "_scale,contentX"
-                duration: 150
-                easing.type: Easing.InQuad
+                properties: "_scale,contentX,contentY"
+                duration: 300
+                easing.type: Easing.InOutCubic
             }
         },
         Transition {
@@ -268,11 +277,10 @@ SilicaFlickable {
             to: '*'
             PropertyAnimation {
                 target: flickable
-                properties: "_scale,contentX"
-                duration: 150
-                easing.type: Easing.InQuad
+                properties: "_scale,contentX,contentY"
+                duration: 300
+                easing.type: Easing.InOutCubic
             }
         }
-
     ]
 }
