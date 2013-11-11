@@ -180,8 +180,8 @@ SilicaFlickable {
         Image {
             id: largePhoto
             sourceSize {
-                width: photo.implicitWidth >= photo.implicitHeight ? 3264 : -1
-                height: photo.implicitWidth < photo.implicitHeight ? 3264 : -1
+                width: 3264
+                height: 3264
             }
             cache: false
             asynchronous: true
