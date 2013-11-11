@@ -36,6 +36,15 @@ ListModel {
                         },
 
                         {
+                            //: ambience aspect ratio
+                            //% "Ambience"
+                            text: qsTrId("components_gallery-li-aspect_ratio_ambience"),
+                            ratio: 27/80,
+                            type: "Ambience"
+
+                        },
+
+                        {
                             //: 3:4 aspect ratio
                             //% "3:4"
                             text: qsTrId("components_gallery-li-aspect_ratio_3_4"),
@@ -59,7 +68,8 @@ ListModel {
     Component.onCompleted: {
         if (!avatarCrop) {
             var index = 0
-            for (; index < 5; ++index) {
+            // TODO size is is hardcoded, this is ugly
+            for (; index < 6; ++index) {
                 append(_aspectRatio(index))
             }
         } else {
