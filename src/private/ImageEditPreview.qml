@@ -193,6 +193,6 @@ Item {
 
     BusyIndicator {
         anchors.centerIn: parent
-        running: editInProgress
+        running: editInProgress || zoomableImage.status != Image.Ready
     }
 }

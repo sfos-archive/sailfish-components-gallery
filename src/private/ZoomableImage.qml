@@ -91,8 +91,8 @@ SilicaFlickable {
             asynchronous: true
             anchors.centerIn: parent
             sourceSize {
-                width: flickable.imageWidth >= flickable.imageHeight ? 3264 : -1
-                height: flickable.imageWidth < flickable.imageHeight ? 3264 : -1
+                width: 3264
+                height: 3264
             }
 
             rotation: orientation
