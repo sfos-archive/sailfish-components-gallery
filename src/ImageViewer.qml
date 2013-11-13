@@ -194,16 +194,6 @@ SilicaFlickable {
             enabled: !flickable.scaled
 
             onClicked: {
-                // There's a little timing problem if listening when drawer's
-                // open property changes and animation looks bit late. Let's
-                // just change menuOpen property when ever we click image then
-                // animation looks to be in sync with drawer animation.
-                if (menuOpen) {
-                    menuOpen = false
-                } else {
-                    menuOpen = true
-                }
-
                 flickable.clicked()
             }
         }
@@ -234,8 +224,8 @@ SilicaFlickable {
                 target: flickable
                 _scale: flickable._menuOpenScale
                 scaled: false
-                contentX: (flickable._originalPhotoWidth  * flickable._menuOpenScale - flickable._viewOpenWidth ) / (flickable._viewOrientation == Orientation.Portrait ? 2 : -2)
-                contentY: (flickable._originalPhotoHeight  * flickable._menuOpenScale - flickable._viewOpenHeight ) / (flickable._viewOrientation == Orientation.Portrait ? -2 : 2)
+                contentX: fit == Fit.Width ? (flickable._originalPhotoWidth  * flickable._menuOpenScale - flickable._viewOpenWidth ) / (flickable._viewOrientation == Orientation.Portrait ? 2 : -2) : 0
+                contentY: fit == Fit.Width ? 0 : (flickable._originalPhotoHeight  * flickable._menuOpenScale - flickable._viewOpenHeight ) / (flickable._viewOrientation == Orientation.Portrait ? -2 : 2)
             }
         },
         State {
