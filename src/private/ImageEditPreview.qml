@@ -25,9 +25,9 @@ Item {
     property bool editInProgress
     property alias source: zoomableImage.source
     property alias target: editor.target
-    //property alias orientation: zoomableImage.orientation
     property int orientation
     property alias previewRotation: zoomableImage.rotation
+    readonly property alias status: zoomableImage.status
 
     function crop()
     {
@@ -123,7 +123,18 @@ Item {
         onClicked: splitView.splitOpen = !splitView.splitOpen
         onStatusChanged: resetImagePosition()
         Behavior on rotation { SmoothedAnimation { duration: 200 } }
+    }
 
+    Label {
+        visible: zoomableImage.status === Image.Error
+        //: Image to be edited can't be opened
+        //% "Oops, image error!"
+        text: qsTrId("sailfish-components-gallery-la_image-loading-error")
+        anchors.centerIn: zoomableImage
+        width: parent.width - 2 * Theme.paddingMedium
+        wrapMode: Text.Wrap
+        font.pixelSize: Theme.fontSizeLarge
+        horizontalAlignment: Text.AlignHCenter
     }
 
     ImageEditor {
@@ -175,7 +186,10 @@ Item {
             editInProgress = false
             if (success) {
                 preview.source = editor.target
+            } else {
+                console.log("Failed to rotate image!")
             }
+
             preview.previewRotation = 0
         }
     }

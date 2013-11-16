@@ -62,6 +62,8 @@ SplitViewPage {
             id: operationDelegate
 
             enabled: !imageEditPreview.editInProgress
+                     && imageEditPreview.status ==Image.Ready
+            opacity: enabled ? 1 : 0.5
 
             IconButton {
                 id: icon

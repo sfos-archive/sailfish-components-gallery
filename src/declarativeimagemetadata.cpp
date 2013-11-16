@@ -71,12 +71,45 @@ int DeclarativeImageMetadata::height() const
     return m_height;
 }
 
+bool DeclarativeImageMetadata::valid() const
+{
+    return m_valid;
+}
+
+bool DeclarativeImageMetadata::hasExif() const
+{
+    return m_hasExif;
+}
+
+bool DeclarativeImageMetadata::hasXmp() const
+{
+    return m_hasXmp;
+}
 
 void DeclarativeImageMetadata::fileChanged()
 {
     const QString path = m_source.toLocalFile();
     if (QuillMetadata::canRead(path)) {
         QuillMetadata md(path);
+
+        bool valid = md.isValid();
+        if (valid != m_valid) {
+            m_valid = valid;
+            emit validChanged();
+        }
+
+        bool hasExif = md.hasExif();
+        if (hasExif != m_hasExif) {
+            m_hasExif = hasExif;
+            emit hasExifChanged();
+        }
+
+        bool hasXmp = md.hasXmp();
+        if (hasXmp != m_hasXmp) {
+            m_hasXmp = hasXmp;
+            emit hasXmpChanged();
+        }
+
         int orientation = md.entry(QuillMetadata::Tag_Orientation).toInt();
         if (m_orientation != orientation) {
             m_orientation = orientation;
