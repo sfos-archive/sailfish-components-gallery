@@ -95,7 +95,7 @@ SilicaFlickable {
                 height: 3264
             }
 
-            rotation: orientation
+            rotation: -orientation
 
             onStatusChanged: {
                 flickable.status = status
