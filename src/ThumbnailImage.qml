@@ -3,10 +3,11 @@ import Sailfish.Silica 1.0
 import org.nemomobile.thumbnailer 1.0
 
 ThumbnailBase {
+    id: thumbnailBase
 
     Thumbnail {
         id: thumbnail
-        property bool gridMoving: grid.moving
+        property bool gridMoving: thumbnailBase.grid.moving
 
         source: parent.source
         mimeType: model.mimeType
@@ -20,7 +21,7 @@ ThumbnailBase {
 
         onGridMovingChanged: {
             if (!gridMoving) {
-                var visibleIndex = Math.floor(grid.contentY / size) * grid.columnCount
+                var visibleIndex = Math.floor(thumbnailBase.grid.contentY / size) * thumbnailBase.grid.columnCount
 
                 if (visibleIndex <= index && index <= visibleIndex + 18) {
                     priority = Thumbnail.HighPriority
