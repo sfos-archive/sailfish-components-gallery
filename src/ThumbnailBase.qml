@@ -13,6 +13,7 @@ MouseArea {
     property int size: GridView.view.cellSize
     property real contentYOffset
     property real contentXOffset
+    property GridView grid: GridView.view
 
     width: size
     height: size
