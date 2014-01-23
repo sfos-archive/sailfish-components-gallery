@@ -7,6 +7,8 @@ Page {
     id: detailsPage
     property alias modelItem: galleryItem.item
 
+    allowedOrientations: Orientation.All
+
     DocumentGalleryItem {
         id: galleryItem
         autoUpdate: false
@@ -26,43 +28,52 @@ Page {
             }
         }
     }
+    SilicaFlickable {
+        anchors.fill: parent
+        contentHeight: column.height
 
-    Column {
-        width: parent.width
-        PageHeader {
-            //% "Details"
-            title: qsTrId("components_gallery-he-details")
+        Column {
+            id: column
+            width: parent.width
+
+            PageHeader {
+                //% "Details"
+                title: qsTrId("components_gallery-he-details")
+            }
+
+            GalleryDetailsItem {
+                id: nameItem
+                //% "Filename"
+                detail: qsTrId("components_gallery-la-filename")
+            }
+            GalleryDetailsItem {
+                id: sizeItem
+                //% "Size"
+                detail: qsTrId("components_gallery-la-size")
+            }
+            GalleryDetailsItem {
+                id: typeItem
+                //% "Type"
+                detail: qsTrId("components_gallery-la-type")
+            }
+            GalleryDetailsItem {
+                id: widthItem
+                //% "Width"
+                detail: qsTrId("components_gallery-la-width")
+            }
+            GalleryDetailsItem {
+                id: heightItem
+                //% "Height"
+                detail: qsTrId("components_gallery-la-height")
+            }
+            GalleryDetailsItem {
+                id: durationItem
+                //% "Duration"
+                detail: qsTrId("components_gallery-la-duration")
+                visible: value.length > 0
+            }
         }
-        GalleryDetailsItem {
-            id: nameItem
-            //% "Filename"
-            detail: qsTrId("components_gallery-la-filename")
-        }
-        GalleryDetailsItem {
-            id: sizeItem
-            //% "Size"
-            detail: qsTrId("components_gallery-la-size")
-        }
-        GalleryDetailsItem {
-            id: typeItem
-            //% "Type"
-            detail: qsTrId("components_gallery-la-type")
-        }
-        GalleryDetailsItem {
-            id: widthItem
-            //% "Width"
-            detail: qsTrId("components_gallery-la-width")
-        }
-        GalleryDetailsItem {
-            id: heightItem
-            //% "Height"
-            detail: qsTrId("components_gallery-la-height")
-        }
-        GalleryDetailsItem {
-            id: durationItem
-            //% "Duration"
-            detail: qsTrId("components_gallery-la-duration")
-            visible: value.length > 0
-        }
+
+        VerticalScrollDecorator { }
     }
 }
