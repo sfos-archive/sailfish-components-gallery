@@ -48,8 +48,10 @@ public:
 
         AppTranslator *engineeringEnglish = new AppTranslator(engine);
         AppTranslator *translator = new AppTranslator(engine);
+        AppTranslator *galleryTranslator = new AppTranslator(engine);
         engineeringEnglish->load("sailfish_components_gallery_qt5_eng_en", "/usr/share/translations");
         translator->load(QLocale(), "sailfish_components_gallery_qt5", "-", "/usr/share/translations");
+        galleryTranslator->load(QLocale(), "gallery", "-", "/usr/share/translations");
     }
 
     virtual void registerTypes(const char *uri)
