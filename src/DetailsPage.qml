@@ -28,13 +28,19 @@ Page {
             }
         }
     }
-    SilicaListView {
+    SilicaFlickable {
         anchors.fill: parent
-        header: PageHeader {
-            //% "Details"
-            title: qsTrId("components_gallery-he-details")
-        }
-        model: VisualItemModel {
+        contentHeight: column.height
+
+        Column {
+            id: column
+            width: parent.width
+
+            PageHeader {
+                //% "Details"
+                title: qsTrId("components_gallery-he-details")
+            }
+
             GalleryDetailsItem {
                 id: nameItem
                 //% "Filename"
