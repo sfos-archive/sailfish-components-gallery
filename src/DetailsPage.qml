@@ -30,38 +30,39 @@ Page {
     Column {
         width: parent.width
         PageHeader {
+            //: This is a temporary translation ID to re-use translations from jolla-gallery.  The ID should be corrected before translation.
             //% "Details"
-            title: qsTrId("components_gallery-he-details")
+            title: qsTrId("gallery-he-details")
         }
         GalleryDetailsItem {
             id: nameItem
             //% "Filename"
-            detail: qsTrId("components_gallery-la-filename")
+            detail: qsTrId("gallery-la-filename")
         }
         GalleryDetailsItem {
             id: sizeItem
             //% "Size"
-            detail: qsTrId("components_gallery-la-size")
+            detail: qsTrId("gallery-la-size")
         }
         GalleryDetailsItem {
             id: typeItem
             //% "Type"
-            detail: qsTrId("components_gallery-la-type")
+            detail: qsTrId("gallery-la-type")
         }
         GalleryDetailsItem {
             id: widthItem
             //% "Width"
-            detail: qsTrId("components_gallery-la-width")
+            detail: qsTrId("gallery-la-width")
         }
         GalleryDetailsItem {
             id: heightItem
             //% "Height"
-            detail: qsTrId("components_gallery-la-height")
+            detail: qsTrId("gallery-la-height")
         }
         GalleryDetailsItem {
             id: durationItem
             //% "Duration"
-            detail: qsTrId("components_gallery-la-duration")
+            detail: qsTrId("gallery-la-duration")
             visible: value.length > 0
         }
     }
