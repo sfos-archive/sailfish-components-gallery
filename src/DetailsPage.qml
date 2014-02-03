@@ -34,7 +34,9 @@ Page {
 
         Column {
             id: column
+
             width: parent.width
+
             PageHeader {
                 //: This is a temporary translation ID to re-use translations from jolla-gallery.  The ID should be corrected before translation.
                 //% "Details"
@@ -72,7 +74,6 @@ Page {
                 visible: value.length > 0
             }
         }
-
         VerticalScrollDecorator { }
     }
 }
