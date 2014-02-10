@@ -74,9 +74,13 @@ MouseArea {
 
         Image {
             anchors.centerIn: parent
-            source: "image://theme/icon-cover-play"
+            source: "image://theme/icon-cover-play?"
+                    + (mouseArea.down ? Theme.highlightColor : Theme.primaryColor)
 
             MouseArea {
+                id: mouseArea
+
+                property bool down: pressed && containsMouse
                 anchors.fill: parent
                 enabled: !videoItem.playing
                 onClicked: {
