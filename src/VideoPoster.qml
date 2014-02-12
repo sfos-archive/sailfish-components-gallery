@@ -96,7 +96,7 @@ MouseArea {
             anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
 
             enabled: !videoItem.playing
-            height: Theme.itemSizeSmall
+            height: Theme.itemSizeExtraLarge
             handleVisible: false
             minimumValue: 0
             valueText: Format.formatDuration(value, Formatter.DurationShort)
