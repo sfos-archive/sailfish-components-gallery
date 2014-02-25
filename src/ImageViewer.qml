@@ -14,22 +14,25 @@ SilicaFlickable {
 
     property bool active: true
 
-    property real _fittedScale: Math.min(width / _originalPhotoWidth, height / _originalPhotoHeight)
-    property real _menuOpenScale: Math.max(_viewOpenWidth / _originalPhotoWidth, _viewOpenHeight / _originalPhotoHeight)
+    property real _fittedScale: Math.min(width / implicitWidth, height / implicitHeight)
+    property real _menuOpenScale: Math.max(_viewOpenWidth / implicitWidth, _viewOpenHeight / implicitHeight)
     property real _scale
 
-    property int orientation
+    property int orientation: metadata.orientation
 
-    property int maximumWidth: photo.implicitWidth
-    property int maximumHeight: photo.implicitHeight
+    property int maximumWidth
+    property int maximumHeight
+
+    // Prefer the maximumWidth and maximumHeight values supplied by the user as these may be more
+    // cheaply obtained, but if those values aren't valid then fall back to the ImageMetadata type.
+    property int _actualWidth: maximumWidth > 1 ? maximumWidth : metadata.width
+    property int _actualHeight: maximumHeight > 1 ? maximumHeight : metadata.height
 
     property int _viewOrientation: fit == Fit.Width ? Orientation.Portrait : Orientation.Landscape
     property int _viewOpenWidth: _viewOrientation == Orientation.Portrait ? Screen.width : Screen.height / 2
     property int _viewOpenHeight: _viewOrientation == Orientation.Portrait ? Screen.height / 2 : Screen.width
 
     readonly property bool _transpose: (orientation % 180) != 0
-    readonly property real _originalPhotoWidth: !_transpose ? maximumWidth : maximumHeight
-    readonly property real _originalPhotoHeight: !_transpose ? maximumHeight : maximumWidth
 
     signal clicked
 
@@ -39,8 +42,8 @@ SilicaFlickable {
 
     flickableDirection: Flickable.HorizontalAndVerticalFlick
 
-    implicitWidth: !_transpose ? maximumWidth : maximumHeight
-    implicitHeight: !_transpose ? maximumHeight : maximumWidth
+    implicitWidth: !_transpose ? flickable._actualWidth : flickable._actualHeight
+    implicitHeight: !_transpose ? flickable._actualHeight : flickable._actualWidth
 
     contentWidth: container.width
     contentHeight: container.height
@@ -86,22 +89,22 @@ SilicaFlickable {
             // Scale and bounds check the width, and then apply the same scale to height.
             newWidth = (!flickable._transpose ? photo.width : photo.height) * scale
 
-            if (newWidth <= _fittedScale * _originalPhotoWidth) {
+            if (newWidth <= _fittedScale * flickable.implicitWidth) {
                 _resetScale()
                 return
             } else {
-                newWidth = Math.min(newWidth, flickable.maximumWidth)
+                newWidth = Math.min(newWidth, flickable._actualWidth)
                 _scale = newWidth / flickable.implicitWidth
                 newHeight = Math.max(!_transpose ? photo.height : photo.width, Screen.height)
             }
         } else {
             // Scale and bounds check the height, and then apply the same scale to width.
             newHeight = (!flickable._transpose ? photo.height: photo.width) * scale
-            if (newHeight <= _fittedScale * _originalPhotoHeight) {
+            if (newHeight <= _fittedScale * flickable.implicitHeight) {
                 _resetScale()
                 return
             } else {
-                newHeight = Math.min(newHeight, flickable.maximumHeight)
+                newHeight = Math.min(newHeight, flickable._actualHeight)
                 _scale = newHeight / flickable.implicitHeight
                 newWidth = Math.max(!_transpose ? photo.width : photo.height, Screen.height)
             }
@@ -129,6 +132,13 @@ SilicaFlickable {
                 : "fullscreen" // fallback
     }
 
+    ImageMetadata {
+        id: metadata
+
+        source: photo.source
+        autoUpdate: false
+    }
+
     children: ScrollDecorator {}
 
     PinchArea {
@@ -145,8 +155,8 @@ SilicaFlickable {
             objectName: "zoomableImage"
 
             smooth: !(flickable.movingVertically || flickable.movingHorizontally)
-            width: flickable.maximumWidth * flickable._scale
-            height: flickable.maximumHeight * flickable._scale
+            width: flickable._actualWidth * flickable._scale
+            height: flickable._actualHeight * flickable._scale
             sourceSize.width: Screen.height
             fillMode:  Image.PreserveAspectFit
             asynchronous: true
@@ -224,8 +234,8 @@ SilicaFlickable {
                 target: flickable
                 _scale: flickable._menuOpenScale
                 scaled: false
-                contentX: fit == Fit.Width ? (flickable._originalPhotoWidth  * flickable._menuOpenScale - flickable._viewOpenWidth ) / (flickable._viewOrientation == Orientation.Portrait ? 2 : -2) : 0
-                contentY: fit == Fit.Width ? 0 : (flickable._originalPhotoHeight  * flickable._menuOpenScale - flickable._viewOpenHeight ) / (flickable._viewOrientation == Orientation.Portrait ? -2 : 2)
+                contentX: fit == Fit.Width ? (flickable.implicitWidth  * flickable._menuOpenScale - flickable._viewOpenWidth ) / (flickable._viewOrientation == Orientation.Portrait ? 2 : -2) : 0
+                contentY: fit == Fit.Width ? 0 : (flickable.implicitHeight  * flickable._menuOpenScale - flickable._viewOpenHeight ) / (flickable._viewOrientation == Orientation.Portrait ? -2 : 2)
             }
         },
         State {

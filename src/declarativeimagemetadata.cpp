@@ -6,16 +6,108 @@
 #include <QtDebug>
 #include <QImageReader>
 
+#include <QElapsedTimer>
+
+class ImageWatcher : public QFileSystemWatcher
+{
+    Q_OBJECT
+public:
+    ImageWatcher(QObject *parent = 0);
+    ~ImageWatcher();
+
+    void deregisterMetadata(const QString &fileName, DeclarativeImageMetadata *metadata);
+    void registerMetadata(const QString &fileName, DeclarativeImageMetadata *metadata);
+
+private slots:
+    void imageChanged(const QString &fileName);
+
+private:
+    QHash<QString, DeclarativeImageMetadata *> m_metadata;
+    typedef QHash<QString, DeclarativeImageMetadata *>::iterator iterator;
+};
+
+ImageWatcher::ImageWatcher(QObject *parent)
+    : QFileSystemWatcher(parent)
+{
+    connect(this, &QFileSystemWatcher::fileChanged,
+            this, &ImageWatcher::imageChanged);
+}
+
+ImageWatcher::~ImageWatcher()
+{
+}
+
+void ImageWatcher::deregisterMetadata(const QString &fileName, DeclarativeImageMetadata *metadata)
+{
+    if (fileName.isEmpty()) {
+        return;
+    }
+
+    for (iterator it = m_metadata.find(fileName); it != m_metadata.end() && it.key() == fileName; ++it) {
+        if (it.value() == metadata) {
+            m_metadata.erase(it);
+            break;
+        }
+    }
+    if (!m_metadata.contains(fileName)) {
+        removePath(fileName);
+    }
+}
+
+void ImageWatcher::registerMetadata(const QString &fileName, DeclarativeImageMetadata *metadata)
+{
+    if (fileName.isEmpty()) {
+        return;
+    }
+
+    if (!m_metadata.contains(fileName)) {
+        addPath(fileName);
+    }
+    m_metadata.insertMulti(fileName, metadata);
+}
+
+void ImageWatcher::imageChanged(const QString &fileName)
+{
+    for (iterator it = m_metadata.find(fileName); it != m_metadata.end() && it.key() == fileName; ++it) {
+        it.value()->fileChanged(fileName);
+    }
+}
+
+Q_GLOBAL_STATIC(ImageWatcher, image_metadata_watcher);
+
 DeclarativeImageMetadata::DeclarativeImageMetadata(QObject *parent)
     : QObject(parent)
     , m_source()
-    , m_watcher(new QFileSystemWatcher(this))
     , m_orientation(0)
     , m_width(0)
     , m_height(0)
+    , m_autoUpdate(true)
+    , m_complete(false)
+    , m_valid(false)
+    , m_hasExif(false)
+    , m_hasXmp(false)
+    , m_wantTags(false)
+    , m_wantDimensions(false)
 {
-    connect(m_watcher, &QFileSystemWatcher::fileChanged,
-            this, &DeclarativeImageMetadata::fileChanged);
+}
+
+DeclarativeImageMetadata::~DeclarativeImageMetadata()
+{
+    if (m_autoUpdate) {
+        image_metadata_watcher()->deregisterMetadata(m_source.toLocalFile(), this);
+    }
+}
+
+void DeclarativeImageMetadata::classBegin()
+{
+}
+
+void DeclarativeImageMetadata::componentComplete()
+{
+    m_complete = true;
+    if (m_autoUpdate) {
+        image_metadata_watcher()->registerMetadata(m_source.toLocalFile(), this);
+    }
 }
 
 QUrl DeclarativeImageMetadata::source() const
@@ -28,25 +120,44 @@ void DeclarativeImageMetadata::setSource(const QUrl &source)
     // Let user also reset this object by setting "" as a string
     if (m_source != source) {
         const QString path = source.toLocalFile();
-        QStringList paths = m_watcher->files();
 
-        // Remove the old path first
-        if (paths.contains(path)) {
-            m_watcher->removePath(path);
+        if (m_autoUpdate && m_complete) {
+            image_metadata_watcher()->deregisterMetadata(m_source.toLocalFile(), this);
+            image_metadata_watcher()->registerMetadata(path, this);
         }
 
         m_source = source;
         emit sourceChanged();
 
-        if (!path.isEmpty() && QFile::exists(path)) {
-            m_watcher->addPath(path);
-            fileChanged();
+        fileChanged(path);
+    }
+}
+
+bool DeclarativeImageMetadata::autoUpdate() const
+{
+    return m_autoUpdate;
+}
+
+void DeclarativeImageMetadata::setAutoUpdate(bool update)
+{
+    if (m_autoUpdate != update) {
+        m_autoUpdate = update;
+
+        if (m_autoUpdate && m_complete) {
+            image_metadata_watcher()->registerMetadata(m_source.toLocalFile(), this);
+        } else if (m_complete) {
+            image_metadata_watcher()->deregisterMetadata(m_source.toLocalFile(), this);
         }
+        emit autoUpdateChanged();
     }
 }
 
 int DeclarativeImageMetadata::orientation() const
 {
+    if (!m_wantTags) {
+        const_cast<DeclarativeImageMetadata *>(this)->readTags(m_source.toLocalFile());
+    }
+
     switch (m_orientation) {
     case 0: return 0;
     case 1: return 0;
@@ -63,82 +174,124 @@ int DeclarativeImageMetadata::orientation() const
 
 int DeclarativeImageMetadata::width() const
 {
+    if (!m_wantDimensions) {
+        const_cast<DeclarativeImageMetadata *>(this)->readDimensions(m_source.toLocalFile());
+    }
     return m_width;
 }
 
 int DeclarativeImageMetadata::height() const
 {
+    if (!m_wantDimensions) {
+        const_cast<DeclarativeImageMetadata *>(this)->readDimensions(m_source.toLocalFile());
+    }
     return m_height;
 }
 
 bool DeclarativeImageMetadata::valid() const
 {
+    if (!m_wantTags) {
+        const_cast<DeclarativeImageMetadata *>(this)->readTags(m_source.toLocalFile());
+    }
     return m_valid;
 }
 
 bool DeclarativeImageMetadata::hasExif() const
 {
+    if (!m_wantTags) {
+        const_cast<DeclarativeImageMetadata *>(this)->readTags(m_source.toLocalFile());
+    }
     return m_hasExif;
 }
 
 bool DeclarativeImageMetadata::hasXmp() const
 {
+    if (!m_wantTags) {
+        const_cast<DeclarativeImageMetadata *>(this)->readTags(m_source.toLocalFile());
+    }
     return m_hasXmp;
 }
 
-void DeclarativeImageMetadata::fileChanged()
+void DeclarativeImageMetadata::fileChanged(const QString &fileName)
 {
-    const QString path = m_source.toLocalFile();
-    if (QuillMetadata::canRead(path)) {
-        QuillMetadata md(path);
+    const bool wasValid = m_valid;
+    const bool hadExif = m_hasExif;
+    const bool hadXmp = m_hasXmp;
+    const int orientation = m_orientation;
+    const int width = m_width;
+    const int height = m_height;
 
-        bool valid = md.isValid();
-        if (valid != m_valid) {
-            m_valid = valid;
-            emit validChanged();
-        }
+    m_valid = false;
+    m_hasExif = false;
+    m_hasXmp = false;
+    m_orientation = 0;
+    m_width = 0;
+    m_height = 0;
 
-        bool hasExif = md.hasExif();
-        if (hasExif != m_hasExif) {
-            m_hasExif = hasExif;
-            emit hasExifChanged();
-        }
+    // Reading file data can be costly, just getting the width and height of an image can
+    // take between 0.5 to 1 ms and the accumulative costs have a noticeable impact when panning
+    // between images. So only do reads that have been requested.
+    if (m_wantTags) {
+        readTags(fileName);
+    }
 
-        bool hasXmp = md.hasXmp();
-        if (hasXmp != m_hasXmp) {
-            m_hasXmp = hasXmp;
-            emit hasXmpChanged();
-        }
+    if (m_wantDimensions) {
+        readDimensions(fileName);
+    }
 
-        int orientation = md.entry(QuillMetadata::Tag_Orientation).toInt();
-        if (m_orientation != orientation) {
-            m_orientation = orientation;
-            emit orientationChanged();
-        }
-    } else {
-        qWarning() << Q_FUNC_INFO;
-        qWarning() << "Failed to read image metadata: " << path;
-        m_orientation = 0;
+    if (wasValid != m_valid) {
+        emit validChanged();
+    }
+    if (hadExif != m_hasExif) {
+        emit hasExifChanged();
+    }
+    if (hadXmp != m_hasXmp) {
+        emit hasXmpChanged();
+    }
+    if (orientation != m_orientation) {
         emit orientationChanged();
     }
-
-    // Looks like width and height are quite often left out from the metadata
-    // so it's safer to read them using QImageReader
-    QImageReader ir(path);
-    if (ir.canRead()) {
-        const int width = ir.size().width();
-        if (m_width != width) {
-            m_width = width;
-            emit widthChanged();
-        }
-        const int height = ir.size().height();
-        if (m_height != height) {
-            m_height = height;
-            emit heightChanged();
-        }
-
-    } else {
-        qWarning() << Q_FUNC_INFO;
-        qWarning() << "Failed to read image data: " << path;
+    if (width != m_width) {
+        emit widthChanged();
+    }
+    if (height != m_height) {
+        emit heightChanged();
     }
 }
+
+void DeclarativeImageMetadata::readTags(const QString &fileName)
+{
+    m_wantTags = true;
+
+    if (!fileName.isEmpty()) {
+        QuillMetadata md(fileName);
+        if (md.isValid()) {
+            m_valid = true;
+            m_hasExif = md.hasExif();
+            m_hasXmp = md.hasXmp();
+            m_orientation = md.entry(QuillMetadata::Tag_Orientation).toInt();
+        } else {
+            qWarning() << Q_FUNC_INFO;
+            qWarning() << "Failed to read image metadata: " << fileName;
+        }
+    }
+}
+
+void DeclarativeImageMetadata::readDimensions(const QString &fileName)
+{
+    m_wantDimensions = true;
+
+    if (!fileName.isEmpty()) {
+        QImageReader ir(fileName);
+        if (ir.canRead()) {
+            const  QSize size = ir.size();
+            m_width = size.width();
+            m_height = size.height();
+        } else {
+            qWarning() << Q_FUNC_INFO;
+            qWarning() << "Failed to read image data: " << fileName;
+        }
+    }
+}
+
+#include "declarativeimagemetadata.moc"
