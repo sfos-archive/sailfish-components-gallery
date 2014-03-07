@@ -23,11 +23,13 @@ SOURCES += \
     declarativeimageeditor.cpp \
     declarativeimageeditor_p.cpp \
     plugin.cpp \
-    declarativeimagemetadata.cpp
+    declarativeimagemetadata.cpp \
+    declarativeavatarfilehandler.cpp
 
 HEADERS += declarativeimageeditor.h \
     declarativeimageeditor_p.h \
-    declarativeimagemetadata.h
+    declarativeimagemetadata.h \
+    declarativeavatarfilehandler.h
 
 TS_FILE = $$OUT_PWD/sailfish_components_gallery_qt5.ts
 EE_QM = $$OUT_PWD/sailfish_components_gallery_qt5_eng_en.qm

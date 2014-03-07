@@ -66,6 +66,10 @@ SplitViewPage {
             }
 
             person.avatarPath = _avatarPath
+
+            // Remove old avatar file(s)
+            AvatarFileHandler.removeOldAvatars(person.firstName, person.lastName, _avatarPath);
+
             if (!model.savePerson(person)) {
                 console.log("Failed to save avatar image to the contact with id: ", _contactId)
                 return
@@ -240,7 +244,7 @@ SplitViewPage {
         ContactSelectPage {
             onContactClicked: {
                 // Hardcoded path will be removed once get JB5266 fixed
-                imageEditPreview.target = "/home/nemo/.local/share/data/avatars/" + contact.firstName + "-" + contact.lastName + ".jpeg"
+                imageEditPreview.target = AvatarFileHandler.createNewAvatarFileName(contact.firstName, contact.lastName)
                 imageEditor._avatarPath = imageEditPreview.target
                 imageEditor._contactId = contact.id
                 _contactSaveRequested = true
