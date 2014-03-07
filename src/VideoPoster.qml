@@ -99,7 +99,9 @@ MouseArea {
             height: Theme.itemSizeExtraLarge
             handleVisible: false
             minimumValue: 0
-            valueText: Format.formatDuration(value, Formatter.DurationShort)
+            valueText: Format.formatDuration(value, value >= 3600
+                        ? Format.DurationLong
+                        : Format.DurationShort)
 
             onReleased: {
                 if (videoItem.active) {
