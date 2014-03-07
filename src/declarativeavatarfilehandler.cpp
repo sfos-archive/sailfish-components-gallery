@@ -1,9 +1,8 @@
 #include "declarativeavatarfilehandler.h"
 #include <QDir>
 #include <QDateTime>
+#include <QStandardPaths>
 #include <QtDebug>
-
-#define DEFAULT_PATH QStringLiteral("/home/nemo/.local/share/data/avatars")
 
 DeclarativeAvatarFileHandler::DeclarativeAvatarFileHandler(QObject *parent)
     : QObject(parent)
@@ -11,29 +10,31 @@ DeclarativeAvatarFileHandler::DeclarativeAvatarFileHandler(QObject *parent)
 }
 
 
-QUrl DeclarativeAvatarFileHandler::createNewAvatarFileName(const QString &firstName, const QString &lastName)
+QUrl DeclarativeAvatarFileHandler::createNewAvatarFileName(const QString &id)
 {
-    if (firstName.isEmpty() && lastName.isEmpty()) {
+    if (id.isEmpty()) {
         qWarning() << Q_FUNC_INFO << "No name for contact. Can't create a new avatar file name!";
         return QUrl();
     }
 
     QDateTime time = QDateTime::currentDateTime();
-    QString fileName("%1-%2-%3.jpg");
-    return QUrl::fromLocalFile(DEFAULT_PATH + QDir::separator() + fileName.arg(firstName).arg(lastName).arg(time.toString(Qt::ISODate)));
+    QString fileName("%1-%2.jpg");
+    return QUrl::fromLocalFile(DeclarativeAvatarFileHandler::avatarPath() +
+                               QDir::separator() +
+                               fileName.arg(id).arg(time.toString(Qt::ISODate)));
 }
 
-bool DeclarativeAvatarFileHandler::removeOldAvatars(const QString &firstName, const QString &lastName, const QUrl &excludedFile)
+bool DeclarativeAvatarFileHandler::removeOldAvatars(const QString &id,const QUrl &excludedFile)
 {
-    if (firstName.isEmpty() && lastName.isEmpty()) {
+    if (id.isEmpty()) {
         qWarning() << Q_FUNC_INFO << "No name for contact. Can't remove old avatars!";
         return false;
     }
 
-    QDir path(DEFAULT_PATH);
-    QString filter("%1-%2-*.*");
+    QDir path(DeclarativeAvatarFileHandler::avatarPath());
+    QString filter("%1-*.*");
     const QString efn = excludedFile.toLocalFile();
-    QFileInfoList files = path.entryInfoList(QStringList() << filter.arg(firstName).arg(lastName), QDir::Files | QDir::NoDotAndDotDot);
+    QFileInfoList files = path.entryInfoList(QStringList() << filter.arg(id), QDir::Files | QDir::NoDotAndDotDot);
 
     if (!files.isEmpty()) {
         // Delete files
@@ -48,6 +49,15 @@ bool DeclarativeAvatarFileHandler::removeOldAvatars(const QString &firstName, co
     }
 
     return true;
+}
+
+QString DeclarativeAvatarFileHandler::avatarPath()
+{
+    return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) +
+           QDir::separator() +
+           QLatin1String("data") +
+           QDir::separator() +
+           QLatin1String("avatars");
 }
 
 QObject *DeclarativeAvatarFileHandler::api_factory(QQmlEngine *, QJSEngine *)

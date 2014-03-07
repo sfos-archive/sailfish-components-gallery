@@ -68,7 +68,7 @@ SplitViewPage {
             person.avatarPath = _avatarPath
 
             // Remove old avatar file(s)
-            AvatarFileHandler.removeOldAvatars(person.firstName, person.lastName, _avatarPath);
+            AvatarFileHandler.removeOldAvatars(_contactId, _avatarPath);
 
             if (!model.savePerson(person)) {
                 console.log("Failed to save avatar image to the contact with id: ", _contactId)
@@ -243,8 +243,7 @@ SplitViewPage {
 
         ContactSelectPage {
             onContactClicked: {
-                // Hardcoded path will be removed once get JB5266 fixed
-                imageEditPreview.target = AvatarFileHandler.createNewAvatarFileName(contact.firstName, contact.lastName)
+                imageEditPreview.target = AvatarFileHandler.createNewAvatarFileName(contact.id)
                 imageEditor._avatarPath = imageEditPreview.target
                 imageEditor._contactId = contact.id
                 _contactSaveRequested = true
