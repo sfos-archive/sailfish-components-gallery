@@ -9,6 +9,7 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import Sailfish.Contacts 1.0
 import Sailfish.Gallery.private 1.0
+import org.nemomobile.contacts 1.0
 import "private"
 
 SplitViewPage {
@@ -25,6 +26,9 @@ SplitViewPage {
 
     property Page _contactPicker
     property bool _contactSaveRequested
+
+    property string _avatarPath
+    property string _contactId
 
     signal edited
 
@@ -44,7 +48,42 @@ SplitViewPage {
 
     onEdited: {
         if (_contactSaveRequested) {
-            _contactPicker.allContactsModel.savePerson(_contactPicker.unsavedContact)
+            if (_contactId == "" || _avatarPath == "") {
+                console.log("Invalid contact id or avatar path")
+                return
+            }
+
+            var model = peopleModelComponent.createObject(imageEditor)
+            if (!model) {
+                console.log("Failed to create contact model!")
+                return
+            }
+
+            var person = model.personById(_contactId)
+            if (!person) {
+                console.log("Failed to fetch person with id: ", _contactId)
+                return
+            }
+
+            person.avatarPath = _avatarPath
+
+            // Remove old avatar file(s)
+            AvatarFileHandler.removeOldAvatars(_contactId, _avatarPath);
+
+            if (!model.savePerson(person)) {
+                console.log("Failed to save avatar image to the contact with id: ", _contactId)
+                return
+            }
+
+            _contactSaveRequested = false
+            model.destroy(1000)
+        }
+    }
+
+    Component {
+        id: peopleModelComponent
+        PeopleModel {
+            filterType: PeopleModel.FilterAll
         }
     }
 
@@ -203,15 +242,12 @@ SplitViewPage {
         id: contactPickerPage
 
         ContactSelectPage {
-            property variant unsavedContact
-
             onContactClicked: {
-                // Hardcoded path will be removed once get JB5266 fixed
-                imageEditPreview.target = "/home/nemo/.local/share/data/avatars/" + contact.firstName + "-" + contact.lastName + ".jpeg"
-                imageEditPreview.crop()
+                imageEditPreview.target = AvatarFileHandler.createNewAvatarFileName(contact.id)
+                imageEditor._avatarPath = imageEditPreview.target
+                imageEditor._contactId = contact.id
                 _contactSaveRequested = true
-                unsavedContact = contact
-                unsavedContact.avatarPath = imageEditPreview.target
+                imageEditPreview.crop()
                 // Do all needed page activation states before popping pages
                 imageEditor._pageActivating()
                 _navigation = PageNavigation.Forward
