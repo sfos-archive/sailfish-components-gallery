@@ -16,6 +16,7 @@ Page {
     default property alias data: drawer.data
 
     backNavigation: drawer.open
+    allowedOrientations: Orientation.All
 
     Drawer {
         id: drawer

@@ -18,8 +18,6 @@ SplitViewDialog {
     signal cropRequested
     signal cropCanceled
 
-    // Clip zoomed part of the image
-    clip: true
     onDone: {
         if (result == DialogResult.Accepted) {
             cropRequested()

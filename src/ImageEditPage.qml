@@ -20,9 +20,6 @@ SplitViewPage {
     // To align this with SplitViewDialog
     property alias splitOpen: imageEditor.open
     property alias splitOpened: imageEditor.opened
-    // TODO: Remove orientation, it won't be used anymore but it's needed
-    // to prevent this QML element loading to fail.
-    property int orientation
 
     property Page _contactPicker
     property bool _contactSaveRequested
@@ -30,14 +27,17 @@ SplitViewPage {
     property string _avatarPath
     property string _contactId
 
+    onIsPortraitChanged: imageEditPreview.resetScale()
+
     signal edited
+
+    open: true
 
     function _pageActivating() {
         imageEditor.foreground = imageEditPreview
         imageEditPreview.resetParent(imageEditor.foregroundItem)
         imageEditPreview.splitView = imageEditor
         imageEditPreview.editOperation = ImageEditor.None
-        splitOpen = true
     }
 
     onStatusChanged: {
@@ -87,15 +87,12 @@ SplitViewPage {
         }
     }
 
-    // Clip zoomed part of the image
-    clip: true
     background: SilicaListView {
         anchors.fill: parent
-        header: PageHeader {
-            //: "Image editing page title"
-            //% "Edit"
-            title: qsTrId("components_gallery-he-edit")
-        }
+
+        //: "Image editing page title"
+        //% "Edit"
+        header: PageHeader { title: qsTrId("components_gallery-he-edit") }
 
         delegate: BackgroundItem {
             id: operationDelegate
@@ -128,7 +125,7 @@ SplitViewPage {
             onClicked: {
                 if (model.type === ImageEditor.Crop) {
                     imageEditPreview.splitView = pageStack.push(aspectRatioDialogComponent,
-                                                                { splitOpen: false })
+                                                               { splitOpen: false })
                     imageEditPreview.editOperation = model.type
                     imageEditPreview.resetParent(imageEditPreview.splitView.foregroundItem)
                 } else
@@ -142,10 +139,16 @@ SplitViewPage {
         }
 
         model: ImageEditOperationModel {}
+
     }
+
+
 
     // Shared between ImageEditPage and CropDialog so that state
     // of zoom is correct.
+    // TODO: MarkoM: I think ImageEditPreview is doing too much. We should redesign
+    //               to have e.g. crop specific preview only. Current implementation
+    //               is way too complex and not very modular.
     foreground: ImageEditPreview {
         id: imageEditPreview
 
@@ -156,7 +159,8 @@ SplitViewPage {
 
         isPortrait: splitView.isPortrait
         splitView: imageEditor
-        anchors.fill: parent
+        width: parent ? parent.width : 0
+        height: parent ? parent.height : 0
         active: pageStack.currentPage === imageEditor ? false : !splitView.splitOpen
         explicitWidth: imageEditor.width
         explicitHeight: imageEditor.height
@@ -220,10 +224,12 @@ SplitViewPage {
             foreground: imageEditPreview
 
             onRotate: {
+                imageEditPreview.previewRotationAnimEnabled = true
                 // Rotate in steps, but not when there's an ongoing transition
                 if (imageEditPreview.previewRotation % 90 == 0) {
                     imageEditPreview.previewRotation = imageEditPreview.previewRotation + angle
                 }
+                imageEditPreview.previewRotationAnimEnabled = false
             }
 
             onRotateRequested: {
@@ -236,7 +242,6 @@ SplitViewPage {
             }
         }
     }
-
 
     Component {
         id: contactPickerPage
@@ -254,5 +259,5 @@ SplitViewPage {
                 pageStack.pop(imageEditor)
             }
         }
-    }
+    }        
 }

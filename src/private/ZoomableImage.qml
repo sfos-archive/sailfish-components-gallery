@@ -37,22 +37,6 @@ SilicaFlickable {
         photo.updateScale()
     }
 
-    function _centerImage(pinch) {
-        var scale = 1.0 + pinch.scale - pinch.previousScale
-
-        var newContentWidth = contentWidth * scale
-        var newContentHeight = contentHeight * scale
-
-        var dx = (pinch.center.x * newContentWidth / contentWidth) - pinch.center.x
-        var dy = (pinch.center.y * newContentHeight / contentHeight) - pinch.center.y
-
-        if (newContentWidth >= minimumWidth && newContentHeight >= minimumHeight &&
-                newContentWidth <= maximumWidth && newContentHeight <= maximumHeight) {
-            contentX += dx
-            contentY += dy
-        }
-        // Do we want to keep pinch always inside the boundararies ?
-    }
 
     PinchArea {
         id: pinchArea
@@ -63,12 +47,11 @@ SilicaFlickable {
         pinch.minimumScale: Math.max(minimumWidth / flickable.implicitWidth, minimumHeight / flickable.implicitHeight)
         pinch.maximumScale: Math.min(maximumWidth / flickable.implicitWidth, maximumHeight / flickable.implicitHeight)
         pinch.dragAxis: Pinch.XandYAxis
-
-        onPinchUpdated: _centerImage(pinch)
         onPinchFinished: flickable.returnToBounds()
 
         Image {
             id: photo
+            property real prevScale
 
             function updateScale() {
                 if (status != Image.Ready)
@@ -100,6 +83,18 @@ SilicaFlickable {
             onStatusChanged: {
                 flickable.status = status
                 updateScale()
+            }
+
+            onScaleChanged: {
+                if ((width * scale) > flickable.width) {
+                    var xoff = (flickable.width / 2 + flickable.contentX) * scale / prevScale;
+                    flickable.contentX = xoff - flickable.width / 2;
+                }
+                if ((height * scale) > flickable.height) {
+                    var yoff = (flickable.height / 2 + flickable.contentY) * scale / prevScale;
+                    flickable.contentY = yoff - flickable.height / 2;
+                }
+                prevScale = scale;
             }
         }
 
