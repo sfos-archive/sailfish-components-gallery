@@ -166,13 +166,6 @@ SplitViewPage {
         explicitHeight: imageEditor.height
     }
 
-    Binding {
-        target: pageStack._pageStackIndicator
-        property: "enabled"
-        value: imageEditor.splitOpened
-        when: imageEditor.status === PageStatus.Activating || imageEditor.status === PageStatus.Active
-    }
-
     Component {
         id: aspectRatioDialogComponent
         CropDialog {
