@@ -95,4 +95,10 @@ SplitViewDialog
             }
         }
     }
+    Binding {
+        target: pageStack._pageStackIndicator
+        property: "enabled"
+        value: rotateDialog.splitOpened
+        when: rotateDialog.status === PageStatus.Activating || rotateDialog.status === PageStatus.Active
+    }
 }

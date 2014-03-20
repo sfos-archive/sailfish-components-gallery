@@ -27,6 +27,7 @@ Item {
     property alias target: editor.target
     property int orientation
     property alias previewRotation: zoomableImage.rotation
+    property alias previewRotationAnimEnabled: prevRotationBehavior.enabled
     readonly property alias status: zoomableImage.status
 
     function crop()
@@ -54,6 +55,8 @@ Item {
         if (aspectRatioType == "original") {
             aspectRatio = -1.0
         }
+
+        zoomableImage.resetImagePosition()
     }
 
     // ImageMetadata is needed to track the real orientation
@@ -113,8 +116,8 @@ Item {
         anchors.fill: editor
         initialImageWidth: explicitWidth
         initialImageHeight: explicitHeight
-        maximumWidth: 4 * parent.width
-        maximumHeight: 4 * parent.height
+        maximumWidth: imageWidth
+        maximumHeight: imageHeight
         minimumWidth: editor.width
         minimumHeight: editor.height
         imageWidth: metadata.width
@@ -122,7 +125,7 @@ Item {
         interactive: active && editOperation == ImageEditor.Crop
         onClicked: splitView.splitOpen = !splitView.splitOpen
         onStatusChanged: resetImagePosition()
-        Behavior on rotation { SmoothedAnimation { duration: 200 } }
+        Behavior on rotation { id: prevRotationBehavior; enabled: false; SmoothedAnimation { duration: 200 } }
     }
 
     Label {
@@ -143,7 +146,9 @@ Item {
         // As a function to avoid binding loops
         function setSize() {
             if (!aspectRatio || aspectRatio === -1.0) {
-                aspectRatio = zoomableImage.contentWidth / zoomableImage.contentHeight
+                aspectRatio =  !zoomableImage._transpose
+                        ? metadata.width / metadata.height
+                        : metadata.height / metadata.width
             }
 
             if (isPortrait) {
@@ -174,11 +179,11 @@ Item {
         onCropped: {
             editInProgress = false
             if (success) {
-                 if (preview.source == preview.target) {
-                    preview.source = ""
+                if (aspectRatioType !== "avatar") {
                     preview.source = editor.target
-                 }
-                 splitView.edited()
+                }
+                zoomableImage.resetImagePosition()
+                splitView.edited()
             }
         }
 
