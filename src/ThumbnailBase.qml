@@ -17,13 +17,14 @@ MouseArea {
 
     width: size
     height: size
-    opacity: GridView.isCurrentItem && GridView.view.unfocusHighlightEnabled
+    opacity: grid && grid.currentIndex === index && grid.unfocusHighlightEnabled
              ? 1.0
-             : GridView.view._unfocusedOpacity
+             : grid._unfocusedOpacity
 
     // Default behavior for each thumbnail
-    onPressed: GridView.view.currentIndex = index
+    onPressed: if (grid) grid.currentIndex = index
     onPressAndHold: pressedAndHolded = true
     onReleased: pressedAndHolded = false
+    onCanceled: pressedAndHolded = false
 
 }
