@@ -97,9 +97,9 @@ Item {
             pressedSpy.clear()
 
             mouseClick(thumbnail, thumbnail.x, thumbnail.y)
-            tryCompare(clickedSpy.count, 1)
-            tryCompare(pressedSpy.count, 1)
-            tryCompare(releasedSpy.count, 1)
+            tryCompare(clickedSpy, "count", 1)
+            tryCompare(pressedSpy, "count", 1)
+            tryCompare(releasedSpy, "count", 1)
         }
 
         function test_thumbnailImagePressedReleased() {
@@ -109,10 +109,10 @@ Item {
             releasedSpy.clear()
 
             mousePress(thumbnail, thumbnail.x, thumbnail.y)
-            tryCompare(pressedSpy.count, 1)
+            tryCompare(pressedSpy, "count", 1)
 
             mouseRelease(thumbnail, thumbnail.x, thumbnail.y)
-            tryCompare(releasedSpy.count, 1)
+            tryCompare(releasedSpy, "count", 1)
         }
 
         function test_thumbnailImagePressAndHold() {
@@ -126,12 +126,12 @@ Item {
             mousePress(thumbnail, thumbnail.x, thumbnail.y)
             wait(1200) // Thresshold is 800
 
-            tryCompare(pressAndHoldSpy, 1)
+            tryCompare(pressAndHoldSpy, "count", 1)
             compare(thumbnail.pressedAndHolded, true)
 
             mouseRelease(thumbnail, thumbnail.x, thumbnail.y)
-            tryCompare(pressedSpy.count, 1)
-            tryCompare(releasedSpy.count, 1)
+            tryCompare(pressedSpy, "count", 1)
+            tryCompare(releasedSpy, "count", 1)
             compare(thumbnail.pressedAndHolded, false)
         }
     }
