@@ -35,8 +35,27 @@ Item {
     }
 
     SignalSpy {
-        id: pressedSpy
-        signalName: "pressed"
+        // WORKAROUND: Compared to the other SignalSpy items, this one deals
+        // with the fact that MouseArea contains one property and one signal
+        // sharing the same name "pressed" - SignalSpy fails with such a target.
+        id: pressedSpy_
+        target: pressedSpy
+        signalName: "targetPressed"
+
+        Connections {
+            id: pressedSpy
+            target: pressedSpyFakeTarget
+            onPressed: targetPressed()
+            signal targetPressed()
+            property alias count: pressedSpy_.count
+            function clear() { pressedSpy_.clear() }
+        }
+
+        // Used to suppress warning about nonexisting signal during initialization
+        Item {
+            id: pressedSpyFakeTarget
+            signal pressed()
+        }
     }
 
     SignalSpy {
