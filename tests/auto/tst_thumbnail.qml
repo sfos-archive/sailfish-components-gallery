@@ -49,7 +49,7 @@ Item {
         signalName: "pressAndHold"
     }
 
-    resources: TestCase {
+    TestCase {
         name: "ThumbnailImage"
         when: windowShown
 
