@@ -17,7 +17,7 @@ BuildRequires:  qt5-qttools
 BuildRequires:  qt5-qttools-linguist
 BuildRequires:  pkgconfig(quillmetadata-qt5)
 
-Requires:  sailfishsilica-qt5
+Requires:  sailfishsilica-qt5 >= 0.11.97
 Requires:  nemo-qml-plugin-thumbnailer-qt5
 #Requires:  sailfish-components-contacts-qt5
 Requires:  jolla-ambient >= 0.3.7
