@@ -22,7 +22,7 @@ SilicaGridView {
     // Make header visible if it exists.
     Component.onCompleted: if (header) grid.positionViewAtBeginning()
 
-    maximumFlickVelocity: 5000
+    maximumFlickVelocity: 5000*Theme.pixelRatio
 
     VerticalScrollDecorator { }
 
