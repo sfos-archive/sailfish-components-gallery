@@ -5,6 +5,7 @@
 #include "declarativeimageeditor.h"
 #include "declarativeimagemetadata.h"
 #include "declarativeavatarfilehandler.h"
+#include "declarativefileinfo.h"
 
 // using custom translator so it gets properly removed from qApp when engine is deleted
 class AppTranslator: public QTranslator
@@ -60,6 +61,7 @@ public:
         Q_ASSERT(QLatin1String(uri) == QLatin1String("Sailfish.Gallery"));
         qmlRegisterType<DeclarativeImageEditor>("Sailfish.Gallery.private", 1, 0, "ImageEditor");
         qmlRegisterType<DeclarativeImageMetadata>("Sailfish.Gallery.private", 1, 0, "ImageMetadata");
+        qmlRegisterType<DeclarativeFileInfo>("Sailfish.Gallery", 1, 0, "FileInfo");
         qmlRegisterUncreatableType<FitNamespace>("Sailfish.Gallery", 1, 0, "Fit", QString());
         qmlRegisterSingletonType<DeclarativeAvatarFileHandler>("Sailfish.Gallery.private", 1, 0, "AvatarFileHandler", DeclarativeAvatarFileHandler::api_factory);
     }
