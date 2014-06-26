@@ -35,8 +35,27 @@ Item {
     }
 
     SignalSpy {
-        id: pressedSpy
-        signalName: "pressed"
+        // WORKAROUND: Compared to the other SignalSpy items, this one deals
+        // with the fact that MouseArea contains one property and one signal
+        // sharing the same name "pressed" - SignalSpy fails with such a target.
+        id: pressedSpy_
+        target: pressedSpy
+        signalName: "targetPressed"
+
+        Connections {
+            id: pressedSpy
+            target: pressedSpyFakeTarget
+            onPressed: targetPressed()
+            signal targetPressed()
+            property alias count: pressedSpy_.count
+            function clear() { pressedSpy_.clear() }
+        }
+
+        // Used to suppress warning about nonexisting signal during initialization
+        Item {
+            id: pressedSpyFakeTarget
+            signal pressed()
+        }
     }
 
     SignalSpy {
@@ -49,7 +68,7 @@ Item {
         signalName: "pressAndHold"
     }
 
-    resources: TestCase {
+    TestCase {
         name: "ThumbnailImage"
         when: windowShown
 
@@ -97,9 +116,9 @@ Item {
             pressedSpy.clear()
 
             mouseClick(thumbnail, thumbnail.x, thumbnail.y)
-            tryCompare(clickedSpy.count, 1)
-            tryCompare(pressedSpy.count, 1)
-            tryCompare(releasedSpy.count, 1)
+            tryCompare(clickedSpy, "count", 1)
+            tryCompare(pressedSpy, "count", 1)
+            tryCompare(releasedSpy, "count", 1)
         }
 
         function test_thumbnailImagePressedReleased() {
@@ -109,10 +128,10 @@ Item {
             releasedSpy.clear()
 
             mousePress(thumbnail, thumbnail.x, thumbnail.y)
-            tryCompare(pressedSpy.count, 1)
+            tryCompare(pressedSpy, "count", 1)
 
             mouseRelease(thumbnail, thumbnail.x, thumbnail.y)
-            tryCompare(releasedSpy.count, 1)
+            tryCompare(releasedSpy, "count", 1)
         }
 
         function test_thumbnailImagePressAndHold() {
@@ -126,12 +145,12 @@ Item {
             mousePress(thumbnail, thumbnail.x, thumbnail.y)
             wait(1200) // Thresshold is 800
 
-            tryCompare(pressAndHoldSpy, 1)
+            tryCompare(pressAndHoldSpy, "count", 1)
             compare(thumbnail.pressedAndHolded, true)
 
             mouseRelease(thumbnail, thumbnail.x, thumbnail.y)
-            tryCompare(pressedSpy.count, 1)
-            tryCompare(releasedSpy.count, 1)
+            tryCompare(pressedSpy, "count", 1)
+            tryCompare(releasedSpy, "count", 1)
             compare(thumbnail.pressedAndHolded, false)
         }
     }
