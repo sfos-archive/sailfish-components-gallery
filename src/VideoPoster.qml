@@ -11,7 +11,6 @@ MouseArea {
     property url source
     property string mimeType
     property int duration
-    onDurationChanged: positionSlider.maximumValue = duration
 
     property bool transpose
 
@@ -28,7 +27,6 @@ MouseArea {
         target: videoItem._loaded ? videoItem.player : null
 
         onPositionChanged: positionSlider.value = videoItem.player.position / 1000
-        onDurationChanged: positionSlider.maximumValue = videoItem.player.duration / 1000
     }
 
     onActiveChanged: {
@@ -99,6 +97,8 @@ MouseArea {
             height: Theme.itemSizeExtraLarge
             handleVisible: false
             minimumValue: 0
+            maximumValue: videoItem._loaded ? videoItem.player.duration / 1000 : videoItem.duration
+
             valueText: Format.formatDuration(value, value >= 3600
                         ? Format.DurationLong
                         : Format.DurationShort)
