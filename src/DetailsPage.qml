@@ -42,35 +42,35 @@ Page {
                 //% "Details"
                 title: qsTrId("gallery-he-details")
             }
-            GalleryDetailsItem {
+            DetailItem {
                 id: nameItem
                 //% "Filename"
-                detail: qsTrId("gallery-la-filename")
+                label: qsTrId("gallery-la-filename")
             }
-            GalleryDetailsItem {
+            DetailItem {
                 id: sizeItem
                 //% "Size"
-                detail: qsTrId("gallery-la-size")
+                label: qsTrId("gallery-la-size")
             }
-            GalleryDetailsItem {
+            DetailItem {
                 id: typeItem
                 //% "Type"
-                detail: qsTrId("gallery-la-type")
+                label: qsTrId("gallery-la-type")
             }
-            GalleryDetailsItem {
+            DetailItem {
                 id: widthItem
                 //% "Width"
-                detail: qsTrId("gallery-la-width")
+                label: qsTrId("gallery-la-width")
             }
-            GalleryDetailsItem {
+            DetailItem {
                 id: heightItem
                 //% "Height"
-                detail: qsTrId("gallery-la-height")
+                label: qsTrId("gallery-la-height")
             }
-            GalleryDetailsItem {
+            DetailItem {
                 id: durationItem
                 //% "Duration"
-                detail: qsTrId("gallery-la-duration")
+                label: qsTrId("gallery-la-duration")
                 visible: value.length > 0
             }
         }
