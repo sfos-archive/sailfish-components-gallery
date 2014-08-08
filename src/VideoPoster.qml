@@ -12,6 +12,9 @@ MouseArea {
     property string mimeType
     property int duration
 
+    property real contentWidth: width
+    property real contentHeight: height
+
     property bool transpose
 
     property bool playing: active && videoItem.player && videoItem.player.playbackState == MediaPlayer.PlayingState
@@ -42,8 +45,8 @@ MouseArea {
         anchors.centerIn: parent
 
 
-        width: !videoItem.transpose ? videoItem.width : videoItem.height
-        height: !videoItem.transpose ? videoItem.height : videoItem.width
+        width: !videoItem.transpose ? videoItem.contentWidth : videoItem.contentHeight
+        height: !videoItem.transpose ? videoItem.contentHeight : videoItem.contentWidth
 
         sourceSize.width: Screen.height
         sourceSize.height: Screen.height
