@@ -155,13 +155,16 @@ SilicaFlickable {
             objectName: "zoomableImage"
 
             smooth: !(flickable.movingVertically || flickable.movingHorizontally)
-            width: flickable._actualWidth * flickable._scale
-            height: flickable._actualHeight * flickable._scale
+            width: Math.ceil(flickable._actualWidth * flickable._scale)
+            height: Math.ceil(flickable._actualHeight * flickable._scale)
             sourceSize.width: Screen.height
             fillMode:  Image.PreserveAspectFit
             asynchronous: true
             anchors.centerIn: parent
             cache: false
+
+            horizontalAlignment: Image.Left
+            verticalAlignment: Image.Top
 
             onStatusChanged: {
 
