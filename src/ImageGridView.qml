@@ -5,8 +5,7 @@ SilicaGridView {
     id: grid
 
     property real cellSize: Math.floor(width / columnCount)
-    // reference column width: 540 / 3
-    property int columnCount: Math.floor(width / (Theme.pixelRatio * 180.0))
+    property int columnCount: Math.floor(width / Theme.itemSizeHuge)
     property bool highlightEnabled: true
     property bool unfocusHighlightEnabled
     property bool forceUnfocusHighlight
