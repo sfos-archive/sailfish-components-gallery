@@ -85,7 +85,7 @@ Item {
         function test_thumbnailImage() {
             verify(thumbnail != null)
 
-            compare(thumbnail.size, Math.floor(screen.width / 3))
+            compare(thumbnail.size, imageGridView.cellSize)
             compare(thumbnail.width, thumbnail.size)
             compare(thumbnail.height, thumbnail.size)
             compare(thumbnail.source, "file:///home/nemo/Pictures/image1.jpg")
@@ -101,7 +101,7 @@ Item {
             compare(thumbnailImage.sourceSize.width, thumbnail.size)
 
             isPortrait = false
-            compare(thumbnail.size, Math.floor(screen.width / 5))
+            compare(thumbnail.size, imageGridView.cellSize)
             compare(thumbnail.width, thumbnail.size)
             compare(thumbnail.height, thumbnail.size)
             compare(thumbnailImage.sourceSize.height, thumbnail.size)
