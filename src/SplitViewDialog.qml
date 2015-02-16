@@ -21,7 +21,7 @@ Dialog {
 
     Drawer {
         id: drawer
-        dock: dialog.orientation == Orientation.Portrait ? Dock.Top: Dock.Left
+        dock: dialog.orientation & Orientation.PortraitMask ? Dock.Top: Dock.Left
         hideOnMinimize: true
         anchors.fill: parent
     }
