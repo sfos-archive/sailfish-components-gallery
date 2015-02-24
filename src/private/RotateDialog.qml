@@ -39,7 +39,7 @@ SplitViewDialog
 
             IconButton {
                 id: icon
-                x: Theme.paddingLarge
+                x: Theme.horizontalPageMargin
                 icon.source: model.icon
                 icon.opacity: 1.0
                 down: operationDelegate.highlighted
@@ -53,7 +53,7 @@ SplitViewDialog
                 anchors {
                     left: icon.right
                     right: parent.right
-                    rightMargin: Theme.paddingLarge
+                    rightMargin: Theme.horizontalPageMargin
                     verticalCenter: parent.verticalCenter
                 }
             }
