@@ -45,8 +45,9 @@ public:
 
     void initializeEngine(QQmlEngine *engine, const char *uri)
     {
-        Q_UNUSED(uri)
-        Q_ASSERT(QLatin1String(uri) == QLatin1String("Sailfish.Gallery"));
+        if (QLatin1String(uri) != QLatin1String("Sailfish.Gallery")) {
+            return;
+        }
 
         AppTranslator *engineeringEnglish = new AppTranslator(engine);
         AppTranslator *translator = new AppTranslator(engine);
@@ -58,12 +59,14 @@ public:
 
     virtual void registerTypes(const char *uri)
     {
-        Q_ASSERT(QLatin1String(uri) == QLatin1String("Sailfish.Gallery"));
-        qmlRegisterType<DeclarativeImageEditor>("Sailfish.Gallery.private", 1, 0, "ImageEditor");
-        qmlRegisterType<DeclarativeImageMetadata>("Sailfish.Gallery.private", 1, 0, "ImageMetadata");
-        qmlRegisterType<DeclarativeFileInfo>("Sailfish.Gallery", 1, 0, "FileInfo");
-        qmlRegisterUncreatableType<FitNamespace>("Sailfish.Gallery", 1, 0, "Fit", QString());
-        qmlRegisterSingletonType<DeclarativeAvatarFileHandler>("Sailfish.Gallery.private", 1, 0, "AvatarFileHandler", DeclarativeAvatarFileHandler::api_factory);
+        if (QLatin1String(uri) == QLatin1String("Sailfish.Gallery")) {
+            qmlRegisterType<DeclarativeFileInfo>("Sailfish.Gallery", 1, 0, "FileInfo");
+            qmlRegisterUncreatableType<FitNamespace>("Sailfish.Gallery", 1, 0, "Fit", QString());
+        } else if (QLatin1String(uri) == QLatin1String("Sailfish.Gallery.private")) {
+            qmlRegisterType<DeclarativeImageEditor>("Sailfish.Gallery.private", 1, 0, "ImageEditor");
+            qmlRegisterType<DeclarativeImageMetadata>("Sailfish.Gallery.private", 1, 0, "ImageMetadata");
+            qmlRegisterSingletonType<DeclarativeAvatarFileHandler>("Sailfish.Gallery.private", 1, 0, "AvatarFileHandler", DeclarativeAvatarFileHandler::api_factory);
+        }
     }
 };
 
