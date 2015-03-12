@@ -16,8 +16,10 @@ import.files = *.qml private qmldir scripts
 import.path = $$TARGETPATH
 target.path = $$TARGETPATH
 
-OTHER_FILES += *.qml private/*.qml \
-    private/ImageEditPreview.qml
+OTHER_FILES += \
+    *.qml \
+    private/*.qml \
+    private/libsailfishgalleryplugin.so
 
 SOURCES += \
     declarativeimageeditor.cpp \
