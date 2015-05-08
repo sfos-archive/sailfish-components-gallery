@@ -32,6 +32,7 @@ BuildRequires:  pkgconfig(Qt5Test)
 Requires:   %{name} = %{version}-%{release}
 Requires:   qt5-qtdeclarative-import-qttest
 Requires:   qt5-qtdeclarative-devel-tools
+Requires:   nemo-test-tools
 
 %description tests
 This package contains QML unit tests for Sailfish Gallery UI components
