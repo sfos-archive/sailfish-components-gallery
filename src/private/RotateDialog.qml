@@ -15,6 +15,9 @@ SplitViewDialog
 
     property real rotationAngle
 
+    property alias foregroundItem: flickable
+    property alias foreground: flickable.children
+
     signal rotate(real angle)
     signal rotateRequested
     signal rotateCanceled
@@ -95,6 +98,13 @@ SplitViewDialog
             }
         }
     }
+
+    _foreground: Flickable {
+        id: flickable
+        anchors.fill: parent
+        flickableDirection: rotateDialog.splitOpen ? Flickable.AutoFlickDirection : Flickable.HorizontalAndVerticalFlick
+    }
+
     Binding {
         target: pageStack._pageStackIndicator
         property: "enabled"

@@ -14,6 +14,8 @@ Dialog {
     property alias foregroundItem: drawer.foregroundItem
     property alias foreground: drawer.foreground
 
+    property alias _foreground: drawer.foreground
+
     default property alias data: drawer.data
 
     backNavigation: drawer.open
