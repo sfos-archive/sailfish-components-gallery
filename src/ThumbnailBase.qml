@@ -9,7 +9,7 @@ MouseArea {
 
     property url source
     property bool down: pressed && containsMouse
-    property string mimeType
+    property string mimeType: model && model.mimeType ? model.mimeType : ""
     property bool pressedAndHolded
     property int size: GridView.view.cellSize
     property real contentYOffset
