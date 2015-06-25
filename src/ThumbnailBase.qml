@@ -2,7 +2,8 @@ import QtQuick 2.0
 import org.nemomobile.thumbnailer 1.0
 
 // Base item for thumbnails in a Grid to get default behavior for free.
-// Make sure that this is a top level delegate item for a grid
+// Make sure that this is a top level delegate item for a grid or
+// some functionality (opacity, ...) will be lost
 MouseArea {
     id: thumbnail
 
@@ -17,9 +18,11 @@ MouseArea {
 
     width: size
     height: size
-    opacity: grid && grid.currentIndex === index && grid.unfocusHighlightEnabled
-             ? 1.0
-             : grid._unfocusedOpacity
+    opacity: grid
+             ? (grid.currentIndex === index && grid.unfocusHighlightEnabled
+                ? 1.0
+                : grid._unfocusedOpacity)
+             : 1.0
 
     // Default behavior for each thumbnail
     onPressed: if (grid) grid.currentIndex = index

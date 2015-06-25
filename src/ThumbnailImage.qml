@@ -7,7 +7,7 @@ ThumbnailBase {
 
     Thumbnail {
         id: thumbnail
-        property bool gridMoving: thumbnailBase.grid.moving
+        property bool gridMoving: thumbnailBase.grid ? thumbnailBase.grid.moving : false
 
         source: parent.source
         mimeType: model.mimeType
