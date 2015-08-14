@@ -11,10 +11,10 @@ public:
     QString m_mimeType;
     QString m_mimeFileType;
 
-    QString refreshMimeType()
+    void refreshMimeType()
     {
         if (m_url.isEmpty()) {
-            return QString();
+            return;
         }
 
         QMimeDatabase db;
@@ -28,7 +28,7 @@ public:
         m_mimeType = mimeType.name();
 
         if (!m_mimeType.contains(QLatin1String("/"))) {
-            return QString();
+            return;
         }
 
         m_mimeFileType = m_mimeType.left(m_mimeType.indexOf(QLatin1String("/")));
