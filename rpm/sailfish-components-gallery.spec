@@ -20,7 +20,7 @@ BuildRequires:  pkgconfig(quillmetadata-qt5)
 Requires:  sailfishsilica-qt5 >= 0.21.0
 Requires:  nemo-qml-plugin-thumbnailer-qt5
 #Requires:  sailfish-components-contacts-qt5
-Requires:  jolla-ambient >= 0.7.1
+Requires:  sailfish-content-graphics >= 0.7.36
 
 %description
 Sailfish Gallery UI Components
