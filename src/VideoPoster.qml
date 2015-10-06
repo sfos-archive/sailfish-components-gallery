@@ -75,7 +75,7 @@ MouseArea {
 
         Image {
             anchors.centerIn: parent
-            source: "image://theme/icon-cover-play?"
+            source: "image://theme/icon-video-overlay-play?"
                     + (mouseArea.down ? Theme.highlightColor : Theme.primaryColor)
 
             MouseArea {
