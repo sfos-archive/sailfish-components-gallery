@@ -6,7 +6,7 @@ import org.nemomobile.thumbnailer 1.0
 MouseArea {
     id: videoItem
 
-    property MediaPlayer player
+    property QtObject player
     property bool active
     property url source
     property string mimeType
