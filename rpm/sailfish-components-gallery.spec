@@ -4,7 +4,7 @@ Summary:    Sailfish Gallery UI Components
 Version:    0.1.4
 Release:    1
 Group:      System/Libraries
-License:    TBD
+License:    Proprietary
 URL:        https://bitbucket.org/jolla/ui-sailfish-components-gallery
 Source0:    %{name}-%{version}.tar.bz2
 BuildRequires:  pkgconfig(Qt5Core)
@@ -39,7 +39,6 @@ This package contains QML unit tests for Sailfish Gallery UI components
 
 %package ts-devel
 Summary:   Translation source for sailfish-components-gallery
-License:   TBD
 Group:     System/Libraries
 
 %description ts-devel
