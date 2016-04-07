@@ -2,6 +2,7 @@
 #include <QMimeDatabase>
 #include <QMimeType>
 #include <QFileInfo>
+#include <QImageWriter>
 
 class DeclarativeFileInfoPrivate
 {
@@ -121,4 +122,10 @@ qint64 DeclarativeFileInfo::size() const
 {
     Q_D(const DeclarativeFileInfo);
     return d->m_info.size();
+}
+
+bool DeclarativeFileInfo::editableImage() const
+{
+    Q_D(const DeclarativeFileInfo);
+    return QImageWriter::supportedMimeTypes().contains(d->m_mimeType.toUtf8());
 }
