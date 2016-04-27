@@ -6,7 +6,7 @@ MODULENAME = Sailfish/Gallery
 TARGETPATH = $$[QT_INSTALL_QML]/$$MODULENAME
 
 QT += qml quick concurrent
-CONFIG += plugin link_pkgconfig
+CONFIG += plugin link_pkgconfig hide_symbols
 
 packagesExist(quillmetadata-qt5) {
     PKGCONFIG += quillmetadata-qt5
