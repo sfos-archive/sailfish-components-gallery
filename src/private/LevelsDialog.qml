@@ -77,9 +77,9 @@ SplitViewDialog {
                 if (_levelsOption["list"] === undefined) {
                     _levelsOption.list = [
                     {
-                        //: Adjust the image brightness level
-                        //% "Brightness"
-                        text: qsTrId("components_gallery-li-brightness"),
+                        //: Adjust the image light levels
+                        //% "Light"
+                        text: qsTrId("components_gallery-li-light"),
                         adjustedPropertyName: 'brightness',
                         initialValue: 0.0,
                         maxValue: 1.0,

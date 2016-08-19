@@ -28,9 +28,9 @@ ListModel {
                             icon: "image://theme/icon-m-crop"
                         },
                         {
-                            //: Adjust the brightness and contrast
-                            //% "Adjust Levels"
-                            text: qsTrId("components_gallery-li-levels"),
+                            //: Adjust the light and contrast
+                            //% "Light and Contrast"
+                            text: qsTrId("components_gallery-li-light_and_contrast"),
                             type: ImageEditor.AdjustLevels,
                             // TODO: needs a real icon
                             icon: "image://theme/icon-m-shuffle"
