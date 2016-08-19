@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
 import Sailfish.Silica 1.0
 
 SilicaFlickable {
@@ -16,6 +17,8 @@ SilicaFlickable {
     property int imageHeight
     property int imageWidth
     property int status: Image.Null
+    property alias brightness: adjustLevels.brightness
+    property alias contrast: adjustLevels.contrast
 
     property real maximumZoom: Math.max(Screen.width, Screen.height) / 200
 
@@ -50,6 +53,14 @@ SilicaFlickable {
         pinch.maximumScale: Math.max(flickable.maximumZoom, pinch.minimumScale)
         pinch.dragAxis: Pinch.XandYAxis
         onPinchFinished: flickable.returnToBounds()
+        clip: true
+
+        BrightnessContrast {
+            id: adjustLevels
+
+            anchors.fill: photo
+            source: photo
+        }
 
         Image {
             id: photo
@@ -70,6 +81,7 @@ SilicaFlickable {
                 flickable.contentY = (flickable.implicitHeight * scale - flickable.height) / 2
             }
 
+            visible: false
             objectName: "zoomableImage"
             cache: false
             smooth: !(flickable.movingVertically || flickable.movingHorizontally)

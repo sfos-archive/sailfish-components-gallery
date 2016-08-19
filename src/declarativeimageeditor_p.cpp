@@ -6,8 +6,11 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QDateTime>
+#include <QRgb>
 
 #include <quillmetadata-qt5/QuillMetadata>
+
+#include <cmath>
 
 DeclarativeImageEditorPrivate::DeclarativeImageEditorPrivate(QObject *parent) :
     QObject(parent)
@@ -261,3 +264,104 @@ void  DeclarativeImageEditorPrivate::crop(const QString &source, const QString &
         emit cropped(false);
     }
 }
+
+void DeclarativeImageEditorPrivate::adjustLevels(const QString &source, const QString &target, double brightness, double contrast)
+{
+    // Scale down large images before adjusting them.
+    QImageReader reader(source);
+    QSize scaledSize = reader.size();
+    if (scaledSize.width() > 3264 || scaledSize.height() > 3264) {
+        scaledSize = scaledSize.scaled(3264, 3264, Qt::KeepAspectRatio);
+    }
+
+    reader.setScaledSize(scaledSize);
+    QImage img = reader.read();
+    if (img.format() != QImage::Format_RGB32 && img.format() != QImage::Format_ARGB32) {
+        img = img.convertToFormat(QImage::Format_ARGB32);
+    }
+
+    // Note: manual processing to match QtGraphicalEffects (there is an suitable filter provided
+    // by quillimagefilter-qt5, but it uses a different algorithm whose results do not match...)
+    //
+    // The shader is:
+    //  void main() {
+    //      highp vec4 pixelColor = texture2D(source, qt_TexCoord0);
+    //      pixelColor.rgb /= max(1.0/256.0, pixelColor.a);
+    //      highp float c = 1.0 + contrast;
+    //      highp float contrastGainFactor = 1.0 + c * c * c * c * step(0.0, contrast);
+    //      pixelColor.rgb = ((pixelColor.rgb - 0.5) * (contrastGainFactor * contrast + 1.0)) + 0.5;
+    //      pixelColor.rgb = mix(pixelColor.rgb, vec3(step(0.0, brightness)), abs(brightness));
+    //      gl_FragColor = vec4(pixelColor.rgb * pixelColor.a, pixelColor.a) * qt_Opacity;
+    //  }
+    const bool brightnessModification(contrast != 0.0);
+    const bool contrastModification(contrast != 0.0);
+    const float intScalar = 256.0f;
+    const float fpScalar = 1.0f / intScalar;
+    const double c = 1.0 + contrast;
+    const float contrastGainFactor = 1.0f + static_cast<float>(std::pow(c, 4)) * (contrast < 0.0 ? 0.0f : 1.0f);
+    const float contrastScalar = contrastGainFactor * contrast + 1.0f;
+    const float brightnessLimit = (brightness < 0.0 ? 0.0f : 1.0f);
+    const float brightnessFraction = std::abs(brightness);
+    const float brightnessComplement = 1.0f - brightnessFraction;
+    const float brightnessAdjustment = brightnessLimit * brightnessFraction;
+
+    QRgb *it = reinterpret_cast<QRgb *>(img.bits());
+    for (QRgb *end = it + (img.width() * img.height()); it != end; ++it) {
+        QRgb &pixel(*it);
+
+        const float alpha = qAlpha(pixel) * fpScalar;
+        const float alphaScalar = std::max(fpScalar, alpha);
+
+        float components[3] = { qRed(pixel) * fpScalar, qGreen(pixel) * fpScalar, qBlue(pixel) * fpScalar };
+        for (int i = 0; i < 3; ++i) {
+            float &component(components[i]);
+            component /= alphaScalar;
+
+            if (contrastModification) {
+                component = (component - 0.5f) * contrastScalar + 0.5f;
+            }
+            if (brightnessModification) {
+                // mix(x,y,a) is defined as: x*(1-a) + y*a
+                component = component * brightnessComplement + brightnessAdjustment;
+            }
+
+            // Note: I don't know why this is required, but it must happen precisely at this point,
+            // otherwise combined modifications of brightness and contrast fail:
+            component = std::min(1.0f, std::max(0.0f, component));
+
+            component *= alpha;
+        }
+
+        pixel = qRgba(components[0] * intScalar, components[1] * intScalar, components[2] * intScalar, alpha * intScalar);
+    }
+
+    QString tmpFile = uniqueFilePath(source);
+    if (!tmpFile.isEmpty() && !img.save(tmpFile)) {
+        qWarning() << Q_FUNC_INFO << "Failed to save image";
+        QFile::remove(tmpFile);
+        emit levelsAdjusted(false);
+        return;
+    }
+
+    QFileInfo info(source);
+    QString targetFile = target;
+    if (target.isEmpty() || !QFile::exists(tmpFile)) {
+        targetFile = uniqueFilePath(source, info.canonicalPath());
+    }
+    if (targetFile.isEmpty()) {
+        QFile::remove(tmpFile);
+        emit levelsAdjusted(false);
+        return;
+    }
+
+    if (!QFile::copy(tmpFile, targetFile)) {
+        QFile::remove(tmpFile);
+        QFile::remove(targetFile);
+        emit levelsAdjusted(false);
+        return;
+    }
+
+    QFile::remove(tmpFile);
+    emit levelsAdjusted(true, targetFile);
+}
+
