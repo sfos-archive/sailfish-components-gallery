@@ -19,7 +19,8 @@ public:
     enum EditOperationType {
         None,
         Crop,
-        Rotate
+        Rotate,
+        AdjustLevels,
     };
 
     explicit DeclarativeImageEditor(QQuickItem *parent = 0);
@@ -33,16 +34,19 @@ public:
 
     Q_INVOKABLE void crop(const QSizeF &cropSize, const QSizeF &imageSize, const QPointF &position);
     Q_INVOKABLE void rotate(int rotation);
+    Q_INVOKABLE void adjustLevels(double brightness, double contrast);
 
 Q_SIGNALS:
     void cropped(bool success);
     void rotated(bool success);
+    void levelsAdjusted(bool success);
     void sourceChanged();
     void targetChanged();
 
 private Q_SLOTS:
     void cropResult(bool success, const QString &targetFile);
     void rotateResult(bool success, const QString &targetFile);
+    void adjustLevelsResult(bool success, const QString &targetFile);
 
 private:
     DeclarativeImageEditorPrivate *d_ptr;

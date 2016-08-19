@@ -26,11 +26,12 @@ public:
 public Q_SLOTS:
     void rotate(const QString &source, const QString &target, int rotation);
     void crop(const QString &source, const QString &target, const QSizeF &cropSize, const QSizeF &imageSize, const QPointF &position);
+    void adjustLevels(const QString &source, const QString &target, double brightness, double contrast);
 
 Q_SIGNALS:
     void cropped(bool success, const QString &targetFile = QString());
     void rotated(bool success, const QString &targetFile = QString());
-
+    void levelsAdjusted(bool success, const QString &targetFile = QString());
 };
 
 #endif // DECLARATIVEIMAGEEDITOR_PRIVATE_H

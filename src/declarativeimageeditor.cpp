@@ -13,6 +13,7 @@ DeclarativeImageEditor::DeclarativeImageEditor(QQuickItem *parent) :
     setFlag(QQuickItem::ItemHasContents, true);
     connect(d_ptr, SIGNAL(cropped(bool,QString)), this, SLOT(cropResult(bool,QString)));
     connect(d_ptr, SIGNAL(rotated(bool,QString)), this, SLOT(rotateResult(bool,QString)));
+    connect(d_ptr, SIGNAL(levelsAdjusted(bool,QString)), this, SLOT(adjustLevelsResult(bool,QString)));
 }
 
 DeclarativeImageEditor::~DeclarativeImageEditor()
@@ -69,6 +70,14 @@ void DeclarativeImageEditor::crop(const QSizeF &cropSize, const QSizeF &imageSiz
     QtConcurrent::run(d, &DeclarativeImageEditorPrivate::crop, source, target, cropSize, imageSize, position);
 }
 
+void DeclarativeImageEditor::adjustLevels(double brightness, double contrast)
+{
+    Q_D(DeclarativeImageEditor);
+    QString source = d->m_source.toLocalFile();
+    QString target = d->m_target.toLocalFile();
+    QtConcurrent::run(d, &DeclarativeImageEditorPrivate::adjustLevels, source, target, brightness, contrast);
+}
+
 void DeclarativeImageEditor::cropResult(bool success, const QString &targetFile)
 {
     Q_D(DeclarativeImageEditor);
@@ -85,4 +94,13 @@ void DeclarativeImageEditor::rotateResult(bool success, const QString &targetFil
         setTarget(targetFile);
     }
     emit rotated(success);
+}
+
+void DeclarativeImageEditor::adjustLevelsResult(bool success, const QString &targetFile)
+{
+    Q_D(DeclarativeImageEditor);
+    if (d->m_target.isEmpty()) {
+        setTarget(targetFile);
+    }
+    emit levelsAdjusted(success);
 }
