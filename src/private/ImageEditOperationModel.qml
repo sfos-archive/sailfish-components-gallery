@@ -32,8 +32,7 @@ ListModel {
                             //% "Light and Contrast"
                             text: qsTrId("components_gallery-li-light_and_contrast"),
                             type: ImageEditor.AdjustLevels,
-                            // TODO: needs a real icon
-                            icon: "image://theme/icon-m-shuffle"
+                            icon: "image://theme/icon-m-light-contrast"
                         }
                     ]
         }
