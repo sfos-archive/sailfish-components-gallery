@@ -131,6 +131,7 @@ Item {
         maximumHeight: imageHeight
         minimumWidth: editor.width
         minimumHeight: editor.height
+        image.visible: editOperation != ImageEditor.AdjustLevels
         imageWidth: metadata.width
         imageHeight: metadata.height
         interactive: active && editOperation == ImageEditor.Crop
