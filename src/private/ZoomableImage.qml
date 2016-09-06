@@ -7,6 +7,7 @@ SilicaFlickable {
 
     property bool itemScaled: scale != 1.0
     property alias source: photo.source
+    property alias image: photo
     property alias scale: photo.scale
     property real minimumWidth: width
     property real maximumWidth
@@ -81,7 +82,6 @@ SilicaFlickable {
                 flickable.contentY = (flickable.implicitHeight * scale - flickable.height) / 2
             }
 
-            visible: false
             objectName: "zoomableImage"
             cache: false
             smooth: !(flickable.movingVertically || flickable.movingHorizontally)
