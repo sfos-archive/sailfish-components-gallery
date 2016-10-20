@@ -343,6 +343,17 @@ void DeclarativeImageEditorPrivate::adjustLevels(const QString &source, const QS
         return;
     }
 
+    QuillMetadata md(source);
+    if (md.hasExif()) {
+        // Copy the metadata into the new file
+        if (!md.write(tmpFile)) {
+            qWarning() << Q_FUNC_INFO << "Failed to write metadata";
+            QFile::remove(tmpFile);
+            emit levelsAdjusted(false);
+            return;
+        }
+    }
+
     QFileInfo info(source);
     QString targetFile = target;
     if (target.isEmpty() || !QFile::exists(tmpFile)) {

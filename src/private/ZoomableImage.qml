@@ -61,6 +61,8 @@ SilicaFlickable {
 
             anchors.fill: photo
             source: photo
+            rotation: photo.rotation
+            scale: photo.scale
         }
 
         Image {
