@@ -268,36 +268,4 @@ SilicaFlickable {
             extend: "fullscreen"
         }
     ]
-
-    transitions: [
-        Transition {
-            from: '*'
-            to: 'menuOpen'
-            SequentialAnimation {
-                ScriptAction { script: flickable._menuAnimating = true }
-                PropertyAnimation {
-                    target: flickable
-                    properties: "_scale,contentX,contentY"
-                    duration: 300
-                    easing.type: Easing.InOutCubic
-                }
-                ScriptAction { script: flickable._menuAnimating = false }
-            }
-        },
-        Transition {
-            from: 'menuOpen'
-            to: '*'
-            SequentialAnimation {
-                ScriptAction { script: flickable._menuAnimating = true }
-                PropertyAnimation {
-                    target: flickable
-                    properties: "_scale,contentX,contentY"
-                    duration: 300
-                    easing.type: Easing.InOutCubic
-                }
-                ScriptAction { script: flickable._menuAnimating = false }
-            }
-        }
-    ]
-
 }
