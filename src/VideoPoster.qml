@@ -15,28 +15,16 @@ MouseArea {
     property real contentWidth: width
     property real contentHeight: height
 
+    property bool overlayMode
     property bool transpose
+    property bool down: pressed && containsMouse
 
-    property bool playing: active && videoItem.player && videoItem.player.playbackState == MediaPlayer.PlayingState
-    readonly property bool _loaded: active
-                && videoItem.player
-                && videoItem.player.status >= MediaPlayer.Loaded
-                && videoItem.player.status < MediaPlayer.EndOfMedia
+    property bool playing: active && player && player.playbackState == MediaPlayer.PlayingState
+    readonly property bool loaded: active && player && player.status >= MediaPlayer.Loaded
+                                   && player.status < MediaPlayer.EndOfMedia
 
     implicitWidth: poster.implicitWidth
     implicitHeight: poster.implicitHeight
-
-    Connections {
-        target: videoItem._loaded ? videoItem.player : null
-
-        onPositionChanged: positionSlider.value = videoItem.player.position / 1000
-    }
-
-    onActiveChanged: {
-        if (!active) {
-            positionSlider.value = 0
-        }
-    }
 
     // Poster
     Thumbnail {
@@ -44,9 +32,8 @@ MouseArea {
 
         anchors.centerIn: parent
 
-
-        width: !videoItem.transpose ? videoItem.contentWidth : videoItem.contentHeight
-        height: !videoItem.transpose ? videoItem.contentHeight : videoItem.contentWidth
+        width: !transpose ? videoItem.contentWidth : videoItem.contentHeight
+        height: !transpose ? videoItem.contentHeight : videoItem.contentWidth
 
         sourceSize.width: Screen.height
         sourceSize.height: Screen.height
@@ -56,61 +43,40 @@ MouseArea {
 
         priority: Thumbnail.HighPriority
         fillMode: Thumbnail.PreserveAspectFit
-        opacity: !videoItem._loaded ? 1.0 : 0.0
-        Behavior on opacity { FadeAnimation { id: posterFade } }
+        opacity: !loaded ? 1.0 : 0.0
+        Behavior on opacity { FadeAnimator {} }
 
-        visible: !videoItem._loaded || posterFade.running
-
-        rotation: videoItem.transpose ? (implicitHeight > implicitWidth ? 270 : 90)  : 0
+        visible: !loaded || posterFade.running
+        rotation: transpose ? (implicitHeight > implicitWidth ? 270 : 90)  : 0
     }
 
-    Item {
-        width: videoItem.width
-        height: videoItem.height
+    Image {
+        id: icon
+        anchors.centerIn: parent
+        opacity: overlayMode || !playing ? 1.0 : 0.0
+        Behavior on opacity { FadeAnimator {} }
 
-        opacity: videoItem.playing ? 0.0 : 1.0
-        Behavior on opacity { FadeAnimation { id: controlFade } }
-
-        visible: videoItem.player && (!videoItem.playing || controlFade.running)
-
-        Image {
-            anchors.centerIn: parent
-            source: "image://theme/icon-video-overlay-play?"
-                    + (mouseArea.down ? Theme.highlightColor : Theme.primaryColor)
-
-            MouseArea {
-                id: mouseArea
-
-                property bool down: pressed && containsMouse
-                anchors.fill: parent
-                enabled: !videoItem.playing
-                onClicked: {
-                    videoItem.player.source = videoItem.source
-                    videoItem.player.play()
-                }
-            }
+        Binding	{
+            target:	icon
+            when: overlayMode // avoid flicker to pause icon when pressing play
+            property: "source"
+            value: "image://theme/icon-"
+                   + (playing ?  "l-pause" : "video-overlay-play")
+                   + "?" + (mouseArea.down ? Theme.highlightColor : Theme.primaryColor)
         }
+        MouseArea {
+            id: mouseArea
 
-        Slider {
-            id: positionSlider
-
-            anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
-
-            enabled: !videoItem.playing
-            height: Math.max(implicitHeight, Theme.itemSizeExtraLarge)
-            handleVisible: false
-            minimumValue: 0
-            maximumValue: videoItem._loaded ? videoItem.player.duration / 1000 : videoItem.duration
-
-            valueText: Format.formatDuration(value, value >= 3600
-                        ? Format.DurationLong
-                        : Format.DurationShort)
-
-            onReleased: {
-                if (videoItem.active) {
-                    videoItem.player.source = videoItem.source
-                    videoItem.player.seek(value * 1000)
-                    videoItem.player.pause()
+            property bool down: pressed && containsMouse
+            anchors.fill: parent
+            onClicked: {
+                if (player.playbackState == MediaPlayer.PlayingState) {
+                    // pause and go splitscreen
+                    view._pause()
+                } else if ((player.playbackState == MediaPlayer.StoppedState
+                            || player.playbackState == MediaPlayer.PausedState)) {
+                    // start playback and go fullscreen
+                    view._play()
                 }
             }
         }
