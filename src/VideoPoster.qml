@@ -1,16 +1,16 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import QtMultimedia 5.0
 import org.nemomobile.thumbnailer 1.0
 
 MouseArea {
-    id: videoItem
+    id: root
+
+    signal load
 
     property QtObject player
     property bool active
     property url source
     property string mimeType
-    property int duration
 
     property real contentWidth: width
     property real contentHeight: height
@@ -18,10 +18,10 @@ MouseArea {
     property bool overlayMode
     property bool transpose
     property bool down: pressed && containsMouse
+    property alias showBusyIndicator: busyIndicator.running
 
-    property bool playing: active && player && player.playbackState == MediaPlayer.PlayingState
-    readonly property bool loaded: active && player && player.status >= MediaPlayer.Loaded
-                                   && player.status < MediaPlayer.EndOfMedia
+    readonly property bool playing: active && player && player.playing
+    readonly property bool loaded: active && player && player.loaded
 
     implicitWidth: poster.implicitWidth
     implicitHeight: poster.implicitHeight
@@ -32,32 +32,38 @@ MouseArea {
 
         anchors.centerIn: parent
 
-        width: !transpose ? videoItem.contentWidth : videoItem.contentHeight
-        height: !transpose ? videoItem.contentHeight : videoItem.contentWidth
+        width: !transpose ? root.contentWidth : root.contentHeight
+        height: !transpose ? root.contentHeight : root.contentWidth
 
         sourceSize.width: Screen.height
         sourceSize.height: Screen.height
 
-        source: videoItem.source
-        mimeType: videoItem.mimeType
+        source: root.source
+        mimeType: root.mimeType
 
         priority: Thumbnail.HighPriority
         fillMode: Thumbnail.PreserveAspectFit
         opacity: !loaded ? 1.0 : 0.0
         Behavior on opacity { FadeAnimator {} }
 
-        visible: !loaded || posterFade.running
+        visible: !loaded
         rotation: transpose ? (implicitHeight > implicitWidth ? 270 : 90)  : 0
+    }
+
+    BusyIndicator {
+        id: busyIndicator
+        anchors.centerIn: parent
+        size: BusyIndicatorSize.Large
     }
 
     Image {
         id: icon
         anchors.centerIn: parent
-        opacity: overlayMode || !playing ? 1.0 : 0.0
+        opacity: !busyIndicator.running && (overlayMode || !playing) ? 1.0 : 0.0
         Behavior on opacity { FadeAnimator {} }
 
         Binding	{
-            target:	icon
+            target: icon
             when: overlayMode // avoid flicker to pause icon when pressing play
             property: "source"
             value: "image://theme/icon-"
@@ -70,13 +76,11 @@ MouseArea {
             property bool down: pressed && containsMouse
             anchors.fill: parent
             onClicked: {
-                if (player.playbackState == MediaPlayer.PlayingState) {
-                    // pause and go splitscreen
-                    view._pause()
-                } else if ((player.playbackState == MediaPlayer.StoppedState
-                            || player.playbackState == MediaPlayer.PausedState)) {
-                    // start playback and go fullscreen
-                    view._play()
+                root.load()
+                if (player.playing) {
+                    player.pause()
+                } else if (player.ready) {
+                    player.play()
                 }
             }
         }
