@@ -1,5 +1,6 @@
 module Sailfish.Gallery
 plugin sailfishgalleryplugin
+AmbienceSettingsPage 1.0 AmbienceSettingsPage.qml
 DetailsPage 1.0 DetailsPage.qml
 HighlightItem 1.0 HighlightItem.qml
 ImageEditPage 1.0 ImageEditPage.qml
