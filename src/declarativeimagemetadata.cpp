@@ -2,7 +2,9 @@
 #include <QFileSystemWatcher>
 #include <QFile>
 #include <QStringList>
+#ifndef DESKTOP
 #include <QuillMetadata>
+#endif
 #include <QtDebug>
 #include <QImageReader>
 
@@ -261,6 +263,7 @@ void DeclarativeImageMetadata::fileChanged(const QString &fileName)
 
 void DeclarativeImageMetadata::readTags(const QString &fileName)
 {
+#ifndef DESKTOP
     m_wantTags = true;
 
     if (!fileName.isEmpty()) {
@@ -275,6 +278,7 @@ void DeclarativeImageMetadata::readTags(const QString &fileName)
             qWarning() << "Failed to read image metadata: " << fileName;
         }
     }
+#endif
 }
 
 void DeclarativeImageMetadata::readDimensions(const QString &fileName)

@@ -8,7 +8,9 @@
 #include <QDateTime>
 #include <QRgb>
 
+#ifndef DESKTOP
 #include <quillmetadata-qt5/QuillMetadata>
+#endif
 
 #include <cmath>
 
@@ -69,6 +71,7 @@ QString DeclarativeImageEditorPrivate::uniqueFilePath(const QString &sourceFileP
 
 void DeclarativeImageEditorPrivate::rotate(const QString &source, const QString &target, int rotation)
 {
+#ifndef DESKTOP
     QuillMetadata md(source);
     bool hasExif = md.hasExif();
     int oldAngle = 0;
@@ -140,11 +143,13 @@ void DeclarativeImageEditorPrivate::rotate(const QString &source, const QString 
 
     QFile::remove(tmpFile);
     emit rotated(true, targetFile);
+#endif
 }
 
 // Run in QtConcurrent::run
 void  DeclarativeImageEditorPrivate::crop(const QString &source, const QString &target, const QSizeF &cropSize, const QSizeF &imageSize, const QPointF &position)
 {
+#ifndef DESKTOP
     QImageReader reader(source);
     if (reader.canRead() && !cropSize.isEmpty() && !imageSize.isEmpty()) {
         int rotate = 0;
@@ -263,10 +268,12 @@ void  DeclarativeImageEditorPrivate::crop(const QString &source, const QString &
     } else {
         emit cropped(false);
     }
+#endif
 }
 
 void DeclarativeImageEditorPrivate::adjustLevels(const QString &source, const QString &target, double brightness, double contrast)
 {
+#ifndef DESKTOP
     // Scale down large images before adjusting them.
     QImageReader reader(source);
     QSize scaledSize = reader.size();
@@ -374,5 +381,6 @@ void DeclarativeImageEditorPrivate::adjustLevels(const QString &source, const QS
 
     QFile::remove(tmpFile);
     emit levelsAdjusted(true, targetFile);
+#endif
 }
 
