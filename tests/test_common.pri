@@ -7,6 +7,7 @@ DEFINES *= MODULENAME=\"\\\"\"$${MODULENAME}\"\\\"\"
 DEFINES += COMPONENTDIR=\\\"$$[QT_INSTALL_QML]/$$MODULENAME\\\"
 
 contains(CONFIG, desktop) {
+    DEFINES *= DESKTOP
     DEFINES += APPLICATIONDIR=\\\"$$PWD/../../applications/\\\"
 } else {
     DEFINES += APPLICATIONDIR=\\\"/usr/share/\\\"
