@@ -3,6 +3,7 @@ plugin sailfishgalleryplugin
 AmbienceSettingsPage 1.0 AmbienceSettingsPage.qml
 DetailsPage 1.0 DetailsPage.qml
 GalleryMediaPlayer 1.0 GalleryMediaPlayer.qml
+GallerySharePage 1.0 GallerySharePage.qml
 HighlightItem 1.0 HighlightItem.qml
 ImageEditPage 1.0 ImageEditPage.qml
 ImageGridView 1.0 ImageGridView.qml
