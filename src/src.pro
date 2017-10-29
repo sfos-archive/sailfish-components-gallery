@@ -31,12 +31,14 @@ SOURCES += \
     plugin.cpp \
     declarativeimagemetadata.cpp \
     declarativeavatarfilehandler.cpp \
+    declarativethreadedfileremover.cpp \
     declarativefileinfo.cpp
 
 HEADERS += declarativeimageeditor.h \
     declarativeimageeditor_p.h \
     declarativeimagemetadata.h \
     declarativeavatarfilehandler.h \
+    declarativethreadedfileremover.h \
     declarativefileinfo.h
 
 TS_FILE = $$OUT_PWD/sailfish_components_gallery_qt5.ts

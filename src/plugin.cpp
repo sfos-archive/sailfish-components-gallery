@@ -5,6 +5,7 @@
 #include "declarativeimageeditor.h"
 #include "declarativeimagemetadata.h"
 #include "declarativeavatarfilehandler.h"
+#include "declarativethreadedfileremover.h"
 #include "declarativefileinfo.h"
 
 // using custom translator so it gets properly removed from qApp when engine is deleted
@@ -66,6 +67,7 @@ public:
             qmlRegisterType<DeclarativeImageEditor>("Sailfish.Gallery.private", 1, 0, "ImageEditor");
             qmlRegisterType<DeclarativeImageMetadata>("Sailfish.Gallery.private", 1, 0, "ImageMetadata");
             qmlRegisterSingletonType<DeclarativeAvatarFileHandler>("Sailfish.Gallery.private", 1, 0, "AvatarFileHandler", DeclarativeAvatarFileHandler::api_factory);
+            qmlRegisterType<DeclarativeThreadedFileRemover>("Sailfish.Gallery.private", 1, 0, "FileRemover");
         }
     }
 };
