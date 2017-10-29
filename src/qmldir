@@ -3,6 +3,7 @@ plugin sailfishgalleryplugin
 AmbienceSettingsPage 1.0 AmbienceSettingsPage.qml
 DetailsPage 1.0 DetailsPage.qml
 GalleryMediaPlayer 1.0 GalleryMediaPlayer.qml
+GalleryOverlay 1.0 GalleryOverlay.qml
 GallerySharePage 1.0 GallerySharePage.qml
 HighlightItem 1.0 HighlightItem.qml
 ImageEditPage 1.0 ImageEditPage.qml
@@ -12,5 +13,4 @@ SplitViewPage 1.0 SplitViewPage.qml
 SplitViewDialog 1.0 SplitViewDialog.qml
 ThumbnailImage 1.0 ThumbnailImage.qml
 ThumbnailVideo 1.0 ThumbnailVideo.qml
-ThumbnailCustom 1.0 ThumbnailCustom.qml
 VideoPoster 1.0 VideoPoster.qml

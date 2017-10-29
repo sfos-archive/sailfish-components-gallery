@@ -7,18 +7,16 @@ SilicaFlickable {
     id: flickable
 
     property bool scaled: false
-    property bool menuOpen
     property bool enableZoom
     property alias source: photo.source
-    property int fit
+    property int fit: isPortrait ? Fit.Width : Fit.Height
 
     property bool active: true
+    readonly property bool error: photo.status == Image.Error
 
     property real _fittedScale: Math.min(maximumZoom, Math.min(width / implicitWidth,
                                                                height / implicitHeight))
-    property real _menuOpenScale: Math.max(_viewOpenWidth / implicitWidth,
-                                           _viewOpenHeight / implicitHeight)
-    property real _scale
+    property real _scale: _fittedScale
 
     property int orientation: metadata.orientation
 
@@ -29,18 +27,13 @@ SilicaFlickable {
     property int _maximumZoomedHeight: _fullHeight * maximumZoom
     property int _minimumZoomedWidth: implicitWidth * _fittedScale
     property int _minimumZoomedHeight: implicitHeight * _fittedScale
-    property bool _zoomAllowed: enableZoom && !menuOpen && _fittedScale !== maximumZoom && !_menuAnimating
+    property bool _zoomAllowed: enableZoom && _fittedScale !== maximumZoom
     property int _fullWidth: _transpose ? Math.max(photo.implicitHeight, largePhoto.implicitHeight)
                                         : Math.max(photo.implicitWidth, largePhoto.implicitWidth)
     property int _fullHeight: _transpose ? Math.max(photo.implicitWidth, largePhoto.implicitWidth)
                                          : Math.max(photo.implicitHeight, largePhoto.implicitHeight)
 
-    property int _viewOrientation: fit == Fit.Width ? Orientation.Portrait : Orientation.Landscape
-    property int _viewOpenWidth: _viewOrientation == Orientation.Portrait ? Screen.width : Screen.height / 2
-    property int _viewOpenHeight: _viewOrientation == Orientation.Portrait ? Screen.height / 2 : Screen.width
-
     readonly property bool _transpose: (orientation % 180) != 0
-    property bool _menuAnimating
 
     signal clicked
 
@@ -55,12 +48,6 @@ SilicaFlickable {
 
     contentWidth: container.width
     contentHeight: container.height
-
-    // Only update the scale when width and height are properly set by Silica.
-    // If we do it too early, then calculating a new _fittedScale goes wrong
-    on_ViewOrientationChanged: {
-        _updateScale()
-    }
 
     onActiveChanged: {
         if (!active) {
@@ -127,19 +114,6 @@ SilicaFlickable {
         scaled = true
     }
 
-    function _updateScale() {
-        if (photo.status != Image.Ready) {
-            return
-        }
-        state = menuOpen
-                ? "menuOpen"
-                : _viewOrientation == Orientation.Portrait
-                ? "portrait"
-                : _viewOrientation == Orientation.Landscape
-                ? "landscape"
-                : "fullscreen" // fallback
-    }
-
     ImageMetadata {
         id: metadata
 
@@ -152,7 +126,6 @@ SilicaFlickable {
     PinchArea {
         id: container
         enabled: photo.status == Image.Ready
-        onPinchStarted: if (flickable.menuOpen) flickable.clicked()
         onPinchUpdated: if (flickable._zoomAllowed) flickable._scaleImage(1.0 + pinch.scale - pinch.previousScale, pinch.center, pinch.previousCenter)
         onPinchFinished: flickable.returnToBounds()
         width: Math.max(flickable.width, flickable._transpose ? photo.height : photo.width)
@@ -176,10 +149,6 @@ SilicaFlickable {
             verticalAlignment: Image.Top
 
             onStatusChanged: {
-                if (status == Image.Ready) {
-                    flickable._updateScale()
-                }
-
                 if (status == Image.Error) {
                    errorLabel = errorLabelComponent.createObject(photo)
                 }
@@ -220,52 +189,13 @@ SilicaFlickable {
 
     Component {
         id: errorLabelComponent
-        Label {
+        InfoLabel {
             //: Image loading failed
             //% "Oops, can't display the image"
             text: qsTrId("components_gallery-la-image-loading-failed")
-            anchors.centerIn: parent
-            width: parent.width - 2 * Theme.paddingMedium
-            wrapMode: Text.Wrap
-            horizontalAlignment: Text.AlignHCenter
+            anchors.verticalCenter: parent.verticalCenter
+            opacity: photo.status == Image.Error ? 1.0 : 0.0
+            Behavior on opacity { FadeAnimator {}}
         }
     }
-    // Let the states handle switching between menu open and fullscreen states.
-    // We need to extend fullscreen state with two different states: portrait and
-    // landscape to make it actually reset the fitted scale via state changes when
-    // the orientation changes. Ie. state change from "fullscreen" to "fullscreen"
-    // doesn't reset the fitted scale.
-    states: [
-        State {
-            name: "menuOpen"
-            when: flickable.menuOpen && photo.status === Image.Ready
-            PropertyChanges {
-                target: flickable
-                _scale: flickable._menuOpenScale
-                scaled: false
-                contentX: fit == Fit.Width ? (flickable.implicitWidth  * flickable._menuOpenScale - flickable._viewOpenWidth ) / (flickable._viewOrientation == Orientation.Portrait ? 2 : -2) : 0
-                contentY: fit == Fit.Width ? 0 : (flickable.implicitHeight  * flickable._menuOpenScale - flickable._viewOpenHeight ) / (flickable._viewOrientation == Orientation.Portrait ? -2 : 2)
-            }
-        },
-        State {
-            name: "fullscreen"
-            PropertyChanges {
-                target: flickable
-                _scale: flickable._fittedScale
-                scaled: false
-                contentX: 0
-                contentY: 0
-            }
-        },
-        State {
-            when: !flickable.menuOpen && photo.status === Image.Ready && _viewOrientation === Orientation.Portrait
-            name: "portrait"
-            extend: "fullscreen"
-        },
-        State {
-            when: !flickable.menuOpen && photo.status === Image.Ready && _viewOrientation === Orientation.Landscape
-            name: "landscape"
-            extend: "fullscreen"
-        }
-    ]
 }

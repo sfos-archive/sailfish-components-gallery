@@ -5,23 +5,22 @@ import org.nemomobile.thumbnailer 1.0
 MouseArea {
     id: root
 
-    signal load
+    signal togglePlay
 
-    property QtObject player
-    property bool active
     property url source
     property string mimeType
+
+    property bool playing
+    property bool loaded
+    property alias busy: busyIndicator.running
 
     property real contentWidth: width
     property real contentHeight: height
 
     property bool overlayMode
     property bool transpose
-    property bool down: pressed && containsMouse
-    property alias showBusyIndicator: busyIndicator.running
-
-    readonly property bool playing: active && player && player.playing
-    readonly property bool loaded: active && player && player.loaded
+    readonly property bool error: poster.status == Thumbnail.Error
+    readonly property bool down: pressed && containsMouse
 
     implicitWidth: poster.implicitWidth
     implicitHeight: poster.implicitHeight
@@ -45,6 +44,11 @@ MouseArea {
         fillMode: Thumbnail.PreserveAspectFit
         opacity: !loaded ? 1.0 : 0.0
         Behavior on opacity { FadeAnimator {} }
+        onStatusChanged: {
+            if (status == Thumbnail.Error) {
+               errorLabel = errorLabelComponent.createObject(poster)
+            }
+        }
 
         visible: !loaded
         rotation: transpose ? (implicitHeight > implicitWidth ? 270 : 90)  : 0
@@ -59,15 +63,15 @@ MouseArea {
     Image {
         id: icon
         anchors.centerIn: parent
-        opacity: !busyIndicator.running && (overlayMode || !playing) ? 1.0 : 0.0
+        enabled: !busy && (overlayMode || !playing) && !root.error
+        opacity: enabled ? 1.0 : 0.0
         Behavior on opacity { FadeAnimator {} }
 
         Binding	{
             target: icon
-            when: overlayMode // avoid flicker to pause icon when pressing play
+            when: overlayMode || !playing // avoid flicker to pause icon when pressing play
             property: "source"
-            value: "image://theme/icon-"
-                   + (playing ?  "l-pause" : "video-overlay-play")
+            value: "image://theme/icon-video-overlay-" + (playing ?  "pause" : "play")
                    + "?" + (mouseArea.down ? Theme.highlightColor : Theme.primaryColor)
         }
         MouseArea {
@@ -75,14 +79,18 @@ MouseArea {
 
             property bool down: pressed && containsMouse
             anchors.fill: parent
-            onClicked: {
-                root.load()
-                if (player.playing) {
-                    player.pause()
-                } else if (player.ready) {
-                    player.play()
-                }
-            }
+            onClicked: togglePlay()
         }
     }
+    Component {
+        id: errorLabelComponent
+        InfoLabel {
+            //% "Oops, can't load the video"
+            text: qsTrId("components_gallery-la-video-loading-failed")
+            anchors.verticalCenter: parent.verticalCenter
+            opacity: poster.status == Thumbnail.Error ? 1.0 : 0.0
+            Behavior on opacity { FadeAnimator {}}
+        }
+    }
+
 }

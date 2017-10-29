@@ -8,7 +8,7 @@ Page {
     id: page
 
     property alias endDestination: accountCreator.endDestination
-    property alias url: shareMethodList.source
+    property alias source: shareMethodList.source
     property alias mimeType: shareMethodList.filter
     property alias content: shareMethodList.content
 
@@ -19,7 +19,7 @@ Page {
         header: PageHeader {
             //: Page header for share method selection
             //% "Share"
-            title: qsTrId("gallery-he-share")
+            title: qsTrId("components_gallery-he-share")
         }
         // Add "add account" to the footer. User must be able to
         // create accounts in a case there are none.
@@ -27,7 +27,7 @@ Page {
             Label {
                 id: addAccountLabel
                 //% "Add account"
-                text: qsTrId("gallery-la-add_account")
+                text: qsTrId("components_gallery-la-add_account")
                 x: Theme.horizontalPageMargin
                 anchors.verticalCenter: parent.verticalCenter
                 color: highlighted ? Theme.highlightColor : Theme.primaryColor
