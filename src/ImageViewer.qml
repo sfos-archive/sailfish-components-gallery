@@ -10,7 +10,7 @@ SilicaFlickable {
     property bool menuOpen
     property bool enableZoom
     property alias source: photo.source
-    property int fit
+    property int fit: isPortrait ? Fit.Width : Fit.Height
 
     property bool active: true
 

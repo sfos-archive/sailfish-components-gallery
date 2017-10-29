@@ -8,7 +8,7 @@ Page {
     id: page
 
     property alias endDestination: accountCreator.endDestination
-    property alias url: shareMethodList.source
+    property alias source: shareMethodList.source
     property alias mimeType: shareMethodList.filter
     property alias content: shareMethodList.content
 

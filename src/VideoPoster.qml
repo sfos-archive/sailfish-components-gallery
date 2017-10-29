@@ -5,23 +5,21 @@ import org.nemomobile.thumbnailer 1.0
 MouseArea {
     id: root
 
-    signal load
+    signal togglePlay
 
-    property QtObject player
-    property bool active
     property url source
     property string mimeType
+
+    property bool playing
+    property bool loaded
+    property alias busy: busyIndicator.running
 
     property real contentWidth: width
     property real contentHeight: height
 
     property bool overlayMode
     property bool transpose
-    property bool down: pressed && containsMouse
-    property alias showBusyIndicator: busyIndicator.running
-
-    readonly property bool playing: active && player && player.playing
-    readonly property bool loaded: active && player && player.loaded
+    readonly property bool down: pressed && containsMouse
 
     implicitWidth: poster.implicitWidth
     implicitHeight: poster.implicitHeight
@@ -59,15 +57,14 @@ MouseArea {
     Image {
         id: icon
         anchors.centerIn: parent
-        opacity: !busyIndicator.running && (overlayMode || !playing) ? 1.0 : 0.0
+        opacity: !busy && (overlayMode || !playing) ? 1.0 : 0.0
         Behavior on opacity { FadeAnimator {} }
 
         Binding	{
             target: icon
-            when: overlayMode // avoid flicker to pause icon when pressing play
+            when: overlayMode || !playing // avoid flicker to pause icon when pressing play
             property: "source"
-            value: "image://theme/icon-"
-                   + (playing ?  "l-pause" : "video-overlay-play")
+            value: "image://theme/icon-" + (playing ?  "l-pause" : "video-overlay-play")
                    + "?" + (mouseArea.down ? Theme.highlightColor : Theme.primaryColor)
         }
         MouseArea {
@@ -75,14 +72,7 @@ MouseArea {
 
             property bool down: pressed && containsMouse
             anchors.fill: parent
-            onClicked: {
-                root.load()
-                if (player.playing) {
-                    player.pause()
-                } else if (player.ready) {
-                    player.play()
-                }
-            }
+            onClicked: togglePlay()
         }
     }
 }
