@@ -14,5 +14,4 @@ SplitViewPage 1.0 SplitViewPage.qml
 SplitViewDialog 1.0 SplitViewDialog.qml
 ThumbnailImage 1.0 ThumbnailImage.qml
 ThumbnailVideo 1.0 ThumbnailVideo.qml
-ThumbnailCustom 1.0 ThumbnailCustom.qml
 VideoPoster 1.0 VideoPoster.qml
