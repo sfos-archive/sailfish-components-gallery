@@ -19,7 +19,7 @@ Page {
         header: PageHeader {
             //: Page header for share method selection
             //% "Share"
-            title: qsTrId("gallery-he-sharee")
+            title: qsTrId("components_gallery-he-sharee")
         }
         // Add "add account" to the footer. User must be able to
         // create accounts in a case there are none.
@@ -27,7 +27,7 @@ Page {
             Label {
                 id: addAccountLabel
                 //% "Add account"
-                text: qsTrId("gallery-la-add_account")
+                text: qsTrId("components_gallery-la-add_account")
                 x: Theme.horizontalPageMargin
                 anchors.verticalCenter: parent.verticalCenter
                 color: highlighted ? Theme.highlightColor : Theme.primaryColor
