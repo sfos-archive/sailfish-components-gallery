@@ -7,7 +7,9 @@ SilicaFlickable {
     id: flickable
 
     property bool scaled: false
-    property bool enableZoom
+
+    property bool viewMoving
+    readonly property bool enableZoom: !viewMoving
     property alias source: photo.source
     property int fit: isPortrait ? Fit.Width : Fit.Height
 
@@ -16,8 +18,7 @@ SilicaFlickable {
 
     property real _fittedScale: Math.min(maximumZoom, Math.min(width / implicitWidth,
                                                                height / implicitHeight))
-    property real _scale: _fittedScale
-
+    property real _scale
     property int orientation: metadata.orientation
 
     // Calculate a default value which produces approximately same level of zoom
@@ -41,6 +42,7 @@ SilicaFlickable {
     // block touch events going to PinchArea in certain cases.
     pressDelay: 0
 
+    enabled: !zoomOutAnimation.running
     flickableDirection: Flickable.HorizontalAndVerticalFlick
 
     implicitWidth: _transpose ? photo.implicitHeight : photo.implicitWidth
@@ -49,8 +51,9 @@ SilicaFlickable {
     contentWidth: container.width
     contentHeight: container.height
 
-    onActiveChanged: {
-        if (!active) {
+    readonly property bool _active: active || !viewMoving
+    on_ActiveChanged: {
+        if (!_active) {
             _resetScale()
             largePhoto.source = ""
         }
@@ -58,16 +61,14 @@ SilicaFlickable {
 
     interactive: scaled
 
-    function _resetScale()
-    {
+    function _resetScale() {
         if (scaled) {
             _scale = _fittedScale
             scaled = false
         }
     }
 
-    function _scaleImage(scale, center, prevCenter)
-    {
+    function _scaleImage(scale, center, prevCenter) {
         if (largePhoto.source != photo.source) {
             largePhoto.source = photo.source
         }
@@ -112,6 +113,20 @@ SilicaFlickable {
             contentY -= (oldHeight - newHeight)/(oldHeight/prevCenter.y)
 
         scaled = true
+    }
+
+    Binding { // Update scale on orientation changes
+        target: flickable
+        when: !scaled
+        property: "_scale"
+        value: _fittedScale
+    }
+
+    Binding { // Allow vertical page navigation when panning the image near the top or bottom edge
+        target: pageStack
+        when: root.visible
+        property: "_noGrabbing"
+        value: (flickable.atYBeginning || flickable.atYEnd) && flickable.scaled && !container.pinch.active && !viewMoving
     }
 
     ImageMetadata {
@@ -183,6 +198,34 @@ SilicaFlickable {
             anchors.fill: parent
             onClicked: {
                 flickable.clicked()
+            }
+            onDoubleClicked: {
+                if (_scale !== _fittedScale) {
+                    zoomOutAnimation.start()
+                }
+            }
+
+            ParallelAnimation {
+                id: zoomOutAnimation
+                SequentialAnimation {
+                    NumberAnimation {
+                        target: flickable
+                        property: "_scale"
+                        to: _fittedScale
+                        easing.type: Easing.InOutQuad
+                        duration: 200
+                    }
+                    ScriptAction {
+                        script: scaled = false
+                    }
+                }
+                NumberAnimation {
+                    target: flickable
+                    properties: "contentX, contentY"
+                    to: 0
+                    easing.type: Easing.InOutQuad
+                    duration: 200
+                }
             }
         }
     }
