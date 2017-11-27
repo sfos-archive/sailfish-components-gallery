@@ -19,6 +19,7 @@ MouseArea {
 
     property bool overlayMode
     property bool transpose
+    readonly property bool error: poster.status == Thumbnail.Error
     readonly property bool down: pressed && containsMouse
 
     implicitWidth: poster.implicitWidth
@@ -43,6 +44,11 @@ MouseArea {
         fillMode: Thumbnail.PreserveAspectFit
         opacity: !loaded ? 1.0 : 0.0
         Behavior on opacity { FadeAnimator {} }
+        onStatusChanged: {
+            if (status == Thumbnail.Error) {
+               errorLabel = errorLabelComponent.createObject(poster)
+            }
+        }
 
         visible: !loaded
         rotation: transpose ? (implicitHeight > implicitWidth ? 270 : 90)  : 0
@@ -57,7 +63,8 @@ MouseArea {
     Image {
         id: icon
         anchors.centerIn: parent
-        opacity: !busy && (overlayMode || !playing) ? 1.0 : 0.0
+        enabled: !busy && (overlayMode || !playing) && !root.error
+        opacity: enabled ? 1.0 : 0.0
         Behavior on opacity { FadeAnimator {} }
 
         Binding	{
@@ -75,4 +82,15 @@ MouseArea {
             onClicked: togglePlay()
         }
     }
+    Component {
+        id: errorLabelComponent
+        InfoLabel {
+            //% "Oops, can't load the video"
+            text: qsTrId("components_gallery-la-video-loading-failed")
+            anchors.verticalCenter: parent.verticalCenter
+            opacity: poster.status == Thumbnail.Error ? 1.0 : 0.0
+            Behavior on opacity { FadeAnimator {}}
+        }
+    }
+
 }

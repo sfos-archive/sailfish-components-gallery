@@ -24,6 +24,7 @@ Item {
     property url source
     property string itemId
     property bool isImage
+    property bool error
     property int duration: 1
     readonly property int _duration: {
         if (player && player.loaded) {
@@ -89,6 +90,7 @@ Item {
         id: positionSlider
 
         visible: !isImage
+        opacity: overlay.error ? 0.0 : 1.0
         anchors { left: parent.left; right: bottomButtonRow.left; bottom: parent.bottom }
         rightMargin: Theme.paddingLarge
 

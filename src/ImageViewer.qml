@@ -12,6 +12,7 @@ SilicaFlickable {
     property int fit: isPortrait ? Fit.Width : Fit.Height
 
     property bool active: true
+    readonly property bool error: photo.status == Image.Error
 
     property real _fittedScale: Math.min(maximumZoom, Math.min(width / implicitWidth,
                                                                height / implicitHeight))
@@ -188,14 +189,13 @@ SilicaFlickable {
 
     Component {
         id: errorLabelComponent
-        Label {
+        InfoLabel {
             //: Image loading failed
             //% "Oops, can't display the image"
             text: qsTrId("components_gallery-la-image-loading-failed")
-            anchors.centerIn: parent
-            width: parent.width - 2 * Theme.paddingMedium
-            wrapMode: Text.Wrap
-            horizontalAlignment: Text.AlignHCenter
+            anchors.verticalCenter: parent.verticalCenter
+            opacity: photo.status == Image.Error ? 1.0 : 0.0
+            Behavior on opacity { FadeAnimator {}}
         }
     }
 }
