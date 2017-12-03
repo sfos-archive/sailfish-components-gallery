@@ -200,6 +200,17 @@ SilicaFlickable {
             rotation: -flickable.orientation
         }
 
+        BusyIndicator {
+            running: photo.status === Image.Loading && !delayBusyIndicator.running
+            size: BusyIndicatorSize.Large
+            anchors.centerIn: parent
+            Timer {
+                id: delayBusyIndicator
+                running: photo.status === Image.Loading
+                interval: 1000
+            }
+        }
+
         MouseArea {
             id: mouseArea
 
