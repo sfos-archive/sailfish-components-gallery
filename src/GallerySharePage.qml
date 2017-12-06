@@ -24,12 +24,25 @@ Page {
         // Add "add account" to the footer. User must be able to
         // create accounts in a case there are none.
         footer: BackgroundItem {
+
+            Image {
+                id: icon
+                x: Theme.horizontalPageMargin
+                anchors.verticalCenter: parent.verticalCenter
+                source: "image://theme/icon-m-add" + (highlighted ? "?" + Theme.highlightColor : "")
+            }
+
             Label {
                 id: addAccountLabel
                 //% "Add account"
                 text: qsTrId("components_gallery-la-add_account")
-                x: Theme.horizontalPageMargin
-                anchors.verticalCenter: parent.verticalCenter
+                anchors {
+                    left: icon.right
+                    leftMargin: Theme.paddingMedium
+                    verticalCenter: parent.verticalCenter
+                }
+                width: parent.width - x - Theme.horizontalPageMargin
+                wrapMode: Text.Wrap
                 color: highlighted ? Theme.highlightColor : Theme.primaryColor
             }
 
