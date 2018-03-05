@@ -180,7 +180,6 @@ Item {
                 }
 
                 pageStack.push("GallerySharePage.qml", {
-                                   "endDestination": pageStack.currentPage,
                                    "source": overlay.source,
                                    "mimeType": localFile ? fileInfo.mimeType : "text/x-url",
                                    "content":  localFile ? undefined : { "type": "text/x-url", "status": overlay.source }
