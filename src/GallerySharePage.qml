@@ -8,6 +8,7 @@ Page {
     property alias source: shareMethodList.source
     property alias mimeType: shareMethodList.filter
     property alias content: shareMethodList.content
+    property alias additionalShareComponent: shareMethodList.additionalShareComponent
 
     ShareMethodList {
         id: shareMethodList

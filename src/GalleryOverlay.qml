@@ -35,6 +35,7 @@ Item {
         }
     }
     property Item _remorsePopup
+    property Component additionalShareComponent
 
     function remorseAction(text, action) {
         if (!_remorsePopup) {
@@ -181,8 +182,11 @@ Item {
 
                 pageStack.push("GallerySharePage.qml", {
                                    "source": overlay.source,
-                                   "mimeType": localFile ? fileInfo.mimeType : "text/x-url",
-                                   "content":  localFile ? undefined : { "type": "text/x-url", "status": overlay.source }
+                                   "mimeType": localFile ? fileInfo.mimeType
+                                                         : "text/x-url",
+                                   "content": localFile ? undefined
+                                                        : { "type": "text/x-url", "status": overlay.source },
+                                   "additionalShareComponent": additionalShareComponent
                                })
             }
         }
