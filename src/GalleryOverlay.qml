@@ -180,12 +180,14 @@ Item {
                     player.pause()
                 }
 
-                pageStack.push("GallerySharePage.qml", {
+                pageStack.push("Sailfish.TransferEngine.SharePage",
+                               {
                                    "source": overlay.source,
                                    "mimeType": localFile ? fileInfo.mimeType
                                                          : "text/x-url",
                                    "content": localFile ? undefined
                                                         : { "type": "text/x-url", "status": overlay.source },
+                                   "serviceFilter": ["sharing", "e-mail"],
                                    "additionalShareComponent": additionalShareComponent
                                })
             }
