@@ -29,6 +29,8 @@ MouseArea {
     Thumbnail {
         id: poster
 
+        property var errorLabel
+
         anchors.centerIn: parent
 
         width: !transpose ? root.contentWidth : root.contentHeight
@@ -46,7 +48,10 @@ MouseArea {
         Behavior on opacity { FadeAnimator {} }
         onStatusChanged: {
             if (status == Thumbnail.Error) {
-               errorLabel = errorLabelComponent.createObject(poster)
+                errorLabel = errorLabelComponent.createObject(poster)
+            } else if (errorLabel) {
+                errorLabel.destroy()
+                errorLabel = null
             }
         }
 
