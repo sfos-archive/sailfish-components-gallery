@@ -194,19 +194,21 @@ Item {
         }
 
         IconButton {
+            id: ambienceButton
+
+            property bool suppressClick
+
+            visible: isImage
             icon.source: "image://theme/icon-m-ambience"
             anchors.verticalCenter: parent.verticalCenter
-            visible: isImage
             onClicked: {
-                var previousAmbienceUrl = Ambience.source
-                Ambience.setAmbience(overlay.source, function(ambienceId) {
-                    pageStack.push(ambienceSettingsPage, {
-                                       'contentId': ambienceId,
-                                       'previousAmbienceUrl': previousAmbienceUrl
-                                   })
+                if (suppressClick) return
+                suppressClick = true
+                Ambience.create(overlay.source, function(ambienceId) {
+                    pageStack.push("com.jolla.gallery.ambience.AmbienceSettingsDialog", { contentId: ambienceId })
+                    ambienceButton.suppressClick = false
                 })
             }
-            Component { id: ambienceSettingsPage; AmbienceSettingsPage {}}
         }
     }
 
