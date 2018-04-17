@@ -171,13 +171,14 @@ SilicaFlickable {
 
             onStatusChanged: {
                 if (status == Image.Error) {
-                   errorLabel = errorLabelComponent.createObject(photo)
+                    errorLabel = errorLabelComponent.createObject(photo)
                 }
             }
 
             onSourceChanged: {
                 if (errorLabel) {
                     errorLabel.destroy()
+                    errorLabel = null
                 }
 
                 flickable.scaled = false
