@@ -129,6 +129,12 @@ SilicaFlickable {
         value: mouseArea.verticalDragUnused
     }
 
+    // Make sure that _noGrabbing will be reset back to false (JB#42531)
+    Component.onDestruction: {
+        if (!root || !root.visible)
+            pageStack._noGrabbing = false
+    }
+
     Connections {
         target: pageStack
         onDragInProgressChanged: {
