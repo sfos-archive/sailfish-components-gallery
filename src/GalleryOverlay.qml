@@ -85,7 +85,7 @@ Item {
         y: Theme.paddingLarge
         icon.source: "image://theme/icon-m-about"
         visible: localFile && !viewerOnlyMode && itemId.length > 0
-        onClicked: if (itemId.length > 0) pageStack.push("DetailsPage.qml", { modelItem: overlay.itemId } )
+        onClicked: if (itemId.length > 0) pageStack.animatorPush("DetailsPage.qml", { modelItem: overlay.itemId } )
     }
 
     Timer {
