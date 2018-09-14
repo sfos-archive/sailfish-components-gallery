@@ -168,7 +168,7 @@ Item {
             icon.source: "image://theme/icon-m-edit"
             visible: fileInfo.editableImage && isImage && !viewerOnlyMode
             anchors.verticalCenter: parent.verticalCenter
-            onClicked: pageStack.push("Sailfish.Gallery.ImageEditPage", { source: overlay.source })
+            onClicked: pageStack.animatorPush("Sailfish.Gallery.ImageEditPage", { source: overlay.source })
         }
 
         IconButton {
@@ -180,16 +180,16 @@ Item {
                     player.pause()
                 }
 
-                pageStack.push("Sailfish.TransferEngine.SharePage",
-                               {
-                                   "source": overlay.source,
-                                   "mimeType": localFile ? fileInfo.mimeType
-                                                         : "text/x-url",
-                                   "content": localFile ? undefined
-                                                        : { "type": "text/x-url", "status": overlay.source },
-                                   "serviceFilter": ["sharing", "e-mail"],
-                                   "additionalShareComponent": additionalShareComponent
-                               })
+                pageStack.animatorPush("Sailfish.TransferEngine.SharePage",
+                                       {
+                                           "source": overlay.source,
+                                           "mimeType": localFile ? fileInfo.mimeType
+                                                                 : "text/x-url",
+                                                                   "content": localFile ? undefined
+                                                                                        : { "type": "text/x-url", "status": overlay.source },
+                                           "serviceFilter": ["sharing", "e-mail"],
+                                           "additionalShareComponent": additionalShareComponent
+                                       })
             }
         }
 
@@ -205,7 +205,7 @@ Item {
                 if (suppressClick) return
                 suppressClick = true
                 Ambience.create(overlay.source, function(ambienceId) {
-                    pageStack.push("com.jolla.gallery.ambience.AmbienceSettingsDialog", { contentId: ambienceId })
+                    pageStack.animatorPush("com.jolla.gallery.ambience.AmbienceSettingsDialog", { contentId: ambienceId })
                     ambienceButton.suppressClick = false
                 })
             }
