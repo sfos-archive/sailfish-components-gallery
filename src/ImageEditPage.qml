@@ -138,7 +138,7 @@ SplitViewPage {
                         imageEditPreview.splitView = dialog
                         imageEditPreview.editOperation = model.type
                         imageEditPreview.resetParent(imageEditPreview.splitView.foregroundItem)
-                    }
+                    })
                 }
             }
         }
