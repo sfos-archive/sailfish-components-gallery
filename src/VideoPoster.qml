@@ -77,7 +77,7 @@ MouseArea {
             when: overlayMode || !playing // avoid flicker to pause icon when pressing play
             property: "source"
             value: "image://theme/icon-video-overlay-" + (playing ?  "pause" : "play")
-                   + "?" + (mouseArea.down ? Theme.highlightColor : Theme.primaryColor)
+                   + "?" + (mouseArea.down ? Theme.highlightColor : Theme.lightPrimaryColor)
         }
         MouseArea {
             id: mouseArea
