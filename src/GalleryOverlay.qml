@@ -17,6 +17,7 @@ Item {
     property alias editingAllowed: editButton.visible
     property alias deletingAllowed: deleteButton.visible
     property alias sharingAllowed: shareButton.visible
+    property alias ambienceAllowed: ambienceButton.visible
     readonly property bool allowed: isImage || localFile
     readonly property bool playing: player && player.playing
     property alias topFade: topFade
