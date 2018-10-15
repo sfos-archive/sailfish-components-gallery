@@ -112,6 +112,7 @@ Item {
         color: Theme.lightPrimaryColor
         backgroundColor: Theme.lightSecondaryColor
         valueLabelColor: Theme.lightPrimaryColor
+        colorScheme: Theme.LightOnDark
 
         height: Math.max(implicitHeight, toolbar.height + toolbar.anchors.bottomMargin * 2 + _valueLabel.height/2)
         handleVisible: false

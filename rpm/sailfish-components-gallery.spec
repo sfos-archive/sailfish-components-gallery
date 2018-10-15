@@ -17,11 +17,11 @@ BuildRequires:  qt5-qttools
 BuildRequires:  qt5-qttools-linguist
 BuildRequires:  pkgconfig(quillmetadata-qt5)
 
-Requires:  sailfishsilica-qt5 >= 0.28.2
+Requires:  sailfishsilica-qt5 >= 0.28.10
 Requires:  nemo-qml-plugin-thumbnailer-qt5
 Requires:  declarative-transferengine-qt5 >= 0.3.3
 Requires:  libjollasignonuiservice-qt5-plugin >= 0.4.0
-#Requires:  sailfish-components-contacts-qt5
+#Requires: sailfish-components-contacts-qt5
 Requires:  sailfish-content-graphics >= 0.7.36
 
 %description
