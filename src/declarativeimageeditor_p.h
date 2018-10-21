@@ -17,6 +17,7 @@ public:
     virtual ~DeclarativeImageEditorPrivate();
 
     QString uniqueFilePath(const QString &sourceFilePath, const QString &path = QDir::tempPath());
+    QString save(QImage &image, const QString &source, const QString &target);
 
     // Member variables
     QUrl m_source;

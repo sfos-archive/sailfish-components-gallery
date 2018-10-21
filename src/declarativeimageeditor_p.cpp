@@ -23,6 +23,54 @@ DeclarativeImageEditorPrivate::~DeclarativeImageEditorPrivate()
 {
 }
 
+#ifndef DESKTOP
+QString DeclarativeImageEditorPrivate::save(QImage &image, const QString &source, const QString &target)
+{
+    QString tmpFile = uniqueFilePath(source);
+    if (!tmpFile.isEmpty() && !image.save(tmpFile)) {
+        qWarning() << Q_FUNC_INFO << "Failed to save image";
+        QFile::remove(tmpFile);
+        return QString();
+    }
+
+    QuillMetadata md(source);
+    if (md.hasExif()) {
+        // Copy the metadata into the new file
+        if (!md.write(tmpFile)) {
+            qWarning() << Q_FUNC_INFO << "Failed to write metadata";
+            QFile::remove(tmpFile);
+            return QString();
+        }
+    }
+
+    QFileInfo info(source);
+    QString targetFile = target;
+    if (target.isEmpty() || !QFile::exists(tmpFile)) {
+        targetFile = uniqueFilePath(source, info.canonicalPath());
+    }
+    if (targetFile.isEmpty()) {
+        QFile::remove(tmpFile);
+
+        return QString();
+    }
+
+    if (tmpFile != targetFile) {
+
+        if (QFile::exists(targetFile)) {
+            QFile::remove(targetFile);
+        }
+        if (!QFile::copy(tmpFile, targetFile)) {
+            QFile::remove(tmpFile);
+            QFile::remove(targetFile);
+            return QString();
+        }
+        QFile::remove(tmpFile);
+    }
+
+    return targetFile;
+}
+
+#endif
 
 QString DeclarativeImageEditorPrivate::uniqueFilePath(const QString &sourceFilePath, const QString &path)
 {
@@ -118,37 +166,15 @@ void DeclarativeImageEditorPrivate::rotate(const QString &source, const QString 
         return;
     }
 
-    if (hasExif && !md.write(tmpFile)) {
-        qWarning() << Q_FUNC_INFO << "Failed to write metadata!";
-    }
-
-    QFileInfo info(source);
-    QString targetFile = target;
-    if (target.isEmpty() || !QFile::exists(tmpFile)) {
-        targetFile = uniqueFilePath(source, info.canonicalPath());
-    }
-
-    if (targetFile.isEmpty()) {
-        QFile::remove(tmpFile);
-        emit rotated(false);
-        return;
-    }
-
-    if (!QFile::copy(tmpFile, targetFile)) {
-        QFile::remove(tmpFile);
-        QFile::remove(targetFile);
-        emit rotated(false);
-        return;
-    }
-
-    QFile::remove(tmpFile);
-    emit rotated(true, targetFile);
+    QString targetFile = save(img, source, target);
+    emit rotated(!targetFile.isEmpty(), targetFile);
 #endif
 }
 
 // Run in QtConcurrent::run
 void  DeclarativeImageEditorPrivate::crop(const QString &source, const QString &target, const QSizeF &cropSize, const QSizeF &imageSize, const QPointF &position)
 {
+
 #ifndef DESKTOP
     QImageReader reader(source);
     if (reader.canRead() && !cropSize.isEmpty() && !imageSize.isEmpty()) {
@@ -300,7 +326,7 @@ void DeclarativeImageEditorPrivate::adjustLevels(const QString &source, const QS
     //      pixelColor.rgb = mix(pixelColor.rgb, vec3(step(0.0, brightness)), abs(brightness));
     //      gl_FragColor = vec4(pixelColor.rgb * pixelColor.a, pixelColor.a) * qt_Opacity;
     //  }
-    const bool brightnessModification(contrast != 0.0);
+    const bool brightnessModification(brightness != 0.0);
     const bool contrastModification(contrast != 0.0);
     const float intScalar = 256.0f;
     const float fpScalar = 1.0f / intScalar;
@@ -342,45 +368,8 @@ void DeclarativeImageEditorPrivate::adjustLevels(const QString &source, const QS
         pixel = qRgba(components[0] * intScalar, components[1] * intScalar, components[2] * intScalar, alpha * intScalar);
     }
 
-    QString tmpFile = uniqueFilePath(source);
-    if (!tmpFile.isEmpty() && !img.save(tmpFile)) {
-        qWarning() << Q_FUNC_INFO << "Failed to save image";
-        QFile::remove(tmpFile);
-        emit levelsAdjusted(false);
-        return;
-    }
-
-    QuillMetadata md(source);
-    if (md.hasExif()) {
-        // Copy the metadata into the new file
-        if (!md.write(tmpFile)) {
-            qWarning() << Q_FUNC_INFO << "Failed to write metadata";
-            QFile::remove(tmpFile);
-            emit levelsAdjusted(false);
-            return;
-        }
-    }
-
-    QFileInfo info(source);
-    QString targetFile = target;
-    if (target.isEmpty() || !QFile::exists(tmpFile)) {
-        targetFile = uniqueFilePath(source, info.canonicalPath());
-    }
-    if (targetFile.isEmpty()) {
-        QFile::remove(tmpFile);
-        emit levelsAdjusted(false);
-        return;
-    }
-
-    if (!QFile::copy(tmpFile, targetFile)) {
-        QFile::remove(tmpFile);
-        QFile::remove(targetFile);
-        emit levelsAdjusted(false);
-        return;
-    }
-
-    QFile::remove(tmpFile);
-    emit levelsAdjusted(true, targetFile);
+    QString targetFile = save(img, source, target);
+    emit levelsAdjusted(!targetFile.isEmpty(), targetFile);
 #endif
 }
 

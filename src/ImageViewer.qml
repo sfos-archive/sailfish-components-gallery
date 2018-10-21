@@ -14,10 +14,18 @@ SilicaFlickable {
     property int fit: isPortrait ? Fit.Width : Fit.Height
 
     property bool active: true
+    property alias pressed: mouseArea.pressed
     readonly property bool error: photo.status == Image.Error
 
-    property real _fittedScale: Math.min(maximumZoom, Math.min(width / implicitWidth,
-                                                               height / implicitHeight))
+    property alias photo: photo
+    property alias largePhoto: largePhoto
+
+    property real minimumScale: -1
+    property real fittedScale: -1
+
+    property real _fittedScale: fittedScale > 0 ? fittedScale : Math.min(maximumZoom, Math.min(width / implicitWidth, height / implicitHeight))
+    property real _minimumScale: minimumScale > 0 ? minimumScale : _fittedScale
+
     property real _scale
     property int orientation: metadata.orientation
 
@@ -26,15 +34,16 @@ SilicaFlickable {
     property real maximumZoom: Math.max(Screen.width, Screen.height) / 200
     property int _maximumZoomedWidth: _fullWidth * maximumZoom
     property int _maximumZoomedHeight: _fullHeight * maximumZoom
-    property int _minimumZoomedWidth: implicitWidth * _fittedScale
-    property int _minimumZoomedHeight: implicitHeight * _fittedScale
-    property bool _zoomAllowed: enableZoom && _fittedScale !== maximumZoom
-    property int _fullWidth: _transpose ? Math.max(photo.implicitHeight, largePhoto.implicitHeight)
+    property int _minimumZoomedWidth: implicitWidth * _minimumScale
+    property int _minimumZoomedHeight: implicitHeight * _minimumScale
+    property bool _zoomAllowed: enableZoom && _minimumScale !== maximumZoom
+    property int _fullWidth: transpose ? Math.max(photo.implicitHeight, largePhoto.implicitHeight)
                                         : Math.max(photo.implicitWidth, largePhoto.implicitWidth)
-    property int _fullHeight: _transpose ? Math.max(photo.implicitWidth, largePhoto.implicitWidth)
+    property int _fullHeight: transpose ? Math.max(photo.implicitWidth, largePhoto.implicitWidth)
                                          : Math.max(photo.implicitHeight, largePhoto.implicitHeight)
 
-    readonly property bool _transpose: (orientation % 180) != 0
+    // Note transpose is used by ZoomableImage
+    property bool transpose: (orientation % 180) != 0
 
     signal clicked
 
@@ -45,8 +54,8 @@ SilicaFlickable {
     enabled: !zoomOutAnimation.running
     flickableDirection: Flickable.HorizontalAndVerticalFlick
 
-    implicitWidth: _transpose ? photo.implicitHeight : photo.implicitWidth
-    implicitHeight: _transpose ? photo.implicitWidth : photo.implicitHeight
+    implicitWidth: transpose ? photo.implicitHeight : photo.implicitWidth
+    implicitHeight: transpose ? photo.implicitWidth : photo.implicitHeight
 
     contentWidth: container.width
     contentHeight: container.height
@@ -54,14 +63,14 @@ SilicaFlickable {
     readonly property bool _active: active || viewMoving
     on_ActiveChanged: {
         if (!_active) {
-            _resetScale()
+            resetScale()
             largePhoto.source = ""
         }
     }
     onViewMovingChanged: if (!viewMoving) mouseArea.reset()
-    interactive: scaled && !mouseArea.horizontalDragUnused
+    interactive: (scaled || leftMargin > 0 || rightMargin > 0 || topMargin > 0 || bottomMargin > 0) && !mouseArea.horizontalDragUnused
 
-    function _resetScale() {
+    function resetScale() {
         if (scaled) {
             _scale = _fittedScale
             scaled = false
@@ -80,25 +89,25 @@ SilicaFlickable {
 
         if (fit == Fit.Width) {
             // Scale and bounds check the width, and then apply the same scale to height.
-            newWidth = (flickable._transpose ? photo.height : photo.width) * scale
+            newWidth = (flickable.transpose ? photo.height : photo.width) * scale
             if (newWidth <= flickable._minimumZoomedWidth) {
-                _resetScale()
+                _scale = _minimumScale
                 return
             } else {
                 newWidth = Math.min(newWidth, flickable._maximumZoomedWidth)
                 _scale = newWidth / implicitWidth
-                newHeight = _transpose ? photo.width : photo.height
+                newHeight = transpose ? photo.width : photo.height
             }
         } else {
             // Scale and bounds check the height, and then apply the same scale to width.
-            newHeight = (flickable._transpose ? photo.width : photo.height) * scale
+            newHeight = (flickable.transpose ? photo.width : photo.height) * scale
             if (newHeight <= flickable._minimumZoomedHeight) {
-                _resetScale()
+                _scale = _minimumScale
                 return
             } else {
                 newHeight = Math.min(newHeight, flickable._maximumZoomedHeight)
                 _scale = newHeight / implicitHeight
-                newWidth = _transpose ? photo.height : photo.width
+                newWidth = transpose ? photo.height : photo.width
             }
         }
 
@@ -158,8 +167,8 @@ SilicaFlickable {
         enabled: photo.status == Image.Ready
         onPinchUpdated: if (flickable._zoomAllowed) flickable._scaleImage(1.0 + pinch.scale - pinch.previousScale, pinch.center, pinch.previousCenter)
         onPinchFinished: flickable.returnToBounds()
-        width: Math.max(flickable.width, flickable._transpose ? photo.height : photo.width)
-        height: Math.max(flickable.height, flickable._transpose ? photo.width : photo.height)
+        width: Math.max(flickable.width, flickable.transpose ? photo.height : photo.width)
+        height: Math.max(flickable.height, flickable.transpose ? photo.width : photo.height)
 
         Image {
             id: photo
@@ -170,7 +179,7 @@ SilicaFlickable {
             width: Math.ceil(implicitWidth * flickable._scale)
             height: Math.ceil(implicitHeight * flickable._scale)
             sourceSize.width: Screen.height
-            fillMode:  Image.PreserveAspectFit
+            fillMode: Image.PreserveAspectFit
             asynchronous: true
             anchors.centerIn: parent
             cache: false

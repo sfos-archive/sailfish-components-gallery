@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import Sailfish.Gallery 1.0
+import Sailfish.Gallery.private 1.0
 import Sailfish.Ambience 1.0
 
 Item {
@@ -21,7 +22,7 @@ Item {
     readonly property bool allowed: isImage || localFile
     readonly property bool playing: player && player.playing
     property alias topFade: topFade
-    property real fadeOpacity: 0.6
+    property alias fadeOpacity: topFade.fadeOpacity
 
     property url source
     property string itemId
@@ -49,6 +50,7 @@ Item {
 
     signal createPlayer
     signal remove
+    signal edited(string image)
 
     onSourceChanged: if (_remorsePopup && _remorsePopup.active) _remorsePopup.trigger()
 
@@ -56,28 +58,21 @@ Item {
     Behavior on opacity { FadeAnimator {}}
     opacity: enabled ? 1.0 : 0.0
 
-    Rectangle {
+    FadeGradient {
         id: topFade
 
         width: parent.width
         height: detailsButton.height + 2 * detailsButton.y
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0, fadeOpacity ) }
-            GradientStop { position: 0.2; color: Qt.rgba(0, 0, 0, fadeOpacity ) }
-            GradientStop { position: 1.0; color: "transparent" }
-        }
+        topDown: true
     }
 
-    Rectangle {
+    FadeGradient {
         id: bottomFade
+
+        fadeOpacity: topFade.fadeOpacity
         width: parent.width
         height: toolbar.height + 2* toolbar.anchors.bottomMargin
         anchors.bottom: parent.bottom
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: "transparent" }
-            GradientStop { position: 0.8; color: Qt.rgba(0, 0, 0, fadeOpacity) }
-            GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, fadeOpacity) }
-        }
     }
 
     IconButton {
@@ -174,7 +169,37 @@ Item {
             icon.source: "image://theme/icon-m-edit?" + Theme.lightPrimaryColor
             visible: fileInfo.editableImage && isImage && !viewerOnlyMode
             anchors.verticalCenter: parent.verticalCenter
-            onClicked: pageStack.animatorPush("Sailfish.Gallery.ImageEditPage", { source: overlay.source })
+            onClicked: {
+                editPageLoader.active = true
+                pageStack.animatorPush(editPageLoader.item)
+            }
+
+            Loader {
+                id: editPageLoader
+                active: false
+                sourceComponent: ImageEditDialog {
+                    source: overlay.source
+                    onEdited: overlay.edited(target)
+                    onFinished: editPageLoader.active = false
+
+                    Rectangle {
+                        z: 1000
+                        color: "black"
+                        anchors.fill: parent
+                        enabled: editInProgress
+                        opacity: enabled ? 1.0 : 0.0
+                        parent: overlay
+                        BusyIndicator {
+                            size: BusyIndicatorSize.Large
+                            anchors.centerIn: parent
+                            running: editInProgress
+                        }
+                        TouchBlocker {
+                            anchors.fill: parent
+                        }
+                    }
+                }
+            }
         }
 
         IconButton {
