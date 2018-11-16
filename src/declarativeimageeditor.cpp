@@ -1,7 +1,6 @@
 #include "declarativeimageeditor.h"
 #include "declarativeimageeditor_p.h"
 
-
 #include <QImage>
 #include <QtConcurrentRun>
 #include <QRectF>
@@ -36,8 +35,6 @@ QUrl DeclarativeImageEditor::source() const
     Q_D(const DeclarativeImageEditor);
     return d->m_source;
 }
-
-
 
 void DeclarativeImageEditor::setTarget(const QUrl &target)
 {
@@ -75,6 +72,7 @@ void DeclarativeImageEditor::adjustLevels(double brightness, double contrast)
     Q_D(DeclarativeImageEditor);
     QString source = d->m_source.toLocalFile();
     QString target = d->m_target.toLocalFile();
+
     QtConcurrent::run(d, &DeclarativeImageEditorPrivate::adjustLevels, source, target, brightness, contrast);
 }
 
@@ -82,7 +80,7 @@ void DeclarativeImageEditor::cropResult(bool success, const QString &targetFile)
 {
     Q_D(DeclarativeImageEditor);
     if (d->m_target.isEmpty()) {
-        setTarget(targetFile);
+        setTarget(QUrl::fromLocalFile(targetFile));
     }
     emit cropped(success);
 }
@@ -91,7 +89,7 @@ void DeclarativeImageEditor::rotateResult(bool success, const QString &targetFil
 {
     Q_D(DeclarativeImageEditor);
     if (d->m_target.isEmpty()) {
-        setTarget(targetFile);
+        setTarget(QUrl::fromLocalFile(targetFile));
     }
     emit rotated(success);
 }
@@ -100,7 +98,7 @@ void DeclarativeImageEditor::adjustLevelsResult(bool success, const QString &tar
 {
     Q_D(DeclarativeImageEditor);
     if (d->m_target.isEmpty()) {
-        setTarget(targetFile);
+        setTarget(QUrl::fromLocalFile(targetFile));
     }
     emit levelsAdjusted(success);
 }
