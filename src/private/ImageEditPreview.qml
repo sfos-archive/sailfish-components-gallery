@@ -38,14 +38,43 @@ Item {
 
     clip: true
 
+    function transposedSize(item) {
+        var transpose = (previewRotation % 180) != 0
+
+        var width = transpose ? item.height : item.width
+        var height = transpose ? item.width : item.height
+        return Qt.size(width, height)
+    }
+
+    function rotatePoint(x, y, cropSize, imageSize, rotation) {
+        var transpose = (rotation % 180) != 0
+        var invert = (rotation < 0 ? rotation + 360 : rotation) >= 180
+        var _x, _y
+        if (transpose) {
+            _x = invert ? imageSize.width - cropSize.width - y : y
+            _y = invert ? x : imageSize.height - cropSize.height - x
+        } else {
+            _x = invert ? imageSize.width - cropSize.width - x : x
+            _y = invert ? imageSize.height - cropSize.height - y : y
+        }
+
+        return Qt.point(_x, _y)
+    }
+
     function crop() {
         editInProgress = true
-        var cropSize = Qt.size(editor.width, editor.height)
-        var imageWidth = zoomableImage.transpose ? zoomableImage.photo.height : zoomableImage.photo.width
-        var imageHeight = zoomableImage.transpose ? zoomableImage.photo.width : zoomableImage.photo.height
+        var cropSize = transposedSize(editor)
+
+        var transpose = (zoomableImage.baseRotation % 180) != 0
+        var imageWidth = transpose ? zoomableImage.photo.height : zoomableImage.photo.width
+        var imageHeight = transpose ? zoomableImage.photo.width : zoomableImage.photo.height
         var imageSize = Qt.size(imageWidth, imageHeight)
-        var position = Qt.point(zoomableImage.contentX + zoomableImage.leftMargin,
-                                zoomableImage.contentY + zoomableImage.topMargin)
+        var position = rotatePoint(zoomableImage.contentX + zoomableImage.leftMargin,
+                                   zoomableImage.contentY + zoomableImage.topMargin,
+                                   cropSize,
+                                   imageSize,
+                                   previewRotation % 360)
+
         editor.crop(cropSize, imageSize, position)
     }
 
@@ -93,6 +122,7 @@ Item {
         baseRotation: -metadata.orientation
         photo.onStatusChanged: if (status === Image.Ready) delayedReset.restart()
     }
+
     Timer {
         id: delayedReset
         running: true; interval: 10
@@ -188,7 +218,7 @@ Item {
         onCropped: {
             editInProgress = false
             if (success) {
-                resetScale()
+                root.source = target
                 root.edited()
             } else {
                 root.failed()

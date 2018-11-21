@@ -28,6 +28,11 @@ Rectangle {
         DebugLabel {
             text: "Crop w " + editor.width + " h " + editor.height + " x " + editor.x + " y " + editor.y
         }
-
+        DebugLabel {
+            text: "Rotation base " + zoomableImage.baseRotation + " image " + zoomableImage.imageRotation
+        }
+        DebugLabel {
+            text: "Orientation meta " + metadata.orientation + " orientation " + zoomableImage.orientation
+        }
     }
 }
