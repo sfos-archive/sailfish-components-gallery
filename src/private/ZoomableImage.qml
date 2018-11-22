@@ -20,8 +20,8 @@ ImageViewer {
     function rotate(angle) {
         resetScale()
         // Don't wait for the rotation animation to complete to new image dimensions
-        transposeBinding.value = (baseRotation + imageRotation + angle) % 180
-        rotationAnimation.to = imageRotation + angle
+        transposeBinding.value = (baseRotation + rotationAnimation.to + angle) % 180
+        rotationAnimation.to = rotationAnimation.to + angle
         rotationAnimation.restart()
     }
 

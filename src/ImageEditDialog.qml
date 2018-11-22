@@ -31,7 +31,7 @@ Dialog {
     property bool _lightAndContrastMode
     property bool _cropMenu
     property string _cropType
-    property int _cropRatio: cropOnly ? aspectRatio : 0.0
+    property int _cropRatio: cropOnly ? aspectRatio : -1.0
     property bool _checkRotation
     property bool _checkLevels
     property bool _checkCrop
@@ -58,6 +58,14 @@ Dialog {
     function editStep() {
         if (!editInProgress) return
 
+        if (!_checkCrop) {
+            _checkCrop = true
+            if (_cropRatio >= 0) {
+                previewImage.crop()
+                return
+            }
+        }
+
         if (!_checkRotation) {
             _checkRotation = true
             if (imageRotation !== 0) {
@@ -74,15 +82,7 @@ Dialog {
             }
         }
 
-        if (!_checkCrop) {
-            _checkCrop = true
-            if (_cropRatio > 0) {
-                previewImage.crop()
-                return
-            }
-        }
-
-        if (_checkRotation && _checkLevels && _checkCrop) {
+        if (_checkCrop && _checkRotation && _checkLevels) {
             editSuccessful = true
             editInProgress = false
             if (status == PageStatus.Inactive) {
