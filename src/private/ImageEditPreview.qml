@@ -92,6 +92,7 @@ Item {
         editor.setSize()
         zoomableImage.resetScale()
     }
+
     function previewRotate(angle) {
         zoomableImage.rotate(angle)
         editor.setSize()
@@ -105,7 +106,7 @@ Item {
             aspectRatio = -1.0
         }
 
-        resetScale()
+        delayedReset.restart()
     }
 
     // ImageMetadata is needed to track the real orientation
@@ -183,7 +184,7 @@ Item {
                 width = maxWidth
                 height = Math.round(width / aspectRatio)
             } else {
-                maxHeight = root.height
+                maxHeight = root.height - Theme.itemSizeSmall
                 var tmpWidth = aspectRatio * maxHeight
                 maxWidth = root.width - Theme.itemSizeMedium
                 if (tmpWidth > maxWidth) {
