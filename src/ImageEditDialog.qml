@@ -41,7 +41,9 @@ Dialog {
     signal edited
     signal finished
 
-    canAccept: imageRotation !== 0 || brightness !== 0 || contrast !== 0 || _cropType !== 0
+    canAccept: imageRotation !== 0 || brightness !== 0 || contrast !== 0 || (_cropType !== "" || cropOnly)
+    backNavigation: !_cropMenu
+    forwardNavigation: !_cropMenu
 
     onStatusChanged: {
         if (status == PageStatus.Inactive) {
@@ -101,6 +103,7 @@ Dialog {
         anchors.fill: parent
         DialogHeader {
             id: header
+
             //% "Save"
             acceptText: qsTrId("components_gallery-he-save")
             spacing: 0
@@ -126,6 +129,8 @@ Dialog {
                 topDown: true
                 width: parent.width
                 height: titleLabel.height + 2 * titleLabel.y
+                visible: !previewImage.longPressed && !_cropMenu
+
                 Label {
                     id: titleLabel
                     y: Theme.paddingLarge
@@ -134,8 +139,8 @@ Dialog {
                     width: parent.width - x
                     x: Theme.horizontalPageMargin
                     font.pixelSize: Theme.fontSizeExtraLarge
-                    wrapMode: Text.Wrap
                     color: Theme.highlightFromColor(Theme.highlightColor, Theme.LightOnDark)
+                    wrapMode: Text.Wrap
                 }
             }
         }
@@ -144,9 +149,7 @@ Dialog {
     Item {
         id: overlay
 
-        property bool active: !previewImage.longPressed && !cropOnly
-        opacity: active ? 1.0 : 0.0
-        enabled: active
+        visible: !previewImage.longPressed && !cropOnly
         anchors.fill: parent
 
         FadeGradient {
@@ -190,26 +193,6 @@ Dialog {
             }
         }
 
-        Loader {
-            Behavior on opacity { FadeAnimator {}}
-            opacity: enabled ? 1.0 : 0.0
-            active: _cropMenu
-            enabled: _cropMenu
-            anchors.fill: parent
-            onActiveChanged: if (active) active = true // remove binding
-            sourceComponent: CropMenu {
-                active: _cropMenu
-                onSelected: {
-                    _cropType = type
-                    _cropRatio = ratio
-                    previewImage.aspectRatio = ratio
-                    previewImage.aspectRatioType = type
-                    _cropMenu = false
-                }
-                onCanceled: _cropMenu = false
-            }
-        }
-
         Row {
             id: toolbar
             anchors  {
@@ -242,6 +225,27 @@ Dialog {
             }
         }
     }
+
+    Loader {
+        Behavior on opacity { FadeAnimator {}}
+        opacity: enabled ? 1.0 : 0.0
+        active: _cropMenu
+        enabled: _cropMenu
+        anchors.fill: parent
+        onActiveChanged: if (active) active = true // remove binding
+        sourceComponent: CropMenu {
+            active: _cropMenu
+            onSelected: {
+                _cropType = type
+                _cropRatio = ratio
+                previewImage.aspectRatio = ratio
+                previewImage.aspectRatioType = type
+                _cropMenu = false
+            }
+            onCanceled: _cropMenu = false
+        }
+    }
+
     Notification {
         id: errorNotification
         isTransient: true

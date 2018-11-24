@@ -21,69 +21,99 @@ Rectangle {
                                                   : Theme.rgba(Theme.lightPrimaryColor, 0.8)
 
     MouseArea {
-        enabled: root.active
         anchors.fill: parent
+        onClicked: root.canceled()
+    }
 
-        onPressed: updateHighlight(mouse.y)
-        onPositionChanged: updateHighlight(mouse.y)
-        onReleased: {
-            updateHighlight(mouse.y)
-            if (_highlightedItem) {
-                _highlightedItem.clicked()
-                _selectedItem = _highlightedItem
-            } else {
-                root.canceled()
+    SilicaFlickable {
+        id: flickable
+        width: parent.width
+        height: Math.min(parent.height, contentHeight)
+        anchors.verticalCenter: parent.verticalCenter
+        contentHeight: contentColumn.y + contentColumn.height + Theme.paddingLarge
+
+        HighlightBar { id: highlightBar }
+
+        Label {
+            id: titleLabel
+
+            //% "Aspect ratio"
+            text: qsTrId("components_gallery-he-aspect_ratio")
+            width: parent.width - x
+            y: Theme.paddingLarge
+            x: Theme.horizontalPageMargin
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: Theme.fontSizeExtraLarge
+            color: Theme.highlightColor
+            wrapMode: Text.Wrap
+            height: Theme.itemSizeSmall
+        }
+
+        Column {
+            id: contentColumn
+
+            width: parent.width
+            anchors.top: titleLabel.bottom
+
+            Repeater {
+                id: repeater
+                model: AspectRatioModel {}
+                MenuItem {
+                    text: model.text
+                    onClicked: {
+                        root.type = model.type
+                        root.ratio = model.ratio
+                        root.selected()
+                    }
+                }
+            }
+        }
+
+        MouseArea {
+            parent: flickable
+            enabled: root.active
+            anchors.fill: parent
+
+            function itemAt(yPos) {
+                var pos = mapToItem(contentColumn, width/2, yPos)
+                var item = contentColumn.childAt(pos.x, pos.y)
+                return item && item.__silica_menuitem !== undefined ? item : null
+            }
+            function updateHighlight(yPos) {
+                if (_highlightedItem && itemAt(yPos) !== _highlightedItem) {
+                    clearHighlight()
+                }
+            }
+            function clearHighlight() {
+                if (_highlightedItem) {
+                    highlightBar.clearHighlight()
+                    _highlightedItem.down = false
+                    _highlightedItem = null
+                }
             }
 
-            clearHighlight()
-        }
-
-        onCanceled: {
-            clearHighlight()
-            root.canceled()
-        }
-
-        function updateHighlight(yPos) {
-            var pos = mapToItem(contentColumn, width/2, yPos)
-            var child = contentColumn.childAt(pos.x, pos.y)
-            if (child !== _highlightedItem) {
-                if (_highlightedItem) {
-                    _highlightedItem.down = false
-                }
-                _highlightedItem = child
+            onPressed: {
+                _highlightedItem = itemAt(mouse.y)
                 if (_highlightedItem) {
                     highlightBar.highlight(_highlightedItem, contentColumn)
                     _highlightedItem.down = true
+                }
+            }
+            onPositionChanged: updateHighlight(mouse.y)
+            onClicked: {
+                updateHighlight(mouse.y)
+                if (_highlightedItem) {
+                    _highlightedItem.clicked()
+                    _selectedItem = _highlightedItem
                 } else {
-                    highlightBar.clearHighlight()
+                    root.canceled()
                 }
+                clearHighlight()
+            }
+            onCanceled: {
+                clearHighlight()
             }
         }
-        function clearHighlight() {
-            if (_highlightedItem) {
-                highlightBar.clearHighlight()
-                _highlightedItem.down = false
-                _highlightedItem = null
-            }
-        }
-    }
-    HighlightBar { id: highlightBar }
-    Column {
-        id: contentColumn
-        width: parent.width
-        anchors.verticalCenter: parent.verticalCenter
-
-        Repeater {
-            id: repeater
-            model: AspectRatioModel {}
-            MenuItem {
-                text: model.text
-                onClicked: {
-                    root.type = model.type
-                    root.ratio = model.ratio
-                    root.selected()
-                }
-            }
-        }
+        VerticalScrollDecorator {}
     }
 }
