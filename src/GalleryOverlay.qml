@@ -186,7 +186,7 @@ Item {
                         z: 1000
                         color: "black"
                         anchors.fill: parent
-                        enabled: editInProgress
+                        enabled: editInProgress || editSuccessful
                         opacity: enabled ? 1.0 : 0.0
                         parent: overlay
                         BusyIndicator {

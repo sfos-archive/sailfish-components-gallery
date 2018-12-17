@@ -45,12 +45,9 @@ Dialog {
     backNavigation: !_cropMenu
     forwardNavigation: !_cropMenu
 
-    onStatusChanged: {
-        if (status == PageStatus.Inactive) {
-            if (!editInProgress) finished()
-            if (editSuccessful) edited()
-        }
-    }
+    // JB#44195: Page is inactive, but the page transition is ongoing. Delay page operation a bit
+    onStatusChanged: if (status == PageStatus.Inactive) delayedCompletion.restart()
+
     onIsPortraitChanged: previewImage.resetScale()
     onAccepted: {
         editInProgress = true
@@ -94,6 +91,15 @@ Dialog {
         }
     }
 
+    Timer {
+        id: delayedCompletion
+        interval: 16
+        onTriggered: {
+            if (!editInProgress) finished()
+            if (editSuccessful) edited()
+        }
+    }
+
     FadeBlocker {
         z: -1
         anchors.fill: parent
@@ -122,6 +128,7 @@ Dialog {
                 errorNotification.previewBody = qsTrId("components_gallery-la-editing_image_failed")
                 errorNotification.publish()
                 root.editInProgress = false
+                finished()
             }
 
             FadeGradient {
