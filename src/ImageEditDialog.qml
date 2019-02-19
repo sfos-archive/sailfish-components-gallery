@@ -48,7 +48,8 @@ Dialog {
     // JB#44195: Page is inactive, but the page transition is ongoing. Delay page operation a bit
     onStatusChanged: if (status == PageStatus.Inactive) delayedCompletion.restart()
 
-    onIsPortraitChanged: previewImage.resetScale()
+    onIsPortraitChanged: previewImage.resetZoom()
+
     onAccepted: {
         editInProgress = true
         editStep()
