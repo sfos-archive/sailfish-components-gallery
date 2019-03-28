@@ -25,6 +25,7 @@ ZoomableFlickable {
     }
 
     contentRotation: -metadata.orientation
+    scrollDecoratorColor: Theme.lightPrimaryColor
 
     zoomEnabled: photo.status == Image.Ready
     maximumZoom: Math.max(Screen.width, Screen.height) / 200
