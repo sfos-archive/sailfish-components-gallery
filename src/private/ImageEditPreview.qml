@@ -121,7 +121,7 @@ Item {
 
         anchors.fill: parent
         baseRotation: -metadata.orientation
-        photo.onStatusChanged: if (status === Image.Ready) delayedReset.restart()
+        photo.onStatusChanged: if (photo.status === Image.Ready) delayedReset.restart()
     }
 
     Timer {

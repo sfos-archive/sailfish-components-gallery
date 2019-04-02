@@ -9,9 +9,8 @@ import QtQuick 2.0
 
 ListModel {
     ListElement {
-        //: No cropping
-        //% "None"
-        text: qsTrId("components_gallery-li-none")
+        //% "No cropping"
+        text: qsTrId("components_gallery-li-no_cropping")
         ratio: -1.0
         type: "none"
     }
