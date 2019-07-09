@@ -11,10 +11,8 @@ class DeclarativeAvatarFileHandler: public QObject
 public:
     DeclarativeAvatarFileHandler(QObject *parent = 0);
 
-    Q_INVOKABLE QUrl createNewAvatarFileName(const QString &id);
-    Q_INVOKABLE bool removeOldAvatars(const QString &id, const QUrl &excludedFile);
+    Q_INVOKABLE QString createNewAvatarFileName(const QString &base);
 
-    static QString avatarPath();
     static QObject *api_factory(QQmlEngine *, QJSEngine *);
 };
 
