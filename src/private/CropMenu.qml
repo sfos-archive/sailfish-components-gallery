@@ -17,8 +17,8 @@ Rectangle {
     onActiveChanged: if (active) highlightBar.highlight(_selectedItem, contentColumn)
 
     anchors.fill: parent
-    color: Theme.colorScheme == Theme.LightOnDark ? Theme.rgba(Theme.highlightDimmerColor, 0.8)
-                                                  : Theme.rgba(Theme.lightPrimaryColor, 0.8)
+    color: Theme.colorScheme == Theme.LightOnDark ? Theme.rgba(Theme.highlightDimmerColor, Theme.opacityOverlay)
+                                                  : Theme.rgba(Theme.lightPrimaryColor, Theme.opacityOverlay)
 
     MouseArea {
         anchors.fill: parent

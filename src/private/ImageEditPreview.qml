@@ -255,7 +255,7 @@ Item {
     DimmedRegion {
         anchors.fill: parent
         color: Theme.highlightDimmerFromColor(Theme.highlightDimmerColor, Theme.LightOnDark)
-        opacity: aspectRatioType !== "none" ? 0.5 : 0.0
+        opacity: aspectRatioType !== "none" ? Theme.opacityHigh : 0.0
         visible: !longPressed
 
 
