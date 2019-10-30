@@ -1,7 +1,7 @@
 Name:       sailfish-components-gallery-qt5
 
 Summary:    Sailfish Gallery UI Components
-Version:    0.2.2
+Version:    1.0.9
 Release:    1
 Group:      System/Libraries
 License:    Proprietary
@@ -17,7 +17,7 @@ BuildRequires:  qt5-qttools
 BuildRequires:  qt5-qttools-linguist
 BuildRequires:  pkgconfig(quillmetadata-qt5)
 
-Requires:  sailfishsilica-qt5 >= 1.1.46
+Requires:  sailfishsilica-qt5 >= 1.1.63
 Requires:  nemo-qml-plugin-thumbnailer-qt5
 Requires:  libkeepalive >= 1.7.0
 Requires:  declarative-transferengine-qt5 >= 0.3.3
