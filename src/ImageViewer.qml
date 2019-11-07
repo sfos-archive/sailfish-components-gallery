@@ -12,6 +12,7 @@ ZoomableFlickable {
     property bool active: true
     readonly property bool _active: active || viewMoving
     readonly property bool error: photo.status == Image.Error
+    readonly property alias imageMetaData: metadata
 
     property alias photo: photo
     property alias largePhoto: largePhoto
