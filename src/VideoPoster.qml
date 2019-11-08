@@ -2,7 +2,7 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import org.nemomobile.thumbnailer 1.0
 
-MouseArea {
+Item {
     id: root
 
     signal togglePlay
@@ -20,10 +20,21 @@ MouseArea {
     property bool overlayMode
     property bool transpose
     readonly property bool error: poster.status == Thumbnail.Error
-    readonly property bool down: pressed && containsMouse
+    readonly property bool down: videoMouse.pressed && videoMouse.containsMouse
+
+    signal clicked
 
     implicitWidth: poster.implicitWidth
     implicitHeight: poster.implicitHeight
+
+    MouseArea {
+        id: videoMouse
+        anchors {
+            fill: parent
+            margins: Theme.paddingLarge // don't react near display edges
+        }
+        onClicked: root.clicked()
+    }
 
     // Poster
     Thumbnail {
@@ -77,10 +88,10 @@ MouseArea {
             when: overlayMode || !playing // avoid flicker to pause icon when pressing play
             property: "source"
             value: "image://theme/icon-video-overlay-" + (playing ?  "pause" : "play")
-                   + "?" + (mouseArea.down ? Theme.highlightColor : Theme.lightPrimaryColor)
+                   + "?" + (iconMouse.down ? Theme.highlightColor : Theme.lightPrimaryColor)
         }
         MouseArea {
-            id: mouseArea
+            id: iconMouse
 
             property bool down: pressed && containsMouse
             anchors.fill: parent

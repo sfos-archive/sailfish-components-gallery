@@ -86,7 +86,11 @@ ZoomableFlickable {
     }
 
     MouseArea {
-        anchors.fill: parent
+        parent: flickable
+        anchors {
+            fill: parent
+            margins: Theme.paddingLarge // don't react near display edges
+        }
         onClicked: flickable.clicked()
     }
 
