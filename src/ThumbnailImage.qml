@@ -5,6 +5,8 @@ import org.nemomobile.thumbnailer 1.0
 ThumbnailBase {
     id: thumbnailBase
 
+    readonly property alias status: thumbnail.status
+
     Thumbnail {
         id: thumbnail
         property bool gridMoving: thumbnailBase.grid ? thumbnailBase.grid.moving : false
