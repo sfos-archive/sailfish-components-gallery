@@ -19,6 +19,7 @@ Column {
     property alias durationDetail: durationItem
     property alias descriptionDetail: descriptionItem
     property alias copyrightDetail: copyrightItem
+    property alias authorDetail: authorItem
 
     function formatDimensions(w, h) {
         //: Pattern for image resolution, width x height
@@ -166,6 +167,13 @@ Column {
         id: copyrightItem
         //% "Copyright"
         label: qsTrId("components_gallery-la-copyright")
+        visible: value.length > 0
+        alignment: Qt.AlignLeft
+    }
+    DetailItem {
+        id: authorItem
+        //% "Author"
+        label: qsTrId("components_gallery-la-author")
         visible: value.length > 0
         alignment: Qt.AlignLeft
     }
