@@ -69,7 +69,7 @@ Page {
                       'exposureTime',
                       'fNumber', 'flashEnabled', 'focalLength', 'meteringMode', 'whiteBalance',
                       'latitude', 'longitude', 'altitude',
-                      'title', 'description', 'copyright'
+                      'description', 'copyright'
                     ]
 
         onStatusChanged: {
@@ -114,7 +114,6 @@ Page {
                               .arg(galleryItem.metaData.longitude)
                               .arg(galleryItem.metaData.altitude)
                             : ""
-                    titleItem.value = galleryItem.metaData.title
                     descriptionItem.value = galleryItem.metaData.description
                     copyrightItem.value = galleryItem.metaData.copyright
                 }
@@ -238,13 +237,6 @@ Page {
                 id: durationItem
                 //% "Duration"
                 label: qsTrId("components_gallery-la-duration")
-                visible: value.length > 0
-                alignment: Qt.AlignLeft
-            }
-            DetailItem {
-                id: titleItem
-                //% "Title"
-                label: qsTrId("components_gallery-la-title")
                 visible: value.length > 0
                 alignment: Qt.AlignLeft
             }
