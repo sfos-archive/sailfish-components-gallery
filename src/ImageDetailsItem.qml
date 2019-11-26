@@ -17,7 +17,6 @@ Column {
     property alias whiteBalanceDetail: whiteBalanceItem
     property alias gpsDetail: gpsItem
     property alias durationDetail: durationItem
-    property alias titleDetail: titleItem
     property alias descriptionDetail: descriptionItem
     property alias copyrightDetail: copyrightItem
 
@@ -153,13 +152,6 @@ Column {
         id: durationItem
         //% "Duration"
         label: qsTrId("components_gallery-la-duration")
-        visible: value.length > 0
-        alignment: Qt.AlignLeft
-    }
-    DetailItem {
-        id: titleItem
-        //% "Title"
-        label: qsTrId("components_gallery-la-title")
         visible: value.length > 0
         alignment: Qt.AlignLeft
     }

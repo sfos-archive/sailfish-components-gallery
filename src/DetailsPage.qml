@@ -69,7 +69,7 @@ Page {
                       'exposureTime',
                       'fNumber', 'flashEnabled', 'focalLength', 'meteringMode', 'whiteBalance',
                       'latitude', 'longitude', 'altitude',
-                      'title', 'description', 'copyright'
+                      'description', 'copyright'
                     ]
 
         onStatusChanged: {
@@ -106,7 +106,6 @@ Page {
                                                            galleryItem.metaData.longitude,
                                                            galleryItem.metaData.altitude)
                             : ""
-                    details.titleDetail.value = galleryItem.metaData.title
                     details.descriptionDetail.value = galleryItem.metaData.description
                     details.copyrightDetail.value = galleryItem.metaData.copyright
                 }
