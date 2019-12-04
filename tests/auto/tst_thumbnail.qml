@@ -25,7 +25,7 @@ Item {
 
     ListModel {
         id: testModel
-        ListElement { url: "file:///home/nemo/Pictures/image1.jpg"; mimeType: "image/jpeg" }
+        ListElement { url: "file://" + StandardPaths.pictures + "/image1.jpg"; mimeType: "image/jpeg" }
     }
 
 
@@ -88,7 +88,7 @@ Item {
             compare(thumbnail.size, imageGridView.cellSize)
             compare(thumbnail.width, thumbnail.size)
             compare(thumbnail.height, thumbnail.size)
-            compare(thumbnail.source, "file:///home/nemo/Pictures/image1.jpg")
+            compare(thumbnail.source, "file://" + StandardPaths.pictures + "/image1.jpg")
             compare(thumbnail.mimeType, "image/jpeg")
             compare(thumbnail.contentYOffset, 0)
             compare(thumbnail.contentXOffset, 0)
