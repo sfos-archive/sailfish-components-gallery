@@ -19,6 +19,7 @@ Column {
     property alias durationDetail: durationItem
     property alias descriptionDetail: descriptionItem
     property alias copyrightDetail: copyrightItem
+    property alias authorDetail: authorItem
 
     function formatDimensions(w, h) {
         //: Pattern for image resolution, width x height
@@ -86,6 +87,55 @@ Column {
         alignment: Qt.AlignLeft
     }
     DetailItem {
+        id: gpsItem
+        //% "GPS"
+        label: qsTrId("components_gallery-la-gps")
+        visible: value.length > 0
+        alignment: Qt.AlignLeft
+    }
+    DetailItem {
+        id: durationItem
+        //% "Duration"
+        label: qsTrId("components_gallery-la-duration")
+        visible: value.length > 0
+        alignment: Qt.AlignLeft
+    }
+    DetailItem {
+        id: descriptionItem
+        //% "Description"
+        label: qsTrId("components_gallery-la-description")
+        visible: value.length > 0
+        alignment: Qt.AlignLeft
+    }
+    DetailItem {
+        id: copyrightItem
+        //% "Copyright"
+        label: qsTrId("components_gallery-la-copyright")
+        visible: value.length > 0
+        alignment: Qt.AlignLeft
+    }
+    DetailItem {
+        id: authorItem
+        //% "Author"
+        label: qsTrId("components_gallery-la-author")
+        visible: value.length > 0
+        alignment: Qt.AlignLeft
+    }
+
+    SectionHeader {
+        //% "Camera info"
+        text: qsTrId("components_gallery-la-camera_info")
+        visible: cameraManufacturerItem.visible
+                 || cameraModelItem.visible
+                 || exposureTimeItem.visible
+                 || fNumberItem.visible
+                 || flashEnabledItem.visible
+                 || focalLengthItem.visible
+                 || meteringModeItem.visible
+                 || whiteBalanceItem.visible
+    }
+
+    DetailItem {
         id: cameraManufacturerItem
         //% "Camera Manufacturer"
         label: qsTrId("components_gallery-la-camera-manufacturer")
@@ -138,34 +188,6 @@ Column {
         id: whiteBalanceItem
         //% "White Balance"
         label: qsTrId("components_gallery-la-white-balance")
-        visible: value.length > 0
-        alignment: Qt.AlignLeft
-    }
-    DetailItem {
-        id: gpsItem
-        //% "GPS"
-        label: qsTrId("components_gallery-la-gps")
-        visible: value.length > 0
-        alignment: Qt.AlignLeft
-    }
-    DetailItem {
-        id: durationItem
-        //% "Duration"
-        label: qsTrId("components_gallery-la-duration")
-        visible: value.length > 0
-        alignment: Qt.AlignLeft
-    }
-    DetailItem {
-        id: descriptionItem
-        //% "Description"
-        label: qsTrId("components_gallery-la-description")
-        visible: value.length > 0
-        alignment: Qt.AlignLeft
-    }
-    DetailItem {
-        id: copyrightItem
-        //% "Copyright"
-        label: qsTrId("components_gallery-la-copyright")
         visible: value.length > 0
         alignment: Qt.AlignLeft
     }

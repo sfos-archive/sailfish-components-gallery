@@ -69,7 +69,7 @@ Page {
                       'exposureTime',
                       'fNumber', 'flashEnabled', 'focalLength', 'meteringMode', 'whiteBalance',
                       'latitude', 'longitude', 'altitude',
-                      'description', 'copyright'
+                      'description', 'copyright', 'author'
                     ]
 
         onStatusChanged: {
@@ -108,6 +108,7 @@ Page {
                             : ""
                     details.descriptionDetail.value = galleryItem.metaData.description
                     details.copyrightDetail.value = galleryItem.metaData.copyright
+                    details.authorDetail.value = galleryItem.metaData.author
                 }
 
                 if (itemType == DocumentGallery.Video) {
