@@ -54,6 +54,8 @@ ThumbnailBase {
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: Theme.fontSizeSmall
             fontSizeMode: Text.Fit
+            opacity: thumbnail.status == Thumbnail.Error ? 1.0 : 0.0
+            Behavior on opacity { FadeAnimator {}}
         }
     }
 }
