@@ -87,7 +87,7 @@ ZoomableFlickable {
     }
 
     MouseArea {
-        parent: flickable
+        parent: _dragDetector // don't catch multi touch events (position behind ZoomableFlickable.pinchArea)
         anchors {
             fill: parent
             margins: Theme.paddingLarge // don't react near display edges
