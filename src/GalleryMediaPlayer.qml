@@ -19,7 +19,19 @@ MediaPlayer {
 
     signal displayError
 
-    onPositionChanged: busy = false
+    onPositionChanged: {
+        // JB#50154: Work-around, force load frame preview when seeking the end
+        if (status === MediaPlayer.EndOfMedia) {
+            asyncPause.restart()
+        }
+        busy = false
+    }
+
+    property var asyncPause: Timer {
+        interval: 16
+        onTriggered: pause()
+    }
+
     onHasErrorChanged: {
         if (error === MediaPlayer.FormatError) {
             //: %1 is replaced with specific codec
