@@ -22,7 +22,7 @@ Requires:  nemo-qml-plugin-thumbnailer-qt5
 Requires:  libkeepalive >= 1.7.0
 Requires:  declarative-transferengine-qt5 >= 0.3.3
 Requires:  libjollasignonuiservice-qt5-plugin >= 0.4.0
-Requires:  sailfish-content-graphics >= 0.7.36
+Requires:  sailfish-content-graphics >= 1.0.52
 
 %description
 Sailfish Gallery UI Components
