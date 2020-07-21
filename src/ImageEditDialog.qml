@@ -263,6 +263,6 @@ Dialog {
         id: errorNotification
         isTransient: true
         urgency: Notification.Critical
-        icon: "icon-system-warning"
+        appIcon: "icon-system-warning"
     }
 }
