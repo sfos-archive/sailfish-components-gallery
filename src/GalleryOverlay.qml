@@ -56,6 +56,33 @@ Item {
         seek(-10000, true /*relative*/)
     }
 
+    function triggerAction(action, immediately) {
+        if (action === "edit") {
+            if (!editPageLoader.active && pageStack.currentPage !== editPageLoader.item) {
+                editPageLoader.active = true
+                pageStack.animatorPush(editPageLoader.item,
+                                       {},
+                                       immediately ? PageStackAction.Immediate : PageStackAction.Animated)
+            }
+        } else if (action === "share") {
+            if (player && player.playing) {
+                player.pause()
+            }
+
+            pageStack.animatorPush("Sailfish.TransferEngine.SharePage",
+                                   {
+                                       "source": overlay.source,
+                                       "mimeType": localFile ? fileInfo.mimeType
+                                                             : "text/x-url",
+                                                               "content": localFile ? undefined
+                                                                                    : { "type": "text/x-url", "status": overlay.source },
+                                       "serviceFilter": ["sharing", "e-mail"],
+                                       "additionalShareComponent": additionalShareComponent
+                                   },
+                                   immediately ? PageStackAction.Immediate : PageStackAction.Animated)
+        }
+    }
+
     Connections {
         id: delayedRelativeSeek
 
@@ -307,8 +334,7 @@ Item {
                 visible: fileInfo.editableImage && isImage && !viewerOnlyMode
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: {
-                    editPageLoader.active = true
-                    pageStack.animatorPush(editPageLoader.item)
+                    overlay.triggerAction("edit")
                 }
 
                 Loader {
@@ -344,20 +370,7 @@ Item {
                 icon.source: "image://theme/icon-m-share"
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: {
-                    if (player && player.playing) {
-                        player.pause()
-                    }
-
-                    pageStack.animatorPush("Sailfish.TransferEngine.SharePage",
-                                           {
-                                               "source": overlay.source,
-                                               "mimeType": localFile ? fileInfo.mimeType
-                                                                     : "text/x-url",
-                                                                       "content": localFile ? undefined
-                                                                                            : { "type": "text/x-url", "status": overlay.source },
-                                               "serviceFilter": ["sharing", "e-mail"],
-                                               "additionalShareComponent": additionalShareComponent
-                                           })
+                    overlay.triggerAction("share")
                 }
             }
 
