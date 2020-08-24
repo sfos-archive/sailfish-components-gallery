@@ -181,7 +181,6 @@ Item {
         }
     }
 
-
     Column {
         id: toolbarParent
         width: parent.width
@@ -272,52 +271,22 @@ Item {
 
             IconButton {
                 visible: !isImage
-                icon.source: "image://theme/icon-m-page-up"
-                icon.rotation: -90
+                icon.source: "image://theme/icon-m-10s-back"
                 anchors.verticalCenter: parent.verticalCenter
                 enabled: !overlay.error && (player && player.position !== 0)
                 opacity: overlay.error ? 0.0 : 1.0
 
                 onClicked: seekBackward()
-
-                width: Theme.itemSizeSmall + rewindLabel.width
-                icon.anchors.horizontalCenterOffset: rewindLabel.width/2 + rewindLabel.x/2
-                Label {
-                    id: rewindLabel
-                    text: "-10s"
-                    opacity: parent.enabled ? 1.0 : Theme.opacityLow
-                    font.pixelSize: Theme.fontSizeSmall
-                    x: Theme.paddingMedium
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                        verticalCenterOffset: -Math.round(Theme.paddingSmall/2)
-                    }
-                }
             }
 
             IconButton {
                 visible: !isImage
-                icon.source: "image://theme/icon-m-page-up"
-                icon.rotation: 90
+                icon.source: "image://theme/icon-m-10s-forward"
                 anchors.verticalCenter: parent.verticalCenter
                 enabled: !overlay.error && (!player || player.position !== player.duration)
                 opacity: overlay.error ? 0.0 : 1.0
 
                 onClicked: seekForward()
-                width: Theme.itemSizeSmall + forwardLabel.width
-                icon.anchors.horizontalCenterOffset: -forwardLabel.width/2 - forwardLabel.anchors.rightMargin/2
-                Label {
-                    id: forwardLabel
-                    text: "+10s"
-                    opacity: parent.enabled ? 1.0 : Theme.opacityLow
-                    font.pixelSize: Theme.fontSizeSmall
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                        verticalCenterOffset: -Math.round(Theme.paddingSmall/2)
-                        right: parent.right
-                        rightMargin: Theme.paddingMedium
-                    }
-                }
             }
 
             IconButton {
