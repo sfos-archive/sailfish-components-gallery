@@ -246,6 +246,8 @@ Item {
 
             IconButton {
                 id: downIcon
+
+                visible: !overlay.error || (localFile && fileInfo.exists)
                 onClicked: toolbar.expanded = !toolbar.expanded
                 icon.source: "image://theme/icon-m-change-type"
                 icon.rotation: toolbar.expanded ? 0 : 180
@@ -292,7 +294,7 @@ Item {
             IconButton {
                 id: deleteButton
                 icon.source: "image://theme/icon-m-delete"
-                visible: localFile
+                visible: localFile && fileInfo.exists
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: overlay.remove()
             }
@@ -300,7 +302,7 @@ Item {
             IconButton {
                 id: editButton
                 icon.source: "image://theme/icon-m-edit"
-                visible: fileInfo.editableImage && isImage && !viewerOnlyMode
+                visible: !overlay.error && fileInfo.editableImage && isImage && !viewerOnlyMode
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: {
                     overlay.triggerAction("edit")
@@ -337,6 +339,7 @@ Item {
             IconButton {
                 id: shareButton
                 icon.source: "image://theme/icon-m-share"
+                visible: !overlay.error
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: {
                     overlay.triggerAction("share")
@@ -348,7 +351,7 @@ Item {
 
                 property bool suppressClick
 
-                visible: isImage
+                visible: isImage && !overlay.error
                 icon.source: "image://theme/icon-m-ambience"
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: {

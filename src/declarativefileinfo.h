@@ -16,6 +16,7 @@ class DeclarativeFileInfo : public QObject
     Q_PROPERTY(QString fileName READ fileName NOTIFY fileNameChanged)
     Q_PROPERTY(qint64 size READ size NOTIFY sizeChanged)
     Q_PROPERTY(bool editableImage READ editableImage NOTIFY mimeTypeChanged)
+    Q_PROPERTY(bool exists READ exists NOTIFY sourceChanged)
 
 public:
 
@@ -33,6 +34,7 @@ public:
     qint64 size() const;
 
     bool editableImage() const;
+    bool exists() const;
 
 Q_SIGNALS:
     void sourceChanged();

@@ -129,3 +129,9 @@ bool DeclarativeFileInfo::editableImage() const
     Q_D(const DeclarativeFileInfo);
     return QImageWriter::supportedMimeTypes().contains(d->m_mimeType.toUtf8());
 }
+
+bool DeclarativeFileInfo::exists() const
+{
+    Q_D(const DeclarativeFileInfo);
+    return d->m_info.exists();
+}
