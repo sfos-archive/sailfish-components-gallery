@@ -2,7 +2,9 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import Sailfish.Silica.private 1.0
 import Sailfish.Gallery 1.0
+import Sailfish.Gallery.private 1.0
 import Sailfish.Ambience 1.0
+import Nemo.FileManager 1.0
 
 Item {
     id: overlay
@@ -302,7 +304,7 @@ Item {
             IconButton {
                 id: editButton
                 icon.source: "image://theme/icon-m-edit"
-                visible: !overlay.error && fileInfo.editableImage && isImage && !viewerOnlyMode
+                visible: !overlay.error && isImage && !viewerOnlyMode && ImageWriter.isMimeTypeSupported(fileInfo.mimeType)
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: {
                     overlay.triggerAction("edit")
@@ -368,7 +370,7 @@ Item {
 
     FileInfo {
         id: fileInfo
-        source: overlay.source
+        url: overlay.source
     }
 
     Component {
