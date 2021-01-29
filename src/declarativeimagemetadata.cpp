@@ -2,9 +2,6 @@
 #include <QFileSystemWatcher>
 #include <QFile>
 #include <QStringList>
-#ifndef DESKTOP
-#include <QuillMetadata>
-#endif
 #include <QtDebug>
 #include <QImageReader>
 
@@ -86,9 +83,6 @@ DeclarativeImageMetadata::DeclarativeImageMetadata(QObject *parent)
     , m_autoUpdate(true)
     , m_complete(false)
     , m_valid(false)
-    , m_hasExif(false)
-    , m_hasXmp(false)
-    , m_wantTags(false)
     , m_wantDimensions(false)
 {
 }
@@ -156,22 +150,11 @@ void DeclarativeImageMetadata::setAutoUpdate(bool update)
 
 int DeclarativeImageMetadata::orientation() const
 {
-    if (!m_wantTags) {
-        const_cast<DeclarativeImageMetadata *>(this)->readTags(m_source.toLocalFile());
+    if (!m_wantDimensions) {
+        const_cast<DeclarativeImageMetadata *>(this)->readDimensions(m_source.toLocalFile());
     }
 
-    switch (m_orientation) {
-    case 0: return 0;
-    case 1: return 0;
-    case 2: return 0;
-    case 3: return 180;
-    case 4: return 180;
-    case 5: return 270;
-    case 6: return 270;
-    case 7: return 90;
-    case 8: return 90;
-    default: return -1;
-    }
+    return m_orientation;
 }
 
 int DeclarativeImageMetadata::width() const
@@ -192,50 +175,24 @@ int DeclarativeImageMetadata::height() const
 
 bool DeclarativeImageMetadata::valid() const
 {
-    if (!m_wantTags) {
-        const_cast<DeclarativeImageMetadata *>(this)->readTags(m_source.toLocalFile());
+    if (!m_wantDimensions) {
+        const_cast<DeclarativeImageMetadata *>(this)->readDimensions(m_source.toLocalFile());
     }
     return m_valid;
-}
-
-bool DeclarativeImageMetadata::hasExif() const
-{
-    if (!m_wantTags) {
-        const_cast<DeclarativeImageMetadata *>(this)->readTags(m_source.toLocalFile());
-    }
-    return m_hasExif;
-}
-
-bool DeclarativeImageMetadata::hasXmp() const
-{
-    if (!m_wantTags) {
-        const_cast<DeclarativeImageMetadata *>(this)->readTags(m_source.toLocalFile());
-    }
-    return m_hasXmp;
 }
 
 void DeclarativeImageMetadata::fileChanged(const QString &fileName)
 {
     const bool wasValid = m_valid;
-    const bool hadExif = m_hasExif;
-    const bool hadXmp = m_hasXmp;
     const int orientation = m_orientation;
     const int width = m_width;
     const int height = m_height;
 
     m_valid = false;
-    m_hasExif = false;
-    m_hasXmp = false;
     m_orientation = 0;
     m_width = 0;
     m_height = 0;
 
-    // Reading file data can be costly, just getting the width and height of an image can
-    // take between 0.5 to 1 ms and the accumulative costs have a noticeable impact when panning
-    // between images. So only do reads that have been requested.
-    if (m_wantTags) {
-        readTags(fileName);
-    }
 
     if (m_wantDimensions) {
         readDimensions(fileName);
@@ -244,12 +201,7 @@ void DeclarativeImageMetadata::fileChanged(const QString &fileName)
     if (wasValid != m_valid) {
         emit validChanged();
     }
-    if (hadExif != m_hasExif) {
-        emit hasExifChanged();
-    }
-    if (hadXmp != m_hasXmp) {
-        emit hasXmpChanged();
-    }
+
     if (orientation != m_orientation) {
         emit orientationChanged();
     }
@@ -261,26 +213,6 @@ void DeclarativeImageMetadata::fileChanged(const QString &fileName)
     }
 }
 
-void DeclarativeImageMetadata::readTags(const QString &fileName)
-{
-#ifndef DESKTOP
-    m_wantTags = true;
-
-    if (!fileName.isEmpty()) {
-        QuillMetadata md(fileName);
-        if (md.isValid()) {
-            m_valid = true;
-            m_hasExif = md.hasExif();
-            m_hasXmp = md.hasXmp();
-            m_orientation = md.entry(QuillMetadata::Tag_Orientation).toInt();
-        } else {
-            qWarning() << Q_FUNC_INFO;
-            qWarning() << "Failed to read image metadata: " << fileName;
-        }
-    }
-#endif
-}
-
 void DeclarativeImageMetadata::readDimensions(const QString &fileName)
 {
     m_wantDimensions = true;
@@ -289,8 +221,28 @@ void DeclarativeImageMetadata::readDimensions(const QString &fileName)
         QImageReader ir(fileName);
         if (ir.canRead()) {
             const  QSize size = ir.size();
+            m_valid = true;
             m_width = size.width();
             m_height = size.height();
+
+            switch (ir.transformation()) {
+            case QImageIOHandler::TransformationNone:
+            case QImageIOHandler::TransformationMirror:
+                m_orientation = 0;
+                break;
+            case QImageIOHandler::TransformationFlip:
+            case QImageIOHandler::TransformationRotate180:
+                m_orientation = 180;
+                break;
+            case QImageIOHandler::TransformationRotate90:
+            case QImageIOHandler::TransformationFlipAndRotate90:
+                m_orientation = 270;
+                break;
+            case QImageIOHandler::TransformationMirrorAndRotate90:
+            case QImageIOHandler::TransformationRotate270:
+                m_orientation = 90;
+                break;
+            }
         } else {
             qWarning() << Q_FUNC_INFO;
             qWarning() << "Failed to read image data: " << fileName;

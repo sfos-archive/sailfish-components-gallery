@@ -80,7 +80,7 @@ Item {
 
     function rotateImage() {
         editInProgress = true
-        editor.rotate(metadata.orientation + zoomableImage.imageRotation)
+        editor.rotate(zoomableImage.imageRotation)
     }
 
     function adjustLevels() {
