@@ -16,7 +16,7 @@ Item {
     property alias toolbar: toolbar
     property alias additionalActions: additionalActionsLoader.sourceComponent
     property alias detailsButton: detailsButton
-    property alias localFile: fileInfo.localFile
+    property bool localFile: fileInfo.localFile
     property alias editingAllowed: editButton.visible
     property alias deletingAllowed: deleteButton.visible
     property alias sharingAllowed: shareButton.visible
@@ -166,8 +166,8 @@ Item {
         x: Theme.horizontalPageMargin
         y: Theme.paddingLarge
         icon.source: "image://theme/icon-m-about"
-        visible: localFile && !viewerOnlyMode && itemId.length > 0
-        onClicked: if (itemId.length > 0) pageStack.animatorPush("DetailsPage.qml", { modelItem: overlay.itemId } )
+        visible: overlay.localFile
+        onClicked: pageStack.animatorPush("DetailsPage.qml", { 'source': overlay.source, 'isImage': overlay.isImage } )
     }
 
     Timer {
@@ -249,7 +249,7 @@ Item {
             IconButton {
                 id: downIcon
 
-                visible: !overlay.error || (localFile && fileInfo.exists)
+                visible: !overlay.error || (fileInfo.localFile && fileInfo.exists)
                 onClicked: toolbar.expanded = !toolbar.expanded
                 icon.source: "image://theme/icon-m-change-type"
                 icon.rotation: toolbar.expanded ? 0 : 180
@@ -296,7 +296,7 @@ Item {
             IconButton {
                 id: deleteButton
                 icon.source: "image://theme/icon-m-delete"
-                visible: localFile && fileInfo.exists
+                visible: overlay.localFile && fileInfo.exists
                 anchors.verticalCenter: parent.verticalCenter
                 onClicked: overlay.remove()
             }
