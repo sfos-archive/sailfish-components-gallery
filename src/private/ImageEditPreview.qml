@@ -119,6 +119,9 @@ Item {
     ZoomableImage {
         id: zoomableImage
 
+        minimumContentWidth: width - (isPortrait ? Theme.itemSizeMedium : Theme.itemSizeSmall)
+        minimumContentHeight: height - (isPortrait ? Theme.itemSizeSmall : Theme.itemSizeMedium)
+
         anchors.fill: parent
         baseRotation: -metadata.orientation
         photo.onStatusChanged: if (photo.status === Image.Ready) delayedReset.restart()
@@ -172,11 +175,10 @@ Item {
             } else if (aspectRatio === 0.0) {
                 aspectRatio = realAspectRatio
             }
-
+            var maxWidth = zoomableImage.minimumContentWidth
+            var maxHeight = zoomableImage.minimumContentHeight
             if (isPortrait) {
-                var maxWidth = root.width - Theme.itemSizeMedium
                 var tmpHeight = maxWidth / aspectRatio
-                var maxHeight = root.height - header.height
                 if (tmpHeight > maxHeight) {
                     maxWidth = maxHeight * aspectRatio
                 }
@@ -184,9 +186,7 @@ Item {
                 width = maxWidth
                 height = Math.round(width / aspectRatio)
             } else {
-                maxHeight = root.height - Theme.itemSizeSmall
                 var tmpWidth = aspectRatio * maxHeight
-                maxWidth = root.width - Theme.itemSizeMedium
                 if (tmpWidth > maxWidth) {
                     maxHeight = maxWidth / aspectRatio
                 }
@@ -196,12 +196,21 @@ Item {
 
             zoomableImage.leftMargin = Qt.binding( function () {
                 var photoSize = zoomableImage.transpose ? zoomableImage.photo.height : zoomableImage.photo.width
-                return Math.max(0, (Math.min(photoSize, root.width) - editor.width)/2)
+                var margin = (Math.min(photoSize, root.width) - editor.width)/2
+                if (zoomableImage.contentWidth < root.width) {
+                    margin = margin + (root.width - zoomableImage.contentWidth)/2
+                }
+                return margin
             })
             zoomableImage.rightMargin = Qt.binding( function () { return zoomableImage.leftMargin } )
             zoomableImage.topMargin = Qt.binding( function () {
                 var photoSize = zoomableImage.transpose ? zoomableImage.photo.width : zoomableImage.photo.height
-                return Math.max(0, (Math.min(photoSize, root.height) - editor.height)/2)
+                var margin = (Math.min(photoSize, root.height) - editor.height)/2
+
+                if (zoomableImage.contentHeight < root.height) {
+                    margin = margin + (root.height - zoomableImage.contentHeight)/2
+                }
+                return margin
             })
             zoomableImage.bottomMargin = Qt.binding( function () { return zoomableImage.topMargin })
 
