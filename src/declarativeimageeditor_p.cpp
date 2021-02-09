@@ -24,10 +24,11 @@ DeclarativeImageEditorPrivate::~DeclarativeImageEditorPrivate()
 }
 
 #ifndef DESKTOP
-QString DeclarativeImageEditorPrivate::save(QImage &image, const QString &source, const QString &target)
+QString DeclarativeImageEditorPrivate::save(QImage &image, const QString &source, const QString &target,
+                                            const QByteArray &format)
 {
     QString tmpFile = uniqueFilePath(source);
-    if (!tmpFile.isEmpty() && !image.save(tmpFile)) {
+    if (!tmpFile.isEmpty() && !image.save(tmpFile, format.constData())) {
         qWarning() << Q_FUNC_INFO << "Failed to save image";
         QFile::remove(tmpFile);
         return QString();
@@ -100,22 +101,22 @@ QString DeclarativeImageEditorPrivate::uniqueFilePath(const QString &sourceFileP
     // /var/temp/img_001_0.jpg, /var/temp/img_001_1.jpg
     // In a case there already is a file with the same filename
     QString filePath = dir.absolutePath() + QDir::separator();
+    QString suffix = fileInfo.suffix().isEmpty() ? QString()
+                                                 : (QLatin1String(".") + fileInfo.suffix());
     QString fileName = fileInfo.baseName() +
                         QLatin1String("_") +
                         QString::number(count) +
-                        QLatin1String(".") +
-                        fileInfo.suffix();
+                        suffix;
 
     // This makes sure that we don't generate a file name which already exists. E.g. there are files:
     // img_001_0, img_001_1, img_001_2 and img_001 gets deleted. Then this code would generate a
     // filename img_001_2 which already exists
-    while(prevFiles.contains(fileName)) {
+    while (prevFiles.contains(fileName)) {
         ++count;
         fileName = fileInfo.baseName() +
                     QLatin1String("_") +
                     QString::number(count) +
-                    QLatin1String(".") +
-                    fileInfo.suffix();
+                    suffix;
     }
 
     return filePath + fileName;
@@ -139,12 +140,20 @@ void DeclarativeImageEditorPrivate::rotate(const QString &source, const QString 
     }
 
     reader.setScaledSize(scaledSize);
+    QByteArray format = reader.format();
     QImage img = reader.read();
+
+    if (img.isNull()) {
+        qWarning() << "Failed to read image to rotate" << reader.errorString();
+        emit rotated(false);
+        return;
+    }
+
     QTransform x;
     x.rotate((rotation) % 360);
     img = img.transformed(x);
 
-    QString targetFile = save(img, source, target);
+    QString targetFile = save(img, source, target, format);
     emit rotated(!targetFile.isEmpty(), targetFile);
 #endif
 }
