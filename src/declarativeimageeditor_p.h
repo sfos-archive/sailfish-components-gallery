@@ -17,12 +17,11 @@ public:
     virtual ~DeclarativeImageEditorPrivate();
 
     QString uniqueFilePath(const QString &sourceFilePath, const QString &path = QDir::tempPath());
-    QString save(QImage &image, const QString &source, const QString &target);
+    QString save(QImage &image, const QString &source, const QString &target, const QByteArray &format = QByteArray());
 
     // Member variables
     QUrl m_source;
     QUrl m_target;
-
 
 public Q_SLOTS:
     void rotate(const QString &source, const QString &target, int rotation);
