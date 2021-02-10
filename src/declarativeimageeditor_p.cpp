@@ -35,6 +35,11 @@ QString DeclarativeImageEditorPrivate::save(QImage &image, const QString &source
 
     QuillMetadata md(source);
     if (md.hasExif()) {
+        md.removeEntry(QuillMetadata::Tag_Orientation);
+        md.setEntry(QuillMetadata::Tag_ImageWidth, image.width());
+        md.setEntry(QuillMetadata::Tag_ImageHeight, image.height());
+        md.setEntry(QuillMetadata::Tag_Timestamp, QDateTime::currentDateTime().toString(Qt::ISODate));
+
         // Copy the metadata into the new file
         if (!md.write(tmpFile)) {
             qWarning() << Q_FUNC_INFO << "Failed to write metadata";
@@ -120,33 +125,14 @@ QString DeclarativeImageEditorPrivate::uniqueFilePath(const QString &sourceFileP
 void DeclarativeImageEditorPrivate::rotate(const QString &source, const QString &target, int rotation)
 {
 #ifndef DESKTOP
-    QuillMetadata md(source);
-    bool hasExif = md.hasExif();
-    int oldAngle = 0;
-
     // Just handle all the angles as positive angles
     if (rotation < 0) {
         rotation = (360 + rotation);
     }
 
-    if (hasExif) {
-        switch (md.entry(QuillMetadata::Tag_Orientation).toInt()) {
-        case 1: oldAngle = 0; break;
-        case 3: oldAngle = 180; break;
-        case 6: oldAngle = 90; break;
-        case 8: oldAngle = 270; break;
-        default:
-            qWarning() << Q_FUNC_INFO;
-            qWarning() << "Unknown Exif orientation: " << md.entry(QuillMetadata::Tag_Orientation).toInt();
-            qWarning() << "Using 0 angle as a fallback!";
-        }
-        // Always set the orientation to 0 degrees. ie. to 1
-        md.setEntry(QuillMetadata::Tag_Orientation, 1);
-        md.setEntry(QuillMetadata::Tag_Timestamp, QDateTime::currentDateTime().toString(Qt::ISODate));
-    }
-
     // Scale down large images before rotating them.
     QImageReader reader(source);
+    reader.setAutoTransform(true);
     QSize scaledSize = reader.size();
     if (scaledSize.width() > 3264 || scaledSize.height() > 3264) {
         scaledSize = scaledSize.scaled(3264, 3264, Qt::KeepAspectRatio);
@@ -155,16 +141,8 @@ void DeclarativeImageEditorPrivate::rotate(const QString &source, const QString 
     reader.setScaledSize(scaledSize);
     QImage img = reader.read();
     QTransform x;
-    x.rotate((oldAngle + rotation) % 360);
+    x.rotate((rotation) % 360);
     img = img.transformed(x);
-
-    QString tmpFile = uniqueFilePath(source);
-    if (!tmpFile.isEmpty() && !img.save(tmpFile)) {
-        qWarning() << Q_FUNC_INFO << "Failed to save image";
-        QFile::remove(tmpFile);
-        emit rotated(false);
-        return;
-    }
 
     QString targetFile = save(img, source, target);
     emit rotated(!targetFile.isEmpty(), targetFile);
@@ -177,37 +155,15 @@ void  DeclarativeImageEditorPrivate::crop(const QString &source, const QString &
 
 #ifndef DESKTOP
     QImageReader reader(source);
+    reader.setAutoTransform(true);
     if (reader.canRead() && !cropSize.isEmpty() && !imageSize.isEmpty()) {
-        int rotate = 0;
-        bool mirror = false;
-
-        QuillMetadata md(source);
-        if (md.hasExif()) {
-            int exifOrientation = md.entry(QuillMetadata::Tag_Orientation).toInt();
-            switch (exifOrientation) {
-            case 1: rotate = 0  ; mirror = false; break;
-            case 2: rotate = 0  ; mirror = true  ; break;
-            case 3: rotate = 180; mirror = false; break;
-            case 4: rotate = 180; mirror = true ; break;
-            case 5: rotate = 90 ; mirror = true ; break;
-            case 6: rotate = 90 ; mirror = false; break;
-            case 7: rotate = 270; mirror = true ; break;
-            case 8: rotate = 270; mirror = false; break;
-            default: break;
-            }
-        }
-
         QSize scaledSize = reader.size();
         if (scaledSize.width() > 3264 || scaledSize.height() > 3264) {
             scaledSize = scaledSize.scaled(3264, 3264, Qt::KeepAspectRatio);
         }
 
-        const qreal scaleX = rotate % 180 == 0
-                ? scaledSize.width() / imageSize.width()
-                : scaledSize.width() / imageSize.height();
-        qreal scaleY = rotate % 180 == 0
-                ? scaledSize.height() / imageSize.height()
-                : scaledSize.height() / imageSize.width();
+        const qreal scaleX = scaledSize.width() / imageSize.width();
+        qreal scaleY = scaledSize.height() / imageSize.height();
 
         QRect cropRect(
                     qRound(position.x() * scaleX),
@@ -215,49 +171,10 @@ void  DeclarativeImageEditorPrivate::crop(const QString &source, const QString &
                     qRound(cropSize.width() * scaleX),
                     qRound(cropSize.height() * scaleY));
 
-        switch (rotate) {
-        case 90:
-            cropRect = QRect(
-                        cropRect.top(),
-                        scaledSize.height() - cropRect.right(),
-                        cropRect.height(),
-                        cropRect.width());
-            break;
-        case 180:
-            cropRect = QRect(
-                        scaledSize.width() - cropRect.right(),
-                        scaledSize.height() - cropRect.bottom(),
-                        cropRect.width(),
-                        cropRect.height());
-            break;
-        case 270:
-            cropRect = QRect(
-                        scaledSize.width() - cropRect.bottom(),
-                        cropRect.left(),
-                        cropRect.height(),
-                        cropRect.width());
-            break;
-        default:
-            break;
-        }
-
-        if (mirror) {
-            cropRect.setLeft(scaledSize.width() - cropRect.right());
-        }
-
         reader.setScaledSize(scaledSize);
         reader.setScaledClipRect(cropRect);
 
         QImage croppedImage = reader.read();
-
-        if (mirror) {
-            croppedImage = croppedImage.mirrored(true, false);
-        }
-        if (rotate != 0) {
-            QTransform transform;
-            transform.rotate(rotate);
-            croppedImage = croppedImage.transformed(transform);
-        }
 
         QString tmpTarget = target;
         if (tmpTarget.isEmpty()) {
@@ -273,24 +190,8 @@ void  DeclarativeImageEditorPrivate::crop(const QString &source, const QString &
            return;
         }
 
-        bool success = croppedImage.save(tmpTarget);
-        if (success && md.hasExif()) {
-            // TODO: Copy all the metadata but this is better than nothing.
-            // The previous version destroyed all the metadata and e.g. rotation
-            // didn't work at all with once cropped images.
-            if (rotate != 0) {
-                // Reset rotated images to 1 ie. 0 angle to match the actual image rotation
-                md.setEntry(QuillMetadata::Tag_Orientation, 1);
-            }
-            md.setEntry(QuillMetadata::Tag_ImageWidth, scaledSize.width());
-            md.setEntry(QuillMetadata::Tag_ImageHeight, scaledSize.height());
-            md.setEntry(QuillMetadata::Tag_Timestamp, QDateTime::currentDateTime().toString(Qt::ISODate));
-            success = md.write(tmpTarget);
-            if (!success) {
-                qWarning() << Q_FUNC_INFO << "Failed to write metadata!" << tmpTarget;
-            }
-        }
-        emit cropped(success, tmpTarget);
+        QString targetFile = save(croppedImage, source, target);
+        emit cropped(!targetFile.isEmpty(), targetFile);
     } else {
         emit cropped(false);
     }
@@ -302,6 +203,8 @@ void DeclarativeImageEditorPrivate::adjustLevels(const QString &source, const QS
 #ifndef DESKTOP
     // Scale down large images before adjusting them.
     QImageReader reader(source);
+    reader.setAutoTransform(true);
+
     QSize scaledSize = reader.size();
     if (scaledSize.width() > 3264 || scaledSize.height() > 3264) {
         scaledSize = scaledSize.scaled(3264, 3264, Qt::KeepAspectRatio);
