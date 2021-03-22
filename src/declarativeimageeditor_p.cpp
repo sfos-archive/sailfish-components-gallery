@@ -165,7 +165,9 @@ void  DeclarativeImageEditorPrivate::crop(const QString &source, const QString &
 #ifndef DESKTOP
     QImageReader reader(source);
     reader.setAutoTransform(true);
+
     if (reader.canRead() && !cropSize.isEmpty() && !imageSize.isEmpty()) {
+        QByteArray format = reader.format();
         QSize scaledSize = reader.size();
         if (scaledSize.width() > 3264 || scaledSize.height() > 3264) {
             scaledSize = scaledSize.scaled(3264, 3264, Qt::KeepAspectRatio);
@@ -199,7 +201,7 @@ void  DeclarativeImageEditorPrivate::crop(const QString &source, const QString &
            return;
         }
 
-        QString targetFile = save(croppedImage, source, target);
+        QString targetFile = save(croppedImage, source, target, format);
         emit cropped(!targetFile.isEmpty(), targetFile);
     } else {
         emit cropped(false);
@@ -212,6 +214,7 @@ void DeclarativeImageEditorPrivate::adjustLevels(const QString &source, const QS
 #ifndef DESKTOP
     // Scale down large images before adjusting them.
     QImageReader reader(source);
+    QByteArray format = reader.format();
     reader.setAutoTransform(true);
 
     QSize scaledSize = reader.size();
@@ -280,7 +283,7 @@ void DeclarativeImageEditorPrivate::adjustLevels(const QString &source, const QS
         pixel = qRgba(components[0] * intScalar, components[1] * intScalar, components[2] * intScalar, alpha * intScalar);
     }
 
-    QString targetFile = save(img, source, target);
+    QString targetFile = save(img, source, target, format);
     emit levelsAdjusted(!targetFile.isEmpty(), targetFile);
 #endif
 }
