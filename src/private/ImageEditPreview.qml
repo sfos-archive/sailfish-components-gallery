@@ -38,42 +38,20 @@ Item {
 
     clip: true
 
-    function transposedSize(item) {
-        var transpose = (previewRotation % 180) != 0
-
-        var width = transpose ? item.height : item.width
-        var height = transpose ? item.width : item.height
-        return Qt.size(width, height)
-    }
-
-    function rotatePoint(x, y, cropSize, imageSize, rotation) {
-        var transpose = (rotation % 180) != 0
-        var invert = (rotation < 0 ? rotation + 360 : rotation) >= 180
-        var _x, _y
-        if (transpose) {
-            _x = invert ? imageSize.width - cropSize.width - y : y
-            _y = invert ? x : imageSize.height - cropSize.height - x
-        } else {
-            _x = invert ? imageSize.width - cropSize.width - x : x
-            _y = invert ? imageSize.height - cropSize.height - y : y
-        }
-
-        return Qt.point(_x, _y)
-    }
-
     function crop() {
         editInProgress = true
-        var cropSize = transposedSize(editor)
+        var cropSize = Qt.size(editor.width, editor.height)
 
         var transpose = (zoomableImage.baseRotation % 180) != 0
+
         var imageWidth = transpose ? zoomableImage.photo.height : zoomableImage.photo.width
+
         var imageHeight = transpose ? zoomableImage.photo.width : zoomableImage.photo.height
+
         var imageSize = Qt.size(imageWidth, imageHeight)
-        var position = rotatePoint(zoomableImage.contentX + zoomableImage.leftMargin,
-                                   zoomableImage.contentY + zoomableImage.topMargin,
-                                   cropSize,
-                                   imageSize,
-                                   previewRotation % 360)
+        var position = Qt.point(
+                    zoomableImage.contentX + zoomableImage.leftMargin,
+                    zoomableImage.contentY + zoomableImage.topMargin)
 
         editor.crop(cropSize, imageSize, position)
     }

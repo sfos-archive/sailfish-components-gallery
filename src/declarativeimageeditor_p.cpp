@@ -161,7 +161,6 @@ void DeclarativeImageEditorPrivate::rotate(const QString &source, const QString 
 // Run in QtConcurrent::run
 void  DeclarativeImageEditorPrivate::crop(const QString &source, const QString &target, const QSizeF &cropSize, const QSizeF &imageSize, const QPointF &position)
 {
-
 #ifndef DESKTOP
     QImageReader reader(source);
     reader.setAutoTransform(true);
@@ -169,6 +168,12 @@ void  DeclarativeImageEditorPrivate::crop(const QString &source, const QString &
     if (reader.canRead() && !cropSize.isEmpty() && !imageSize.isEmpty()) {
         QByteArray format = reader.format();
         QSize scaledSize = reader.size();
+
+        // QImageReader::autoTransform doesn't transform the size or clip rect.
+        if (reader.transformation() & QImageIOHandler::TransformationRotate90) {
+            scaledSize.transpose();
+        }
+
         if (scaledSize.width() > 3264 || scaledSize.height() > 3264) {
             scaledSize = scaledSize.scaled(3264, 3264, Qt::KeepAspectRatio);
         }
@@ -181,6 +186,21 @@ void  DeclarativeImageEditorPrivate::crop(const QString &source, const QString &
                     qRound(position.y() * scaleY),
                     qRound(cropSize.width() * scaleX),
                     qRound(cropSize.height() * scaleY));
+
+
+        if (reader.transformation() & QImageIOHandler::TransformationMirror) {
+            cropRect.moveLeft(scaledSize.width() - cropRect.x() - cropRect.width());
+        }
+
+        if (reader.transformation() & QImageIOHandler::TransformationFlip) {
+            cropRect.moveTop(scaledSize.height() - cropRect.y() - cropRect.height());
+        }
+
+        if (reader.transformation() & QImageIOHandler::TransformationRotate90) {
+            cropRect = QRect(cropRect.y(), scaledSize.width() - cropRect.x() - cropRect.width(), cropRect.height(), cropRect.width());
+
+            scaledSize.transpose();
+        }
 
         reader.setScaledSize(scaledSize);
         reader.setScaledClipRect(cropRect);
