@@ -4,6 +4,7 @@ import Sailfish.Silica.private 1.0
 import Sailfish.Gallery 1.0
 import Sailfish.Gallery.private 1.0
 import Sailfish.Ambience 1.0
+import Sailfish.Share 1.0
 import Nemo.FileManager 1.0
 
 Item {
@@ -39,7 +40,6 @@ Item {
         }
     }
     property Item _remorsePopup
-    property Component additionalShareComponent
 
     function remorseAction(text, action) {
         if (!_remorsePopup) {
@@ -70,19 +70,19 @@ Item {
             if (player && player.playing) {
                 player.pause()
             }
-
-            pageStack.animatorPush("Sailfish.TransferEngine.SharePage",
-                                   {
-                                       "source": overlay.source,
-                                       "mimeType": localFile ? fileInfo.mimeType
-                                                             : "text/x-url",
-                                                               "content": localFile ? undefined
-                                                                                    : { "type": "text/x-url", "status": overlay.source },
-                                       "serviceFilter": ["sharing", "e-mail"],
-                                       "additionalShareComponent": additionalShareComponent
-                                   },
-                                   immediately ? PageStackAction.Immediate : PageStackAction.Animated)
+            if (localFile) {
+                shareAction.resources = [overlay.source.toString()]
+            } else {
+                shareAction.resources = [{ "type": "text/x-url", "status": overlay.source.toString() }]
+            }
+            shareAction.trigger()
         }
+    }
+
+    ShareAction {
+        id: shareAction
+
+        mimeType: localFile ? fileInfo.mimeType : "text/x-url"
     }
 
     Connections {

@@ -20,7 +20,7 @@ Requires:  sailfishsilica-qt5 >= 1.2.53
 Requires:  nemo-qml-plugin-filemanager
 Requires:  nemo-qml-plugin-thumbnailer-qt5
 Requires:  libkeepalive >= 1.7.0
-Requires:  declarative-transferengine-qt5 >= 0.3.3
+Requires:  sailfishshare-components
 Requires:  libjollasignonuiservice-qt5-plugin >= 0.4.0
 Requires:  sailfish-content-graphics >= 1.0.52
 Requires:  qt5-qtdocgallery
