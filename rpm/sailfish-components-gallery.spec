@@ -1,9 +1,8 @@
 Name:       sailfish-components-gallery-qt5
 
 Summary:    Sailfish Gallery UI Components
-Version:    1.0.9
+Version:    1.1.23
 Release:    1
-Group:      System/Libraries
 License:    Proprietary
 URL:        https://bitbucket.org/jolla/ui-sailfish-components-gallery
 Source0:    %{name}-%{version}.tar.bz2
@@ -24,13 +23,13 @@ Requires:  libkeepalive >= 1.7.0
 Requires:  declarative-transferengine-qt5 >= 0.3.3
 Requires:  libjollasignonuiservice-qt5-plugin >= 0.4.0
 Requires:  sailfish-content-graphics >= 1.0.52
+Requires:  qt5-qtdocgallery
 
 %description
 Sailfish Gallery UI Components
 
 %package tests
 Summary:    Unit tests for Sailfish Gallery UI components
-Group:      System/Libraries
 BuildRequires:  pkgconfig(Qt5Test)
 Requires:   %{name} = %{version}-%{release}
 Requires:   qt5-qtdeclarative-import-qttest
@@ -42,7 +41,6 @@ This package contains QML unit tests for Sailfish Gallery UI components
 
 %package ts-devel
 Summary:   Translation source for sailfish-components-gallery
-Group:     System/Libraries
 
 %description ts-devel
 Translation source for sailfish-components-gallery
