@@ -16,45 +16,45 @@ Page {
 
     // https://developer.gnome.org/ontology/stable/nmm-Flash.html
     property var flashValues: {
-        'http://www.tracker-project.org/temp/nmm#flash-on':
+        'http://tracker.api.gnome.org/ontology/v3/nmm#flash-on':
         //% "Did fire"
         qsTrId("components_gallery-value-flash-on"),
-        'http://www.tracker-project.org/temp/nmm#flash-off':
+        'http://tracker.api.gnome.org/ontology/v3/nmm#flash-off':
         //% "Did not fire"
         qsTrId("components_gallery-value-flash-off")
     }
 
     // https://developer.gnome.org/ontology/stable/nmm-MeteringMode.html
     property var meteringModeValues: {
-        'http://www.tracker-project.org/temp/nmm#metering-mode-other':
+        'http://tracker.api.gnome.org/ontology/v3/nmm#metering-mode-other':
         //% "Other"
         qsTrId("components_gallery-value-metering-mode-other"),
-        'http://www.tracker-project.org/temp/nmm#metering-mode-partial':
+        'http://tracker.api.gnome.org/ontology/v3/nmm#metering-mode-partial':
         //% "Partial"
         qsTrId("components_gallery-value-metring-mode-partial"),
-        'http://www.tracker-project.org/temp/nmm#metering-mode-pattern':
+        'http://tracker.api.gnome.org/ontology/v3/nmm#metering-mode-pattern':
         //% "Pattern"
         qsTrId("components_gallery-value-metering-mode-pattern"),
-        'http://www.tracker-project.org/temp/nmm#metering-mode-multispot':
+        'http://tracker.api.gnome.org/ontology/v3/nmm#metering-mode-multispot':
         //% "Multispot"
         qsTrId("components_gallery-value-metering-mode-multispot"),
-        'http://www.tracker-project.org/temp/nmm#metering-mode-spot':
+        'http://tracker.api.gnome.org/ontology/v3/nmm#metering-mode-spot':
         //% "Spot"
         qsTrId("components_gallery-value-metering-mode-spot"),
-        'http://www.tracker-project.org/temp/nmm#metering-mode-center-weighted-average':
+        'http://tracker.api.gnome.org/ontology/v3/nmm#metering-mode-center-weighted-average':
         //% "Center Weighted Average"
         qsTrId("components_gallery-value-metering-mode-center-weighted-average"),
-        'http://www.tracker-project.org/temp/nmm#metering-mode-average':
+        'http://tracker.api.gnome.org/ontology/v3/nmm#metering-mode-average':
         //% "Average"
         qsTrId("components_gallery-value-metering-mode-average")
     }
 
     // https://developer.gnome.org/ontology/stable/nmm-WhiteBalance.html
     property var whiteBalanceValues: {
-        'http://www.tracker-project.org/temp/nmm#white-balance-manual':
+        'http://tracker.api.gnome.org/ontology/v3/nmm#white-balance-manual':
         //% "Manual"
         qsTrId("components_gallery-value-white-balance-manual"),
-        'http://www.tracker-project.org/temp/nmm#white-balance-auto':
+        'http://tracker.api.gnome.org/ontology/v3/nmm#white-balance-auto':
         //% "Auto"
         qsTrId("components_gallery-value-white-balance-auto")
     }
