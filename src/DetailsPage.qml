@@ -113,13 +113,13 @@ Page {
                     cameraModelDetail.value: model.cameraModel
                     exposureTimeDetail.value: model.exposureTime
                     fNumberDetail.value: model.fNumber != ""
-                            ? details.formatFNumber(model.fNumber)
+                            ? formatFNumber(model.fNumber)
                             : ""
                     flashEnabledDetail.value: model.flashEnabled != ""
                             ? flashValues[model.flashEnabled]
                             : ""
                     focalLengthDetail.value: model.focalLength != ""
-                            ? details.formatFocalLength(model.focalLength)
+                            ? formatFocalLength(model.focalLength)
                             : ""
                     meteringModeDetail.value: model.meteringMode != ""
                             ? meteringModeValues[model.meteringMode]
@@ -128,9 +128,9 @@ Page {
                               ? whiteBalanceValues[model.whiteBalance]
                               : ""
                     gpsDetail.value: model.latitude != ""
-                            ? details.formatGpsCoordinates(model.latitude,
-                                                           model.longitude,
-                                                           model.altitude)
+                            ? formatGpsCoordinates(model.latitude,
+                                                   model.longitude,
+                                                   model.altitude)
                             : ""
                     descriptionDetail.value: model.description
                     copyrightDetail.value: model.copyright
