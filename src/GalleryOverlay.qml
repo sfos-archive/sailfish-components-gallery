@@ -127,11 +127,18 @@ Item {
         seekTimer.restart()
     }
 
+
     Timer {
         id: seekTimer
         interval: 16
         property int position
-        onTriggered: player.seek(position)
+        onTriggered: {
+            if (player.loaded) {
+                player.seek(position)
+            } else {
+                restart()
+            }
+        }
     }
 
     signal createPlayer
@@ -207,19 +214,36 @@ Item {
 
                 handleVisible: false
                 minimumValue: 0
-                maximumValue: overlay._duration > 0 ? overlay._duration : 1
+                maximumValue: 1
 
-                valueText: Format.formatDuration(value, value >= 3600
+                valueText: {
+                    var position = overlay._duration * value
+                    return Format.formatDuration(position, position >= 3600
                                                  ? Format.DurationLong
                                                  : Format.DurationShort)
+                }
 
-                onReleased: seek(value * 1000)
+                onPressed: {
+                    if (!overlay.player) {
+                        overlay.createPlayer()
+                    }
+
+                    if (!overlay.player.loaded) {
+                        overlay.player.pause()
+                    }
+                }
+
+                // An absolute value will be assigned to an object property and the actual seek delayed.
+                onReleased: {
+                    var relativePosition = value
+                    seek(Qt.binding(function() { return relativePosition * Math.max(0, overlay.player.duration) }))
+                }
 
                 Connections {
                     target: player
                     onPositionChanged: {
-                        if (!positionSlider.pressed) {
-                            positionSlider.value = player.position / 1000
+                        if (!positionSlider.pressed && player.duration > 0 && !seekTimer.running) {
+                            positionSlider.value = player.position / player.duration
                         }
                     }
                     onSourceChanged: positionSlider.value = 0
