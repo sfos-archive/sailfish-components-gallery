@@ -25,7 +25,7 @@ Item {
 
     ListModel {
         id: testModel
-        ListElement { url: "file://" + StandardPaths.pictures + "/image1.jpg"; mimeType: "image/jpeg" }
+        Component.onCompleted: append({"mimeType": "image/jpeg", "url": "file://" + StandardPaths.pictures + "Default/All_green.jpg" })
     }
 
 
@@ -75,7 +75,7 @@ Item {
         function test_init()
         {
             isPortrait = true
-            thumbnail = Utils.findChild(imageGridView, "ThumbnailBase_QMLTYPE")
+            thumbnail = Utils.findChild(imageGridView, "ThumbnailImage_QMLTYPE")
             clickedSpy.target = thumbnail
             pressedSpy.target = thumbnail
             releasedSpy.target = thumbnail
@@ -85,28 +85,22 @@ Item {
         function test_thumbnailImage() {
             verify(thumbnail != null)
 
-            compare(thumbnail.size, imageGridView.cellSize)
-            compare(thumbnail.width, thumbnail.size)
-            compare(thumbnail.height, thumbnail.size)
-            compare(thumbnail.source, "file://" + StandardPaths.pictures + "/image1.jpg")
+            compare(thumbnail.width, imageGridView.cellSize)
+            compare(thumbnail.height, imageGridView.cellSize)
+            compare(thumbnail.source, "file://" + StandardPaths.pictures + "Default/All_green.jpg")
             compare(thumbnail.mimeType, "image/jpeg")
-            compare(thumbnail.contentYOffset, 0)
-            compare(thumbnail.contentXOffset, 0)
-
 
             // Get the actual Thumbnail item from ThumbnailBase
-            var thumbnailImage = Utils.findChild(thumbnail, "NemoThumbnailItem")
-            verify(thumbnailImage != null)
-            compare(thumbnailImage.sourceSize.height, thumbnail.size)
-            compare(thumbnailImage.sourceSize.width, thumbnail.size)
+            var nemoThumbnail = thumbnail._thumbnail
+            verify(nemoThumbnail != null)
+            compare(nemoThumbnail.sourceSize.height, thumbnail.width)
+            compare(nemoThumbnail.sourceSize.width, thumbnail.height)
 
             isPortrait = false
-            compare(thumbnail.size, imageGridView.cellSize)
-            compare(thumbnail.width, thumbnail.size)
-            compare(thumbnail.height, thumbnail.size)
-            compare(thumbnailImage.sourceSize.height, thumbnail.size)
-            compare(thumbnailImage.sourceSize.width, thumbnail.size)
-
+            compare(thumbnail.width, imageGridView.cellSize)
+            compare(thumbnail.height, imageGridView.cellSize)
+            compare(nemoThumbnail.sourceSize.height, thumbnail.width)
+            compare(nemoThumbnail.sourceSize.width, thumbnail.height)
         }
 
 
@@ -132,26 +126,6 @@ Item {
 
             mouseRelease(thumbnail, thumbnail.x, thumbnail.y)
             tryCompare(releasedSpy, "count", 1)
-        }
-
-        function test_thumbnailImagePressAndHold() {
-            verify(thumbnail != null)
-
-            compare(thumbnail.pressedAndHolded, false)
-            pressedSpy.clear()
-            releasedSpy.clear()
-            clickedSpy.clear()
-
-            mousePress(thumbnail, thumbnail.x, thumbnail.y)
-            wait(1200) // Thresshold is 800
-
-            tryCompare(pressAndHoldSpy, "count", 1)
-            compare(thumbnail.pressedAndHolded, true)
-
-            mouseRelease(thumbnail, thumbnail.x, thumbnail.y)
-            tryCompare(pressedSpy, "count", 1)
-            tryCompare(releasedSpy, "count", 1)
-            compare(thumbnail.pressedAndHolded, false)
         }
     }
 }
