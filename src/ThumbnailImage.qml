@@ -8,6 +8,12 @@ ThumbnailBase {
     readonly property alias status: thumbnail.status
     property alias _thumbnail: thumbnail
 
+    Image {
+        anchors.fill: parent
+        source: thumbnail.status === Thumbnail.Ready ? ""
+                                                     : "image://theme/graphic-avatar-text-back"
+    }
+
     Thumbnail {
         id: thumbnail
         property bool gridMoving: thumbnailBase.grid ? thumbnailBase.grid.moving : false
