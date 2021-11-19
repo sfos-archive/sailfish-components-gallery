@@ -17,6 +17,7 @@ Item {
     property alias toolbar: toolbar
     property alias additionalActions: additionalActionsLoader.sourceComponent
     property alias detailsButton: detailsButton
+    // local == allow file operations and info
     property bool localFile: fileInfo.localFile
     property alias editingAllowed: editButton.visible
     property alias deletingAllowed: deleteButton.visible
@@ -70,7 +71,7 @@ Item {
             if (player && player.playing) {
                 player.pause()
             }
-            if (localFile) {
+            if (fileInfo.localFile) {
                 shareAction.resources = [overlay.source.toString()]
             } else {
                 shareAction.resources = [{ "type": "text/x-url", "status": overlay.source.toString() }]
@@ -82,7 +83,7 @@ Item {
     ShareAction {
         id: shareAction
 
-        mimeType: localFile ? fileInfo.mimeType : "text/x-url"
+        mimeType: fileInfo.localFile ? fileInfo.mimeType : "text/x-url"
     }
 
     Connections {
