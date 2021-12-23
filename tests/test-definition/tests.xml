@@ -8,7 +8,7 @@
                <step>/usr/bin/start-ui-test.sh</step>
            </pre_steps>
            <case manual="false" name="unittests">
-               <step>/usr/lib/qt5/bin/qmltestrunner -input /opt/tests/sailfish-components-gallery-qt5/auto</step>
+               <step>qmltestrunner -input /opt/tests/sailfish-components-gallery-qt5/auto</step>
            </case>
            <post_steps>
                <step>/usr/bin/stop-ui-test.sh</step>
