@@ -11,7 +11,7 @@ ThumbnailBase {
     Image {
         anchors.fill: parent
         source: thumbnail.status === Thumbnail.Ready ? ""
-                                                     : "image://theme/graphic-avatar-text-back"
+                                                     : "image://theme/graphic-grid-item-background"
     }
 
     Thumbnail {
