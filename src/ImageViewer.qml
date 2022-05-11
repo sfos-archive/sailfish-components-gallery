@@ -137,8 +137,8 @@ ZoomableFlickable {
         id: errorLabelComponent
         InfoLabel {
             //: Image loading failed
-            //% "Oops, can't display the image"
-            text: qsTrId("components_gallery-la-image-loading-failed")
+            //% "Couldn't load the image. It could have been deleted or become inaccessible."
+            text: qsTrId("components_gallery-la-image-loading-failed-inaccessible")
             anchors.verticalCenter: parent.verticalCenter
             opacity: photo.status == Image.Error ? 1.0 : 0.0
             Behavior on opacity { FadeAnimator {}}
