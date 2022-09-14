@@ -1,6 +1,9 @@
 import QtQuick 2.6
 import Sailfish.Silica 1.0
 
+/*!
+  \inqmlmodule Sailfish.Gallery
+*/
 Column {
     property alias filePathDetail: filePathItem
     property alias fileSizeDetail: fileSizeItem

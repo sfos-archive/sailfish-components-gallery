@@ -1,0 +1,44 @@
+project         = sailfish-gallery
+description     = Sailfish Gallery UI Component Reference Documentation
+versionsym      =
+version         = 0.0.1
+url             = $BASE_URL/sailfish-gallery
+
+sourcedirs += $$PWD/../src $$PWD/../doc
+headerdirs += $$PWD/../src
+
+outputformats = HTML
+outputdir = $$PWD/html
+base = file:$$PWD/html
+tagfile = $$PWD/html/sailfish-gallery.tags
+
+qhp.projects = SailfishGallery
+qhp.SailfishGallery.file = sailfish-gallery.qhp
+qhp.SailfishGallery.namespace = org.sailfishos.gallery.0.0.1
+qhp.SailfishGallery.virtualFolder = sailfish-gallery
+qhp.SailfishGallery.indexTitle = Sailfish Gallery
+qhp.SailfishGallery.indexRoot =
+
+qhp.SailfishGallery.subprojects = qmltypes
+
+qhp.SailfishGallery.subprojects.qmltypes.title = QML Types
+qhp.SailfishGallery.subprojects.qmltypes.indexTitle = Sailfish Gallery QML Types
+qhp.SailfishGallery.subprojects.qmltypes.selectors = qmlclass
+qhp.SailfishGallery.subprojects.qmltypes.sortPages = true
+
+qhp.SailfishGallery.filterAttributes = sailfish-gallery 0.0.1
+qhp.SailfishGallery.customFilters.SailfishGallery.name = Sailfish Gallery 0.0.1
+qhp.SailfishGallery.customFilters.SailfishGallery.filterAttributes = sailfish-gallery 0.0.1
+
+HTML.footer += \
+    "<div class=\"footer\">\n" \
+    "  <p><acronym title=\"Copyright\">&copy;</acronym> 2022 Jolla Ltd.</p>\n" \
+    "  <p>All other trademarks are property of their respective owners.</p>\n" \
+    "  <p>\n" \
+    "    This document may be used under the terms of the " \
+    "    <a href=\"http://www.gnu.org/licenses/fdl.html\">GNU Free Documentation License version 1.3</a>" \
+    "    as published by the Free Software Foundation." \
+    "  </p>\n" \
+    "</div>\n"
+
+navigation.homepage = "Sailfish Gallery QML Types"
