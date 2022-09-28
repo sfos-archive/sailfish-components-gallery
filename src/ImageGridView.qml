@@ -2,6 +2,9 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import Sailfish.Silica.private 1.0 as Private
 
+/*!
+  \inqmlmodule Sailfish.Gallery
+*/
 SilicaGridView {
     id: grid
 

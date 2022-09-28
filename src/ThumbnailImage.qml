@@ -2,10 +2,16 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import Nemo.Thumbnailer 1.0
 
+/*!
+  \inqmlmodule Sailfish.Gallery
+*/
 ThumbnailBase {
     id: thumbnailBase
 
     readonly property alias status: thumbnail.status
+    /*!
+      \internal
+    */
     property alias _thumbnail: thumbnail
 
     Image {

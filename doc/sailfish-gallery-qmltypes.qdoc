@@ -1,0 +1,25 @@
+/****************************************************************************************
+**
+** Copyright (C) 2022 Jolla Ltd.
+** All rights reserved.
+**
+****************************************************************************************/
+
+/*!
+\qmlmodule Sailfish.Gallery 1.0
+\title Sailfish Gallery QML Types
+
+This module includes the following types:
+
+*/
+
+/*!
+\page sailfish-gallery-qmltypes.html
+\title Sailfish Gallery QML Types
+\brief Provides QML types for Sailfish Gallery
+
+The Sailfish Gallery module includes the following types:
+
+\generatelist{qmltypesbymodule Sailfish.Gallery}
+
+*/

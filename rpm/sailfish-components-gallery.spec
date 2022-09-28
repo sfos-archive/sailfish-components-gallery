@@ -1,7 +1,7 @@
 Name:       sailfish-components-gallery-qt5
 
 Summary:    Sailfish Gallery UI Components
-Version:    1.1.23
+Version:    1.2.8
 Release:    1
 License:    Proprietary
 URL:        https://bitbucket.org/jolla/ui-sailfish-components-gallery
@@ -14,6 +14,8 @@ BuildRequires:  pkgconfig(Qt5Concurrent)
 BuildRequires:  qt5-qttools
 BuildRequires:  qt5-qttools-linguist
 BuildRequires:  pkgconfig(quillmetadata-qt5)
+BuildRequires:  qt5-qttools-qthelp-devel
+BuildRequires:  sailfish-qdoc-template
 
 Requires:  sailfishsilica-qt5 >= 1.2.78
 Requires:  nemo-qml-plugin-filemanager
@@ -25,6 +27,12 @@ Requires:  qt5-qtdocgallery
 
 %description
 Sailfish Gallery UI Components
+
+%package doc
+Summary: Documentation for Sailfish Gallery UI components
+
+%description doc
+%{summary}.
 
 %package tests
 Summary:    Unit tests for Sailfish Gallery UI components
@@ -64,6 +72,10 @@ cp -a tests/auto/*js %{buildroot}/opt/tests/sailfish-components-gallery-qt5/auto
 
 %qmake5_install
 
+install -m 644 doc/html/*.html %{buildroot}/%{_docdir}/Sailfish/Gallery/
+install -m 644 doc/sailfish-gallery.qch %{buildroot}/%{_docdir}/Sailfish/Gallery/
+install -m 644 doc/html/sailfish-gallery.index %{buildroot}/%{_docdir}/Sailfish/Gallery/
+
 #
 # Sailfish Gallery files
 #
@@ -71,6 +83,10 @@ cp -a tests/auto/*js %{buildroot}/opt/tests/sailfish-components-gallery-qt5/auto
 %defattr(-,root,root,-)
 %{_libdir}/qt5/qml/Sailfish/Gallery/*
 %{_datadir}/translations/sailfish_components_gallery_qt5_eng_en.qm
+
+%files doc
+%defattr(-,root,root,-)
+%{_docdir}/Sailfish/Gallery/*
 
 %files tests
 %defattr(-,root,root,-)

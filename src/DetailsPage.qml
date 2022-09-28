@@ -5,6 +5,9 @@ import QtDocGallery 5.0
 import Sailfish.Gallery.private 1.0
 import "private"
 
+/*!
+  \inqmlmodule Sailfish.Gallery
+*/
 Page {
     id: page
 

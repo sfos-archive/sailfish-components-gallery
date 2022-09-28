@@ -4,12 +4,18 @@ import Sailfish.Silica.private 1.0
 import Sailfish.Gallery 1.0
 import Sailfish.Gallery.private 1.0
 
+/*!
+  \inqmlmodule Sailfish.Gallery
+*/
 ZoomableFlickable {
     id: flickable
 
     property alias source: photo.source
 
     property bool active: true
+    /*!
+      \internal
+    */
     readonly property bool _active: active || viewMoving
     readonly property bool error: photo.status == Image.Error
     readonly property alias imageMetaData: metadata
