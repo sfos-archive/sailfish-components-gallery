@@ -1,7 +1,7 @@
 project         = sailfish-gallery
 description     = Sailfish Gallery UI Component Reference Documentation
 versionsym      =
-version         = 0.0.1
+version         = 1.2
 url             = $BASE_URL/sailfish-gallery
 
 sourcedirs += $$PWD/../src $$PWD/../doc
@@ -14,7 +14,7 @@ tagfile = $$PWD/html/sailfish-gallery.tags
 
 qhp.projects = SailfishGallery
 qhp.SailfishGallery.file = sailfish-gallery.qhp
-qhp.SailfishGallery.namespace = org.sailfishos.gallery.0.0.1
+qhp.SailfishGallery.namespace = org.sailfishos.gallery.1.2
 qhp.SailfishGallery.virtualFolder = sailfish-gallery
 qhp.SailfishGallery.indexTitle = Sailfish Gallery
 qhp.SailfishGallery.indexRoot =
@@ -26,13 +26,13 @@ qhp.SailfishGallery.subprojects.qmltypes.indexTitle = Sailfish Gallery QML Types
 qhp.SailfishGallery.subprojects.qmltypes.selectors = qmlclass
 qhp.SailfishGallery.subprojects.qmltypes.sortPages = true
 
-qhp.SailfishGallery.filterAttributes = sailfish-gallery 0.0.1
-qhp.SailfishGallery.customFilters.SailfishGallery.name = Sailfish Gallery 0.0.1
-qhp.SailfishGallery.customFilters.SailfishGallery.filterAttributes = sailfish-gallery 0.0.1
+qhp.SailfishGallery.filterAttributes = sailfish-gallery 1.2
+qhp.SailfishGallery.customFilters.SailfishGallery.name = Sailfish Gallery 1.2
+qhp.SailfishGallery.customFilters.SailfishGallery.filterAttributes = sailfish-gallery 1.2
 
 HTML.footer += \
     "<div class=\"footer\">\n" \
-    "  <p><acronym title=\"Copyright\">&copy;</acronym> 2022 Jolla Ltd.</p>\n" \
+    "  <p><acronym title=\"Copyright\">&copy;</acronym> 2023 Jolla Ltd.</p>\n" \
     "  <p>All other trademarks are property of their respective owners.</p>\n" \
     "  <p>\n" \
     "    This document may be used under the terms of the " \
