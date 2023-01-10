@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import QtMultimedia 5.0
 import Sailfish.Media 1.0
-import org.nemomobile.policy 1.0
+import Nemo.Policy 1.0
 import Nemo.KeepAlive 1.2
 import Nemo.Notifications 1.0
 
