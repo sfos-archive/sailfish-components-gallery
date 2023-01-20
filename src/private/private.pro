@@ -11,6 +11,6 @@ qmltypes.commands = \
         |$$QMLIMPORTSCANNER -qmlFiles - -importPath $$[QT_INSTALL_QML] \
         |sed -e $$shell_quote('/"Sailfish.Silica"/,/{/d') \
         |sed -e $$shell_quote('/"Sailfish.Silica.Background"/,/{/d') > dependencies.json && \
-    qmlplugindump -nonrelocatable -dependencies dependencies.json \
+    qmlplugindump -noinstantiate -nonrelocatable -dependencies dependencies.json \
         Sailfish.Gallery.private 1.0 > $$PWD/plugins.qmltypes
 QMAKE_EXTRA_TARGETS += qmltypes
