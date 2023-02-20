@@ -23,3 +23,13 @@ The Sailfish Gallery module includes the following types:
 \generatelist{qmltypesbymodule Sailfish.Gallery}
 
 */
+
+/*!
+\page sailfish-gallery.html
+\title Sailfish Gallery
+
+The Sailfish Gallery module includes the following QML types:
+
+\generatelist{qmltypesbymodule Sailfish.Gallery}
+
+*/
