@@ -3,7 +3,7 @@ Name:       sailfish-components-gallery-qt5
 Summary:    Sailfish Gallery UI Components
 Version:    1.2.8
 Release:    1
-License:    Proprietary
+License:    BSD
 URL:        https://bitbucket.org/jolla/ui-sailfish-components-gallery
 Source0:    %{name}-%{version}.tar.bz2
 BuildRequires:  pkgconfig(Qt5Core)
@@ -81,6 +81,7 @@ install -m 644 doc/html/sailfish-gallery.index %{buildroot}/%{_docdir}/Sailfish/
 #
 %files
 %defattr(-,root,root,-)
+%license LICENSE.BSD
 %{_libdir}/qt5/qml/Sailfish/Gallery/*
 %{_datadir}/translations/sailfish_components_gallery_qt5_eng_en.qm
 
