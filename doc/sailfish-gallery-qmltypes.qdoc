@@ -3,7 +3,7 @@
 **
 ** All rights reserved.
 **
-** This file is part of Sailfish Transfer Engine component package.
+** This file is part of Sailfish Gallery components package.
 **
 ** You may use this file under the terms of BSD license as follows:
 **
