@@ -4,7 +4,7 @@ Summary:    Sailfish Gallery UI Components
 Version:    1.2.8
 Release:    1
 License:    BSD
-URL:        https://bitbucket.org/jolla/ui-sailfish-components-gallery
+URL:        https://github.com/sailfishos/sailfish-components-gallery
 Source0:    %{name}-%{version}.tar.bz2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
